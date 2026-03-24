@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>TropRapide · Livreur</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow:#F5C800; --black:#0A0A0A; --dark:#111; --card:#1A1A1A;
+    --border:#2A2A2A; --text:#F0F0F0; --muted:#777;
+    --green:#22C55E; --red:#EF4444; --orange:#F97316; --blue:#3B82F6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+  /* LOGIN */
+  .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
+  .login-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--yellow);margin-bottom:6px}
+  .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:36px}
+  .login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:360px}
+  .login-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:20px;text-align:center}
+  .field{margin-bottom:14px}
+  .field label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:6px}
+  .field input,.field select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:12px 14px;font-size:.92rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+  .field input:focus,.field select:focus{border-color:var(--yellow)}
+  .btn-login{width:100%;padding:14px;background:var(--yellow);color:var(--black);border:none;border-radius:12px;font-size:1rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:6px}
+
+  /* APP */
+  .app{display:none;flex-direction:column;min-height:100vh}
+
+  /* HEADER */
+  .app-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+  .hdr-left{display:flex;flex-direction:column}
+  .hdr-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--yellow)}
+  .hdr-role{font-size:.73rem;color:var(--muted)}
+  .dispo-toggle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:8px 14px;cursor:pointer}
+  .dtog-dot{width:9px;height:9px;border-radius:50%;transition:background .3s}
+  .dtog-dot.on{background:var(--green);animation:pulse 1.5s infinite}
+  .dtog-dot.off{background:#444}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+  /* EARNINGS BAR */
+  .earnings-bar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:20px}
+  .earn-item{display:flex;flex-direction:column;align-items:center;flex:1}
+  .earn-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800}
+  .earn-val.y{color:var(--yellow)}
+  .earn-val.g{color:var(--green)}
+  .earn-val.b{color:var(--blue)}
+  .earn-lbl{font-size:.68rem;color:var(--muted);text-align:center}
+  .earn-sep{width:1px;height:30px;background:var(--border)}
+
+  /* COURSE CARD (available) */
+  .course-wrap{padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:100px}
+
+  .course-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .15s}
+  .course-card.urgent{border-left:4px solid var(--red)}
+  .course-card.mine{border-color:var(--blue)}
+  .course-card.new-anim{animation:pop-in .4s cubic-bezier(.34,1.56,.64,1);border-color:var(--yellow)}
+  @keyframes pop-in{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .course-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between}
+  .course-id{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--yellow)}
+  .c-badge{padding:4px 10px;border-radius:100px;font-size:.7rem;font-weight:700}
+  .c-badge.dispo{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
+  .c-badge.prise{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+  .c-badge.livree{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+  .c-badge.urg{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+
+  .course-body{padding:0 16px 16px}
+  .route-line{display:flex;align-items:stretch;gap:12px;margin-bottom:12px}
+  .route-dots{display:flex;flex-direction:column;align-items:center;gap:0;padding-top:3px}
+  .dot-start{width:10px;height:10px;border-radius:50%;background:var(--orange);flex-shrink:0}
+  .dot-line{width:2px;flex:1;background:var(--border);margin:3px 0}
+  .dot-end{width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0}
+  .route-info{flex:1}
+  .route-from{font-size:.85rem;font-weight:600;margin-bottom:2px}
+  .route-from-sub{font-size:.75rem;color:var(--muted);margin-bottom:10px}
+  .route-to{font-size:.85rem;font-weight:600;margin-bottom:2px}
+  .route-to-sub{font-size:.75rem;color:var(--muted)}
+
+  .course-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .chip{background:var(--dark);border-radius:6px;padding:4px 10px;font-size:.75rem;color:var(--text)}
+  .chip.m{background:rgba(34,197,94,.12);color:var(--green)}
+
+  .course-actions{display:flex;gap:8px}
+  .btn{padding:12px 16px;border-radius:12px;font-size:.85rem;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;justify-content:center}
+  .btn:active{transform:scale(.96)}
+  .btn-take{background:var(--yellow);color:var(--black);flex:1}
+  .btn-done{background:var(--green);color:#fff;flex:1}
+  .btn-wa{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+  .btn-nav{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
+  .btn-pass{background:rgba(255,255,255,.06);color:var(--muted)}
+
+  /* ALERT */
+  .alert-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}
+  .alert-overlay.show{display:flex}
+  .alert-sheet{background:var(--card);border:2px solid var(--yellow);border-radius:24px 24px 0 0;padding:24px 22px 36px;width:100%;max-width:480px;animation:slide-up .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .sh-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+  .sh-emoji{font-size:2.8rem;text-align:center;margin-bottom:8px}
+  .sh-title{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;color:var(--yellow);text-align:center;margin-bottom:4px}
+  .sh-sub{font-size:.83rem;color:var(--muted);text-align:center;margin-bottom:18px}
+  .sh-detail{background:var(--dark);border-radius:12px;padding:14px;margin-bottom:18px}
+  .sh-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.83rem}
+  .sh-row:not(:last-child){border-bottom:1px solid var(--border)}
+  .sh-row .lbl{color:var(--muted)}
+  .sh-row .val{font-weight:600;text-align:right;max-width:65%}
+  .sh-btns{display:flex;gap:10px}
+  .sh-btns .btn{flex:1;padding:14px;font-size:.88rem}
+
+  /* TOAST */
+  .toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:8px;width:calc(100% - 32px);max-width:400px}
+  .toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;animation:tdrop .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+  .toast.s{border-left:3px solid var(--green)}.toast.w{border-left:3px solid var(--yellow)}.toast.e{border-left:3px solid var(--red)}
+  @keyframes tdrop{from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .t-ico{font-size:1.2rem}.t-txt{font-size:.83rem;font-weight:600}
+
+  /* EMPTY */
+  .empty{text-align:center;padding:50px 20px;color:var(--muted)}
+  .empty-ico{font-size:3rem;margin-bottom:10px}
+
+  /* BOTTOM NAV */
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:10px 0 20px}
+  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+  .nav-ico{font-size:1.3rem}
+  .nav-lbl{font-size:.67rem;color:var(--muted)}
+  .nav-item.active .nav-lbl{color:var(--yellow)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-logo">🛵 TROPRAPIDE</div>
+  <div class="login-sub">Espace Livreur</div>
+  <div class="login-card">
+    <div class="login-title">Connexion Livreur</div>
+    <div class="field">
+      <label>Votre nom</label>
+      <select id="livreurSelect">
+        <option value="">-- Choisir --</option>
+        <option>Mamadou T.</option>
+        <option>Kouassi B.</option>
+        <option>Ibrahim D.</option>
+        <option>Sékou A.</option>
+        <option>Narcisse K.</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Zone principale</label>
+      <select id="zoneSelect">
+        <option>Cocody</option>
+        <option>Plateau</option>
+        <option>Yopougon</option>
+        <option>Marcory</option>
+        <option>Treichville</option>
+        <option>Adjamé</option>
+        <option>Abobo</option>
+        <option>Koumassi</option>
+      </select>
+    </div>
+    <button class="btn-login" onclick="doLogin()">PRENDRE LA ROUTE →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="appScreen">
+  <div class="app-header">
+    <div class="hdr-left">
+      <div class="hdr-name" id="hdrName">Livreur</div>
+      <div class="hdr-role">🛵 Espace Livreur · TropRapide</div>
+    </div>
+    <div class="dispo-toggle" onclick="toggleDispo()">
+      <div class="dtog-dot on" id="dispoDot"></div>
+      <span id="dispoLabel" style="font-size:.8rem;font-weight:600">Disponible</span>
+    </div>
+  </div>
+
+  <div class="earnings-bar">
+    <div class="earn-item">
+      <div class="earn-val y" id="e-today">0</div>
+      <div class="earn-lbl">Courses<br>aujourd'hui</div>
+    </div>
+    <div class="earn-sep"></div>
+    <div class="earn-item">
+      <div class="earn-val g" id="e-fcfa">0</div>
+      <div class="earn-lbl">FCFA<br>gagnés</div>
+    </div>
+    <div class="earn-sep"></div>
+    <div class="earn-item">
+      <div class="earn-val b" id="e-dispo">0</div>
+      <div class="earn-lbl">Courses<br>disponibles</div>
+    </div>
+  </div>
+
+  <div style="padding:14px 16px 6px">
+    <div style="font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px">Courses disponibles</div>
+  </div>
+  <div class="course-wrap" id="courseWrap"></div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active"><div class="nav-ico">🛵</div><div class="nav-lbl">Courses</div></div>
+    <div class="nav-item"><div class="nav-ico">💰</div><div class="nav-lbl">Gains</div></div>
+    <div class="nav-item" onclick="logout()"><div class="nav-ico">🚪</div><div class="nav-lbl">Quitter</div></div>
+  </div>
+</div>
+
+<!-- ALERT -->
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-sheet">
+    <div class="sh-handle"></div>
+    <div class="sh-emoji">🛵</div>
+    <div class="sh-title">Nouvelle course !</div>
+    <div class="sh-sub" id="shSub"></div>
+    <div class="sh-detail" id="shDetail"></div>
+    <div class="sh-btns">
+      <button class="btn btn-take" onclick="takeFromAlert()">🛵 Prendre la course</button>
+      <button class="btn btn-pass" onclick="closeAlert()">Passer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const STORAGE_KEY = 'troprapide_orders_v1';
+const SESSION_KEY = 'troprapide_livreur_session';
+
+let myName = '';
+let myZone = '';
+let isDispo = true;
+let orders = [];
+let myOrders = [];
+let alertPending = null;
+let lastAvailCount = 0;
+let coursesToday = 0;
+let fcfaToday = 0;
+
+function doLogin() {
+  const n = document.getElementById('livreurSelect').value;
+  const z = document.getElementById('zoneSelect').value;
+  if (!n) { toast('Choisissez votre nom','e'); return; }
+  myName = n; myZone = z;
+  localStorage.setItem(SESSION_KEY, JSON.stringify({name:n, zone:z}));
+  startApp();
+}
+
+function startApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'flex';
+  document.getElementById('hdrName').textContent = myName;
+  loadOrders();
+  setInterval(loadOrders, 2000);
+  requestNotifPermission();
+}
+
+function logout() { localStorage.removeItem(SESSION_KEY); location.reload(); }
+
+window.addEventListener('load', () => {
+  const s = localStorage.getItem(SESSION_KEY);
+  if (s) { try { const d = JSON.parse(s); myName=d.name; myZone=d.zone; startApp(); } catch(e){} }
+});
+
+function loadOrders() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const all = raw ? JSON.parse(raw) : [];
+    // Available = nouvelle or prete (ready for pickup) and not taken
+    const available = all.filter(o => (o.status === 'nouvelle' || o.status === 'prete') && o.livreur !== myName);
+    const mine = all.filter(o => o.livreur === myName);
+    orders = [...available, ...mine];
+
+    // Check new available orders
+    if (isDispo && available.length > lastAvailCount) {
+      const newest = available[available.length - 1];
+      showAlert(newest);
+      playBeep();
+      sendBrowserNotif(newest);
+    }
+    lastAvailCount = available.length;
+
+    document.getElementById('e-dispo').textContent = available.length;
+    document.getElementById('e-today').textContent = coursesToday;
+    document.getElementById('e-fcfa').textContent = fcfaToday.toLocaleString();
+    renderCourses(available, mine);
+  } catch(e) {}
+}
+
+function renderCourses(available, mine) {
+  const wrap = document.getElementById('courseWrap');
+  const all = [...mine.filter(o=>o.status==='en-route'), ...available];
+  if (!all.length) {
+    wrap.innerHTML = `<div class="empty"><div class="empty-ico">🛵</div><div style="color:var(--muted);font-size:.88rem">Aucune course disponible pour le moment.<br>Restez disponible, ça va arriver !</div></div>`;
+    return;
+  }
+  wrap.innerHTML = all.map(o => {
+    const isMine = o.livreur === myName;
+    const elapsed = Math.floor((Date.now() - o.createdAt) / 60000);
+    const isUrg = o.priority === 'urgente';
+    const comm = Number(Math.round(Number(o.amount) * 0.1 / 100) * 100) || 500;
+    return `
+    <div class="course-card ${isUrg?'urgent':''} ${isMine?'mine':''} ${o.isNew?'new-anim':''}">
+      <div class="course-head">
+        <div>
+          <div class="course-id">#CMD-${String(o.id).padStart(4,'0')}</div>
+          <div style="font-size:.72rem;color:var(--muted)">il y a ${elapsed} min</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${isUrg ? '<span class="c-badge urg">🔴 URGENT</span>' : ''}
+          <span class="c-badge ${isMine?'prise':(o.status==='livree'?'livree':'dispo')}">${isMine?'🔵 Ma course':(o.status==='prete'?'🍽 Prête':o.status==='livree'?'✅ Livrée':'🟡 Dispo')}</span>
+        </div>
+      </div>
+      <div class="course-body">
+        <div class="route-line">
+          <div class="route-dots">
+            <div class="dot-start"></div>
+            <div class="dot-line"></div>
+            <div class="dot-end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-from">${o.restaurant}</div>
+            <div class="route-from-sub">📦 Récupérer la commande</div>
+            <div class="route-to">Zone ${o.zone}</div>
+            <div class="route-to-sub">👤 ${o.client} · ${o.phone}</div>
+          </div>
+        </div>
+        <div class="course-chips">
+          <span class="chip">💰 ${Number(o.amount).toLocaleString()} FCFA</span>
+          <span class="chip m">🛵 ~${comm.toLocaleString()} FCFA commission</span>
+          <span class="chip">📦 ${o.items.substring(0,30)}${o.items.length>30?'...':''}</span>
+        </div>
+        <div class="course-actions">
+          ${!isMine ? `<button class="btn btn-take" onclick="takeCourse(${o.id},${comm})">🛵 Prendre la course</button>` : ''}
+          ${isMine && o.status!=='livree' ? `<button class="btn btn-done" onclick="markDone(${o.id},${comm})">✅ Livraison faite</button>` : ''}
+          ${isMine ? `<button class="btn btn-nav" onclick="navigate('${o.zone}')">🗺 Navigation</button>` : ''}
+          <button class="btn btn-wa" onclick="callClient('${o.phone}')">📞</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function takeCourse(id, comm) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const all = raw ? JSON.parse(raw) : [];
+    const idx = all.findIndex(o => o.id === id);
+    if (idx !== -1) {
+      all[idx].livreur = myName;
+      all[idx].status = 'en-route';
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    }
+    toast('Course prise ! 🛵 En route','s');
+    loadOrders();
+  } catch(e) {}
+}
+
+function markDone(id, comm) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const all = raw ? JSON.parse(raw) : [];
+    const idx = all.findIndex(o => o.id === id);
+    if (idx !== -1) { all[idx].status = 'livree'; localStorage.setItem(STORAGE_KEY, JSON.stringify(all)); }
+    coursesToday++;
+    fcfaToday += comm;
+    document.getElementById('e-today').textContent = coursesToday;
+    document.getElementById('e-fcfa').textContent = fcfaToday.toLocaleString();
+    toast(`✅ Livré ! +${comm.toLocaleString()} FCFA gagné`,'s');
+    loadOrders();
+  } catch(e) {}
+}
+
+function navigate(zone) {
+  window.open(`https://www.google.com/maps/search/${encodeURIComponent(zone+' Abidjan')}`, '_blank');
+}
+function callClient(phone) {
+  window.open(`tel:${phone}`, '_self');
+}
+
+function toggleDispo() {
+  isDispo = !isDispo;
+  document.getElementById('dispoDot').className = `dtog-dot ${isDispo?'on':'off'}`;
+  document.getElementById('dispoLabel').textContent = isDispo ? 'Disponible' : 'Pause';
+  toast(isDispo ? '🟢 Vous êtes disponible' : '⏸ En pause','s');
+}
+
+function showAlert(o) {
+  if (!o) return;
+  alertPending = o;
+  const comm = Math.round(Number(o.amount) * 0.1 / 100) * 100 || 500;
+  document.getElementById('shSub').textContent = `Zone: ${o.zone} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('shDetail').innerHTML = `
+    <div class="sh-row"><span class="lbl">Restaurant</span><span class="val">${o.restaurant}</span></div>
+    <div class="sh-row"><span class="lbl">Livraison</span><span class="val">📍 ${o.zone}</span></div>
+    <div class="sh-row"><span class="lbl">Commande</span><span class="val">${o.items.substring(0,40)}</span></div>
+    <div class="sh-row"><span class="lbl">Commission</span><span class="val" style="color:var(--green)">~${comm.toLocaleString()} FCFA 💰</span></div>
+    <div class="sh-row"><span class="lbl">Priorité</span><span class="val">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
+  `;
+  document.getElementById('alertOverlay').classList.add('show');
+}
+
+function closeAlert() { document.getElementById('alertOverlay').classList.remove('show'); }
+function takeFromAlert() {
+  if (alertPending) {
+    const comm = Math.round(Number(alertPending.amount) * 0.1 / 100) * 100 || 500;
+    takeCourse(alertPending.id, comm);
+  }
+  closeAlert();
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [[660,.0],[880,.18],[1100,.36]].forEach(([f,t]) => {
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;o.type='sine';
+      g.gain.setValueAtTime(0,ctx.currentTime+t);
+      g.gain.linearRampToValueAtTime(.3,ctx.currentTime+t+.05);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15);
+    });
+  } catch(e){}
+}
+
+function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+}
+function sendBrowserNotif(o) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification(`🛵 Nouvelle course — ${o.zone}`, {
+      body: `${o.restaurant} → ${o.zone} · ~${Math.round(Number(o.amount)*.1/100)*100||500} FCFA`,
+      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg'
+    });
+  }
+}
+
+function toast(msg, type='s') {
+  const w=document.getElementById('toastWrap');
+  const el=document.createElement('div');
+  const icons={s:'✅',w:'⚠️',e:'❌'};
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span class="t-ico">${icons[type]||'📢'}</span><span class="t-txt">${msg}</span>`;
+  w.prepend(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
+  setTimeout(()=>el.remove(),3200);
+}
+</script>
+</body>
+</html>
