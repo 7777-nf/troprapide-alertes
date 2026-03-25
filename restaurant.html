@@ -4,484 +4,328 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>TropRapide · Restaurant</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --yellow: #F5C800;
-    --black: #0A0A0A;
-    --dark: #111;
-    --card: #1A1A1A;
-    --border: #2A2A2A;
-    --text: #F0F0F0;
-    --muted: #777;
-    --green: #22C55E;
-    --red: #EF4444;
-    --orange: #F97316;
-    --blue: #3B82F6;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body { background:var(--black); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
-
-  /* LOGIN */
-  .login-screen {
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    min-height:100vh; padding:24px; background:var(--dark);
-  }
-  .login-logo { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; color:var(--yellow); margin-bottom:6px; }
-  .login-sub { color:var(--muted); font-size:0.85rem; margin-bottom:36px; }
-  .login-card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:28px; width:100%; max-width:360px; }
-  .login-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:20px; text-align:center; }
-  .field { margin-bottom:14px; }
-  .field label { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:6px; }
-  .field select, .field input {
-    width:100%; background:var(--dark); border:1px solid var(--border); border-radius:10px;
-    color:var(--text); padding:12px 14px; font-size:0.92rem; font-family:'DM Sans',sans-serif;
-    outline:none; -webkit-appearance:none;
-  }
-  .field select:focus, .field input:focus { border-color:var(--yellow); }
-  .btn-login {
-    width:100%; padding:14px; background:var(--yellow); color:var(--black);
-    border:none; border-radius:12px; font-size:1rem; font-weight:800;
-    font-family:'Syne',sans-serif; cursor:pointer; margin-top:6px;
-  }
-
-  /* MAIN APP */
-  .app { display:none; flex-direction:column; min-height:100vh; }
-
-  /* HEADER */
-  .app-header {
-    background:var(--dark); border-bottom:1px solid var(--border);
-    padding:16px 20px; display:flex; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:50;
-  }
-  .app-header-left { display:flex; flex-direction:column; }
-  .app-resto-name { font-family:'Syne',sans-serif; font-weight:800; font-size:1rem; color:var(--yellow); }
-  .app-role { font-size:0.73rem; color:var(--muted); }
-  .online-toggle {
-    display:flex; align-items:center; gap:8px;
-    background:var(--card); border:1px solid var(--border); border-radius:100px;
-    padding:8px 14px; cursor:pointer;
-  }
-  .toggle-dot { width:9px; height:9px; border-radius:50%; transition:background .3s; }
-  .toggle-dot.on { background:var(--green); animation:pulse 1.5s infinite; }
-  .toggle-dot.off { background:#444; }
-  .toggle-label { font-size:0.8rem; font-weight:600; }
-  @keyframes pulse { 0%,100%{transform:scale(1)}50%{transform:scale(1.3)} }
-
-  /* STATS */
-  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:16px; }
-  .stat-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 12px; text-align:center; }
-  .stat-num { font-family:'Syne',sans-serif; font-size:1.6rem; font-weight:800; }
-  .stat-num.yellow { color:var(--yellow); }
-  .stat-num.green { color:var(--green); }
-  .stat-num.orange { color:var(--orange); }
-  .stat-lbl { font-size:0.7rem; color:var(--muted); margin-top:2px; }
-
-  /* TABS */
-  .tabs { display:flex; gap:8px; padding:0 16px 14px; overflow-x:auto; }
-  .tabs::-webkit-scrollbar { display:none; }
-  .tab { padding:8px 18px; border-radius:100px; border:1px solid var(--border); font-size:0.8rem; font-weight:600; white-space:nowrap; cursor:pointer; color:var(--muted); transition:all .2s; flex-shrink:0; }
-  .tab.active { background:var(--yellow); color:var(--black); border-color:var(--yellow); }
-
-  /* ORDER CARDS */
-  .orders-wrap { padding:0 16px 100px; display:flex; flex-direction:column; gap:12px; }
-
-  .order-card {
-    background:var(--card); border:1px solid var(--border); border-radius:16px;
-    overflow:hidden; transition:transform .15s;
-  }
-  .order-card.new-anim { animation:pop-in .4s cubic-bezier(.34,1.56,.64,1), glow 2s ease 3; border-color:var(--yellow); }
-  @keyframes pop-in { from{transform:scale(0.93);opacity:0} to{transform:scale(1);opacity:1} }
-  @keyframes glow { 0%,100%{border-color:var(--yellow)}50%{border-color:rgba(245,200,0,.2)} }
-  .order-card.urgente { border-left:4px solid var(--red); }
-
-  .order-head { padding:14px 16px; display:flex; align-items:center; justify-content:space-between; }
-  .order-num { font-family:'Syne',sans-serif; font-size:0.82rem; font-weight:700; color:var(--yellow); }
-  .order-time-badge { font-size:0.72rem; color:var(--muted); }
-
-  .order-body { padding:0 16px 14px; }
-  .order-items-title { font-weight:600; font-size:0.95rem; margin-bottom:4px; }
-  .order-items-list { font-size:0.83rem; color:var(--muted); margin-bottom:10px; }
-  .order-meta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
-  .meta-chip { background:var(--dark); border-radius:6px; padding:4px 10px; font-size:0.75rem; color:var(--text); }
-  .meta-chip.urg { background:rgba(239,68,68,.15); color:var(--red); }
-
-  .order-actions { display:flex; gap:8px; flex-wrap:wrap; }
-  .btn { padding:10px 16px; border-radius:10px; font-size:0.82rem; font-weight:700; border:none; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all .15s; }
-  .btn-accept { background:var(--yellow); color:var(--black); flex:1; justify-content:center; }
-  .btn-accept:active { transform:scale(.97); }
-  .btn-ready { background:var(--green); color:#fff; flex:1; justify-content:center; }
-  .btn-wa { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.2); }
-  .btn-refuse { background:rgba(239,68,68,.12); color:var(--red); border:1px solid rgba(239,68,68,.2); }
-
-  /* STATUS BADGE */
-  .s-badge { padding:4px 10px; border-radius:100px; font-size:0.7rem; font-weight:700; }
-  .s-badge.nouvelle { background:rgba(245,200,0,.15); color:var(--yellow); border:1px solid rgba(245,200,0,.3); }
-  .s-badge.acceptee { background:rgba(249,115,22,.15); color:var(--orange); border:1px solid rgba(249,115,22,.3); }
-  .s-badge.prete { background:rgba(34,197,94,.15); color:var(--green); border:1px solid rgba(34,197,94,.3); }
-  .s-badge.livree { background:rgba(255,255,255,.05); color:var(--muted); }
-
-  /* ALERT POPUP */
-  .alert-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.85); backdrop-filter:blur(6px); z-index:200; align-items:flex-end; justify-content:center; }
-  .alert-overlay.show { display:flex; }
-  .alert-sheet {
-    background:var(--card); border:2px solid var(--yellow); border-radius:24px 24px 0 0;
-    padding:28px 24px 36px; width:100%; max-width:480px;
-    animation:slide-up .35s cubic-bezier(.34,1.56,.64,1);
-  }
-  @keyframes slide-up { from{transform:translateY(100%)}to{transform:translateY(0)} }
-  .sheet-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
-  .sheet-emoji { font-size:3rem; text-align:center; margin-bottom:8px; }
-  .sheet-title { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:var(--yellow); text-align:center; margin-bottom:4px; }
-  .sheet-sub { font-size:0.85rem; color:var(--muted); text-align:center; margin-bottom:20px; }
-  .sheet-detail { background:var(--dark); border-radius:12px; padding:14px; margin-bottom:20px; }
-  .sheet-row { display:flex; justify-content:space-between; padding:6px 0; font-size:0.85rem; }
-  .sheet-row:not(:last-child) { border-bottom:1px solid var(--border); }
-  .sheet-row .lbl { color:var(--muted); }
-  .sheet-row .val { font-weight:600; text-align:right; max-width:65%; }
-  .sheet-btns { display:flex; gap:10px; }
-  .sheet-btns .btn { flex:1; justify-content:center; padding:14px; font-size:0.9rem; }
-
-  /* TOAST */
-  .toast-wrap { position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:300; display:flex; flex-direction:column; gap:8px; width:calc(100% - 32px); max-width:400px; }
-  .toast { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:10px; animation:toast-drop .3s ease; box-shadow:0 4px 20px rgba(0,0,0,.4); }
-  .toast.s { border-left:3px solid var(--green); }
-  .toast.w { border-left:3px solid var(--yellow); }
-  .toast.e { border-left:3px solid var(--red); }
-  @keyframes toast-drop { from{transform:translateY(-16px);opacity:0}to{transform:translateY(0);opacity:1} }
-  .toast-ico { font-size:1.2rem; }
-  .toast-txt { font-size:0.83rem; font-weight:600; }
-
-  /* EMPTY */
-  .empty { text-align:center; padding:50px 20px; color:var(--muted); }
-  .empty-ico { font-size:3rem; margin-bottom:10px; }
-  .empty-msg { font-size:0.88rem; line-height:1.6; }
-
-  /* BOTTOM NAV */
-  .bottom-nav {
-    position:fixed; bottom:0; left:0; right:0;
-    background:var(--dark); border-top:1px solid var(--border);
-    display:flex; padding:10px 0 20px;
-  }
-  .nav-item { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; }
-  .nav-ico { font-size:1.3rem; }
-  .nav-lbl { font-size:0.67rem; color:var(--muted); }
-  .nav-item.active .nav-lbl { color:var(--yellow); }
+:root{--yellow:#F5C800;--black:#0A0A0A;--dark:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#F0F0F0;--muted:#777;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
+.login-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--yellow);margin-bottom:6px}
+.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;width:100%;max-width:360px}
+.login-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:18px;text-align:center}
+.field{margin-bottom:13px}
+.field label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.field input,.field select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:11px 13px;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:var(--yellow)}
+.btn-login{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:11px;font-size:.95rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
+.app{display:none;flex-direction:column;min-height:100vh}
+.app-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.hname{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--yellow)}
+.hrole{font-size:.7rem;color:var(--muted)}
+.otoggle{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 13px;cursor:pointer}
+.tdot{width:8px;height:8px;border-radius:50%;transition:background .3s}
+.tdot.on{background:var(--green);animation:pulse 1.5s infinite}
+.tdot.off{background:#444}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:14px}
+.sbox{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center}
+.snum{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800}
+.snum.y{color:var(--yellow)}.snum.o{color:var(--orange)}.snum.g{color:var(--green)}
+.slbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+.tabs{display:flex;gap:7px;padding:0 14px 12px;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:7px 16px;border-radius:100px;border:1px solid var(--border);font-size:.78rem;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--muted);transition:all .2s;flex-shrink:0}
+.tab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.orders-wrap{padding:0 14px 90px;display:flex;flex-direction:column;gap:11px}
+.oc{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden}
+.oc.new-a{border-color:var(--yellow);animation:pop .4s cubic-bezier(.34,1.56,.64,1),gb 2s ease 3}
+@keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes gb{0%,100%{border-color:var(--yellow)}50%{border-color:rgba(245,200,0,.2)}}
+.oc.urg{border-left:4px solid var(--red)}
+.oh{padding:13px 15px 8px;display:flex;align-items:center;justify-content:space-between}
+.oid{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow)}
+.ob{padding:0 15px 14px}
+.oitems-title{font-weight:600;font-size:.92rem;margin-bottom:3px}
+.oitems{font-size:.8rem;color:var(--muted);margin-bottom:9px}
+.ochips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
+.chip{background:var(--dark);border-radius:6px;padding:4px 9px;font-size:.73rem}
+.chip.urg{background:rgba(239,68,68,.12);color:var(--red)}
+.oactions{display:flex;gap:7px;flex-wrap:wrap}
+.btn{padding:10px 15px;border-radius:10px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;justify-content:center}
+.btn:active{transform:scale(.97)}
+.btn-acc{background:var(--yellow);color:var(--black);flex:1}
+.btn-rdy{background:var(--green);color:#fff;flex:1}
+.btn-wa{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.btn-ref{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.sb{padding:4px 10px;border-radius:100px;font-size:.69rem;font-weight:700}
+.sb.nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
+.sb.acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
+.sb.prete{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.sb.en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.sb.livree{background:rgba(255,255,255,.05);color:var(--muted)}
+.alert-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}
+.alert-overlay.show{display:flex}
+.sheet{background:var(--card);border:2px solid var(--yellow);border-radius:22px 22px 0 0;padding:24px 22px 34px;width:100%;max-width:480px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sh{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.semoji{font-size:2.8rem;text-align:center;margin-bottom:7px}
+.stitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--yellow);text-align:center;margin-bottom:3px}
+.ssub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:16px}
+.sdetail{background:var(--dark);border-radius:11px;padding:13px;margin-bottom:16px}
+.srow{display:flex;justify-content:space-between;padding:5px 0;font-size:.82rem}
+.srow:not(:last-child){border-bottom:1px solid var(--border)}
+.srow .sl{color:var(--muted)}.srow .sv{font-weight:600;text-align:right;max-width:62%}
+.sbtns{display:flex;gap:9px}
+.sbtns .btn{flex:1;padding:13px}
+.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:7px;width:calc(100% - 28px);max-width:380px}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 15px;display:flex;align-items:center;gap:9px;animation:tdrop .3s ease;box-shadow:0 4px 18px rgba(0,0,0,.4)}
+.toast.s{border-left:3px solid var(--green)}.toast.w{border-left:3px solid var(--yellow)}.toast.e{border-left:3px solid var(--red)}
+@keyframes tdrop{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
+.t-ico{font-size:1.1rem}.t-txt{font-size:.81rem;font-weight:600}
+.empty{text-align:center;padding:46px 18px;color:var(--muted)}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:9px 0 18px}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.ni-ico{font-size:1.2rem}.ni-lbl{font-size:.65rem;color:var(--muted)}
+.ni.active .ni-lbl{color:var(--yellow)}
+/* Firebase config on restaurant */
+.cfg-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
+.cfg-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;width:100%;max-width:360px}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div class="login-screen" id="loginScreen">
+<!-- FIREBASE CONFIG -->
+<div class="cfg-screen" id="cfgScreen">
   <div class="login-logo">🍽 TROPRAPIDE</div>
   <div class="login-sub">Espace Restaurant</div>
-  <div class="login-card">
-    <div class="login-title">Connexion Restaurant</div>
-    <div class="field">
-      <label>Votre restaurant</label>
-      <select id="restoSelect">
-        <option value="">-- Choisir --</option>
-        <option>Le Palais du Poulet</option>
-        <option>Saveurs du Soleil</option>
-        <option>Pizza House Abidjan</option>
-        <option>Street Burger Corner</option>
-        <option>Délices Asiatiques</option>
-        <option>Juice & Smoothies Bar</option>
+  <div class="cfg-card">
+    <div class="login-title">🔥 Connexion Firebase</div>
+    <div class="field"><label>Database URL Firebase</label>
+      <input type="text" id="c_dburl" placeholder="https://troprapide-xxx.firebaseio.com"></div>
+    <div class="field"><label>API Key</label>
+      <input type="text" id="c_apikey" placeholder="AIzaSy..."></div>
+    <div class="field"><label>Project ID</label>
+      <input type="text" id="c_projectid" placeholder="troprapide-xxxxx"></div>
+    <div class="field"><label>Votre restaurant</label>
+      <select id="c_resto">
+        <option>Le Palais du Poulet</option><option>Saveurs du Soleil</option>
+        <option>Pizza House Abidjan</option><option>Street Burger Corner</option>
+        <option>Délices Asiatiques</option><option>Juice & Smoothies Bar</option>
       </select>
     </div>
-    <div class="field">
-      <label>Code d'accès</label>
-      <input type="password" id="codeInput" placeholder="••••" maxlength="4">
-    </div>
-    <button class="btn-login" onclick="doLogin()">ACCÉDER →</button>
+    <button class="btn-login" onclick="connectFirebase()">🔥 SE CONNECTER →</button>
+    <div style="font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center">Saisissez les mêmes infos que l'admin</div>
   </div>
 </div>
 
 <!-- APP -->
 <div class="app" id="appScreen">
   <div class="app-header">
-    <div class="app-header-left">
-      <div class="app-resto-name" id="headerRestoName">Restaurant</div>
-      <div class="app-role">🍽 Espace Restaurant · TropRapide</div>
-    </div>
-    <div class="online-toggle" onclick="toggleOnline()">
-      <div class="toggle-dot on" id="onlineDot"></div>
-      <span class="toggle-label" id="onlineLabel">Ouvert</span>
-    </div>
+    <div><div class="hname" id="hRestoName">Restaurant</div><div class="hrole">🍽 TropRapide · Espace Restaurant</div></div>
+    <div class="otoggle" onclick="toggleOnline()"><div class="tdot on" id="onlineDot"></div><span id="onlineLabel" style="font-size:.79rem;font-weight:600">Ouvert</span></div>
   </div>
-
   <div class="stats-row">
-    <div class="stat-box"><div class="stat-num yellow" id="s-new">0</div><div class="stat-lbl">Nouvelles</div></div>
-    <div class="stat-box"><div class="stat-num orange" id="s-prep">0</div><div class="stat-lbl">En prépa</div></div>
-    <div class="stat-box"><div class="stat-num green" id="s-done">0</div><div class="stat-lbl">Livrées</div></div>
+    <div class="sbox"><div class="snum y" id="s-new">0</div><div class="slbl">Nouvelles</div></div>
+    <div class="sbox"><div class="snum o" id="s-prep">0</div><div class="slbl">En prépa</div></div>
+    <div class="sbox"><div class="snum g" id="s-done">0</div><div class="slbl">Livrées</div></div>
   </div>
-
   <div class="tabs">
     <div class="tab active" onclick="filter('all',this)">Toutes</div>
-    <div class="tab" onclick="filter('nouvelle',this)">Nouvelles 🔴</div>
+    <div class="tab" onclick="filter('nouvelle',this)">🔴 Nouvelles</div>
     <div class="tab" onclick="filter('acceptee',this)">En prépa</div>
     <div class="tab" onclick="filter('prete',this)">Prêtes</div>
     <div class="tab" onclick="filter('livree',this)">Livrées</div>
   </div>
-
   <div class="orders-wrap" id="orderWrap"></div>
-
   <div class="bottom-nav">
-    <div class="nav-item active"><div class="nav-ico">📋</div><div class="nav-lbl">Commandes</div></div>
-    <div class="nav-item"><div class="nav-ico">📊</div><div class="nav-lbl">Stats</div></div>
-    <div class="nav-item" onclick="logout()"><div class="nav-ico">🚪</div><div class="nav-lbl">Quitter</div></div>
+    <div class="ni active"><div class="ni-ico">📋</div><div class="ni-lbl">Commandes</div></div>
+    <div class="ni"><div class="ni-ico">📊</div><div class="ni-lbl">Stats</div></div>
+    <div class="ni" onclick="logout()"><div class="ni-ico">🚪</div><div class="ni-lbl">Quitter</div></div>
   </div>
 </div>
 
-<!-- ALERT -->
 <div class="alert-overlay" id="alertOverlay">
-  <div class="alert-sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-emoji">🔔</div>
-    <div class="sheet-title">Nouvelle commande !</div>
-    <div class="sheet-sub" id="sheetSub"></div>
-    <div class="sheet-detail" id="sheetDetail"></div>
-    <div class="sheet-btns">
-      <button class="btn btn-accept" onclick="acceptFromAlert()">✓ Accepter</button>
+  <div class="sheet">
+    <div class="sh"></div>
+    <div class="semoji">🔔</div>
+    <div class="stitle">Nouvelle commande !</div>
+    <div class="ssub" id="shSub"></div>
+    <div class="sdetail" id="shDetail"></div>
+    <div class="sbtns">
+      <button class="btn btn-acc" onclick="acceptFromAlert()">✓ Accepter</button>
       <button class="btn btn-wa" onclick="waFromAlert()">💬 WA</button>
-      <button class="btn btn-refuse" onclick="closeAlert()">✕</button>
+      <button class="btn btn-ref" onclick="closeAlert()">✕</button>
     </div>
   </div>
 </div>
 
-<!-- TOASTS -->
-<div class="toast-wrap" id="toastWrap"></div>
+<div class="toast-wrap" id="tw"></div>
 
-<script>
-// ── shared storage key (simulate real-time via localStorage) ──
-const STORAGE_KEY = 'troprapide_orders_v1';
-const RESTO_KEY = 'troprapide_resto_session';
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-let myResto = '';
-let isOnline = true;
-let currentFilter = 'all';
-let orders = [];
-let alertPending = null;
-let lastOrderCount = 0;
+const CFG_KEY = 'troprapide_resto_cfg';
+let db = null, myResto = '', isOnline = true;
+let orders = {}, alertPending = null, currentFilter = 'all';
+let prevNewCount = 0;
+const PAYLBL = {cash:'💵 Cash',momo:'📱 Mobile Money',wave:'🌊 Wave',prepaye:'✅ Prépayé'};
 
-// ── LOGIN ──
-function doLogin() {
-  const r = document.getElementById('restoSelect').value;
-  const c = document.getElementById('codeInput').value;
-  if (!r) { toast('Choisissez votre restaurant','','e'); return; }
-  // Demo: any 4-digit code works
-  if (c.length < 1) { toast('Entrez votre code','','e'); return; }
-  myResto = r;
-  localStorage.setItem(RESTO_KEY, r);
-  document.getElementById('loginScreen').style.display = 'none';
+window.connectFirebase = function() {
+  const dburl = document.getElementById('c_dburl').value.trim();
+  const apiKey = document.getElementById('c_apikey').value.trim();
+  const projectId = document.getElementById('c_projectid').value.trim();
+  const resto = document.getElementById('c_resto').value;
+  if (!dburl||!apiKey||!projectId) { alert('Remplissez tous les champs !'); return; }
+  const cfg = {dburl,apiKey,projectId,resto};
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  initApp(cfg);
+};
+
+function initApp(cfg) {
+  myResto = cfg.resto;
+  const app = initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId}, 'resto-'+Date.now());
+  db = getDatabase(app);
+  document.getElementById('cfgScreen').style.display = 'none';
   document.getElementById('appScreen').style.display = 'flex';
-  document.getElementById('headerRestoName').textContent = r;
-  loadOrders();
-  startPolling();
+  document.getElementById('hRestoName').textContent = myResto;
+  startListening();
   requestNotifPermission();
 }
 
-function logout() {
-  localStorage.removeItem(RESTO_KEY);
-  location.reload();
-}
-
-// ── AUTO LOGIN ──
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem(RESTO_KEY);
-  if (saved) {
-    myResto = saved;
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('appScreen').style.display = 'flex';
-    document.getElementById('headerRestoName').textContent = saved;
-    loadOrders();
-    startPolling();
-  }
-});
-
-// ── ORDERS ──
-function loadOrders() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const all = raw ? JSON.parse(raw) : [];
-    orders = all.filter(o => o.restaurant === myResto);
+function startListening() {
+  onValue(ref(db,'orders'), snap => {
+    orders = snap.val() || {};
+    const myOrders = Object.entries(orders).filter(([k,v]) => v.restaurant === myResto);
+    const newOnes = myOrders.filter(([k,v]) => v.status === 'nouvelle');
+    if (newOnes.length > prevNewCount) {
+      const latest = newOnes[newOnes.length-1];
+      showAlert({...latest[1], _key: latest[0]});
+      playBeep();
+      sendNotif(latest[1]);
+    }
+    prevNewCount = newOnes.length;
     renderOrders();
-    updateStats();
-    checkNewOrders();
-  } catch(e) {}
+  });
 }
 
-function startPolling() {
-  setInterval(() => {
-    loadOrders();
-  }, 2000);
-}
-
-function checkNewOrders() {
-  const newOnes = orders.filter(o => o.status === 'nouvelle');
-  if (newOnes.length > lastOrderCount) {
-    const latest = newOnes[newOnes.length - 1];
-    showAlert(latest);
-    playBeep();
-    sendBrowserNotif(latest);
-  }
-  lastOrderCount = newOnes.length;
-}
-
-// ── RENDER ──
 function renderOrders() {
+  const myList = Object.entries(orders)
+    .filter(([k,v]) => v.restaurant === myResto)
+    .map(([k,v]) => ({...v,_key:k}))
+    .sort((a,b) => b.createdAt - a.createdAt);
+
+  const filtered = currentFilter === 'all' ? myList : myList.filter(o => o.status === currentFilter);
   const wrap = document.getElementById('orderWrap');
-  let list = currentFilter === 'all' ? orders : orders.filter(o => o.status === currentFilter);
-  list = [...list].reverse();
-  if (!list.length) {
-    wrap.innerHTML = `<div class="empty"><div class="empty-ico">🍽</div><div class="empty-msg">Aucune commande<br><span style="font-size:.8rem">Les nouvelles commandes apparaîtront ici</span></div></div>`;
+
+  document.getElementById('s-new').textContent = myList.filter(o=>o.status==='nouvelle').length;
+  document.getElementById('s-prep').textContent = myList.filter(o=>o.status==='acceptee'||o.status==='prete').length;
+  document.getElementById('s-done').textContent = myList.filter(o=>o.status==='livree').length;
+
+  if (!filtered.length) {
+    wrap.innerHTML = `<div class="empty">🍽<br><br>Aucune commande ici.<br><span style="font-size:.8rem">Les commandes apparaîtront ici en temps réel</span></div>`;
     return;
   }
-  wrap.innerHTML = list.map(o => {
-    const elapsed = Math.floor((Date.now() - o.createdAt) / 60000);
-    const isUrg = o.priority === 'urgente';
-    return `
-    <div class="order-card ${o.isNew?'new-anim':''} ${isUrg?'urgente':''}">
-      <div class="order-head">
-        <div>
-          <div class="order-num">#CMD-${String(o.id).padStart(4,'0')}</div>
-          <div class="order-time-badge">il y a ${elapsed} min</div>
-        </div>
-        <span class="s-badge ${o.status}">${{nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête',livree:'✅ Livrée'}[o.status]||o.status}</span>
+  const SL = {nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête','en-route':'🔵 En route',livree:'✅ Livrée'};
+  wrap.innerHTML = filtered.map(o => {
+    const elapsed = Math.floor((Date.now()-o.createdAt)/60000);
+    return `<div class="oc ${o.isNew?'new-a':''} ${o.priority==='urgente'?'urg':''}">
+      <div class="oh">
+        <div><div class="oid">#${o._key.slice(-6).toUpperCase()}</div><div style="font-size:.7rem;color:var(--muted)">il y a ${elapsed} min</div></div>
+        <span class="sb ${o.status}">${SL[o.status]||o.status}</span>
       </div>
-      <div class="order-body">
-        <div class="order-items-title">Commande client</div>
-        <div class="order-items-list">${o.items}</div>
-        <div class="order-meta">
-          <span class="meta-chip">👤 ${o.client}</span>
-          <span class="meta-chip">📍 ${o.zone}</span>
-          <span class="meta-chip">💰 ${Number(o.amount).toLocaleString()} FCFA</span>
-          ${isUrg ? '<span class="meta-chip urg">🔴 URGENT</span>' : ''}
+      <div class="ob">
+        <div class="oitems-title">Commande</div>
+        <div class="oitems">${o.items}</div>
+        <div class="ochips">
+          <span class="chip">👤 ${o.client}</span>
+          <span class="chip">📍 ${o.zone}</span>
+          <span class="chip">💰 ${Number(o.amount).toLocaleString()} FCFA</span>
+          <span class="chip">${PAYLBL[o.paiement]||''}</span>
+          ${o.priority==='urgente'?'<span class="chip urg">🔴 URGENT</span>':''}
+          ${o.notes?`<span class="chip">📝 ${o.notes}</span>`:''}
         </div>
-        <div class="order-actions">
-          ${o.status==='nouvelle' ? `
-            <button class="btn btn-accept" onclick="updateStatus(${o.id},'acceptee')">✓ Accepter & Préparer</button>
-            <button class="btn btn-refuse" onclick="updateStatus(${o.id},'refuse')">✕</button>
-          ` : ''}
-          ${o.status==='acceptee' ? `
-            <button class="btn btn-ready" onclick="updateStatus(${o.id},'prete')">🍽 Commande Prête !</button>
-          ` : ''}
-          ${o.status==='prete' ? `<span style="color:var(--green);font-size:.82rem;font-weight:600">✅ En attente du livreur</span>` : ''}
-          ${o.status==='livree' ? `<span style="color:var(--muted);font-size:.82rem">Livraison confirmée</span>` : ''}
+        <div class="oactions">
+          ${o.status==='nouvelle'?`<button class="btn btn-acc" onclick="updateS('${o._key}','acceptee')">✓ Accepter & Préparer</button><button class="btn btn-ref" onclick="updateS('${o._key}','refuse')">✕</button>`:''}
+          ${o.status==='acceptee'?`<button class="btn btn-rdy" onclick="updateS('${o._key}','prete')">🍽 Commande Prête !</button>`:''}
+          ${o.status==='prete'?`<span style="color:var(--green);font-size:.8rem;font-weight:600">✅ En attente du livreur</span>`:''}
+          ${o.status==='livree'?`<span style="color:var(--muted);font-size:.8rem">Livraison confirmée</span>`:''}
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function updateStats() {
-  document.getElementById('s-new').textContent = orders.filter(o=>o.status==='nouvelle').length;
-  document.getElementById('s-prep').textContent = orders.filter(o=>o.status==='acceptee'||o.status==='prete').length;
-  document.getElementById('s-done').textContent = orders.filter(o=>o.status==='livree').length;
-}
+window.updateS = async function(key, status) {
+  if (!db) return;
+  await update(ref(db,'orders/'+key), {status});
+  toast({acceptee:'✓ Commande acceptée',prete:'🍽 Prête !',refuse:'Commande refusée'}[status]||'Mis à jour', status==='refuse'?'e':'s');
+};
 
-function updateStatus(id, newStatus) {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const all = raw ? JSON.parse(raw) : [];
-    const idx = all.findIndex(o => o.id === id);
-    if (idx !== -1) {
-      all[idx].status = newStatus;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-    }
-    const labels = {acceptee:'Commande acceptée ✓', prete:'Commande marquée prête 🍽', refuse:'Commande refusée'};
-    toast(labels[newStatus]||'Mis à jour', '', newStatus==='refuse'?'e':'s');
-    loadOrders();
-  } catch(e) {}
-}
-
-function filter(s, el) {
-  currentFilter = s;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+window.filter = function(s,el) {
+  currentFilter=s;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderOrders();
-}
+};
 
-// ── ONLINE TOGGLE ──
-function toggleOnline() {
-  isOnline = !isOnline;
-  document.getElementById('onlineDot').className = `toggle-dot ${isOnline?'on':'off'}`;
-  document.getElementById('onlineLabel').textContent = isOnline ? 'Ouvert' : 'Fermé';
-  toast(isOnline ? 'Vous êtes en ligne 🟢' : 'Vous êtes hors ligne 🔴', '', isOnline?'s':'e');
-}
+window.toggleOnline = function() {
+  isOnline=!isOnline;
+  document.getElementById('onlineDot').className='tdot '+(isOnline?'on':'off');
+  document.getElementById('onlineLabel').textContent=isOnline?'Ouvert':'Fermé';
+  toast(isOnline?'🟢 En ligne':'🔴 Hors ligne', isOnline?'s':'e');
+};
 
-// ── ALERT SHEET ──
 function showAlert(o) {
-  if (!o) return;
-  alertPending = o;
-  document.getElementById('sheetSub').textContent = `${o.restaurant} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
-  document.getElementById('sheetDetail').innerHTML = `
-    <div class="sheet-row"><span class="lbl">Commande</span><span class="val">${o.items}</span></div>
-    <div class="sheet-row"><span class="lbl">Client</span><span class="val">${o.client}</span></div>
-    <div class="sheet-row"><span class="lbl">Zone</span><span class="val">📍 ${o.zone}</span></div>
-    <div class="sheet-row"><span class="lbl">Montant</span><span class="val">${Number(o.amount).toLocaleString()} FCFA</span></div>
-    <div class="sheet-row"><span class="lbl">Priorité</span><span class="val">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
+  alertPending=o;
+  document.getElementById('shSub').textContent=`${o.restaurant} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('shDetail').innerHTML=`
+    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items}</span></div>
+    <div class="srow"><span class="sl">Client</span><span class="sv">${o.client}</span></div>
+    <div class="srow"><span class="sl">Zone</span><span class="sv">📍 ${o.zone}</span></div>
+    <div class="srow"><span class="sl">Montant</span><span class="sv">${Number(o.amount).toLocaleString()} FCFA</span></div>
+    <div class="srow"><span class="sl">Paiement</span><span class="sv">${PAYLBL[o.paiement]||''}</span></div>
+    ${o.notes?`<div class="srow"><span class="sl">Notes</span><span class="sv">${o.notes}</span></div>`:''}
+    <div class="srow"><span class="sl">Priorité</span><span class="sv">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
   `;
   document.getElementById('alertOverlay').classList.add('show');
 }
-
-function closeAlert() { document.getElementById('alertOverlay').classList.remove('show'); }
-
-function acceptFromAlert() {
-  if (alertPending) updateStatus(alertPending.id, 'acceptee');
-  closeAlert();
-}
-
-function waFromAlert() {
+window.closeAlert = function() { document.getElementById('alertOverlay').classList.remove('show'); };
+window.acceptFromAlert = function() { if(alertPending) updateS(alertPending._key,'acceptee'); closeAlert(); };
+window.waFromAlert = function() {
   if (!alertPending) return;
-  const o = alertPending;
-  const msg = encodeURIComponent(`✅ COMMANDE ACCEPTÉE\n#CMD-${String(o.id).padStart(4,'0')}\n📦 ${o.items}\n💰 ${o.amount} FCFA\n📍 ${o.zone}\nNous préparons votre commande !`);
-  window.open(`https://wa.me/2250140503030?text=${msg}`, '_blank');
+  const o=alertPending;
+  const msg=encodeURIComponent(`✅ COMMANDE ACCEPTÉE\n${o.items}\n💰 ${o.amount} FCFA\n📍 ${o.zone}\n👤 ${o.client} — ${o.phone}`);
+  window.open(`https://wa.me/2250140503030?text=${msg}`,'_blank');
   closeAlert();
-}
+};
 
-// ── AUDIO ──
 function playBeep() {
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [[880,.0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t]) => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = f; o.type = 'sine';
-      g.gain.setValueAtTime(0, ctx.currentTime+t);
-      g.gain.linearRampToValueAtTime(.35, ctx.currentTime+t+.05);
-      g.gain.linearRampToValueAtTime(0, ctx.currentTime+t+.14);
-      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.15);
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;o.type='sine';
+      g.gain.setValueAtTime(0,ctx.currentTime+t);
+      g.gain.linearRampToValueAtTime(.32,ctx.currentTime+t+.05);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15);
     });
-  } catch(e) {}
+  }catch(e){}
 }
+function requestNotifPermission(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
+function sendNotif(o){if('Notification'in window&&Notification.permission==='granted')new Notification(`🔔 Nouvelle commande`,{body:`${o.items} · ${o.zone}`});}
+function toast(msg,type='s'){
+  const w=document.getElementById('tw'),el=document.createElement('div');
+  el.className=`toast ${type}`;el.innerHTML=`<span class="t-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="t-txt">${msg}</span>`;
+  w.prepend(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);setTimeout(()=>el.remove(),3200);
+}
+window.logout=function(){localStorage.removeItem(CFG_KEY);location.reload();};
 
-// ── BROWSER NOTIF ──
-function requestNotifPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
-function sendBrowserNotif(o) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(`🔔 Nouvelle commande — ${o.restaurant}`, {
-      body: `${o.items} · ${o.zone} · ${o.amount} FCFA`,
-      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg'
-    });
-  }
-}
-
-// ── TOAST ──
-function toast(msg, sub='', type='s') {
-  const w = document.getElementById('toastWrap');
-  const el = document.createElement('div');
-  const icons = {s:'✅',w:'⚠️',e:'❌'};
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span class="toast-ico">${icons[type]||'📢'}</span><span class="toast-txt">${msg}</span>`;
-  w.prepend(el);
-  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; }, 2800);
-  setTimeout(()=>el.remove(), 3200);
-}
+const saved=localStorage.getItem(CFG_KEY);
+if(saved){try{initApp(JSON.parse(saved));}catch(e){}}
 </script>
 </body>
 </html>
