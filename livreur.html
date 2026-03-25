@@ -9,6 +9,8 @@
 :root{--yellow:#F5C800;--black:#0A0A0A;--dark:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#F0F0F0;--muted:#777;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* LOGIN */
 .login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
 .login-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--yellow);margin-bottom:6px}
 .login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px}
@@ -19,6 +21,8 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .field input,.field select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:11px 13px;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
 .field input:focus,.field select:focus{border-color:var(--yellow)}
 .btn-login{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:11px;font-size:.95rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
+
+/* APP */
 .app{display:none;flex-direction:column;min-height:100vh}
 .app-header{background:var(--dark);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .hname{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--yellow)}
@@ -28,14 +32,22 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .ddot.on{background:var(--green);animation:pulse 1.5s infinite}
 .ddot.off{background:#444}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+/* EARNINGS BAR */
 .earn-bar{background:var(--card);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:18px}
 .ei{display:flex;flex-direction:column;align-items:center;flex:1}
 .ev{font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800}
 .ev.y{color:var(--yellow)}.ev.g{color:var(--green)}.ev.b{color:var(--blue)}
 .el{font-size:.66rem;color:var(--muted);text-align:center}
 .esep{width:1px;height:28px;background:var(--border)}
+
+/* PAGES */
+.page{display:none;padding:0 0 90px}
+.page.active{display:block}
+
+/* COURSES */
 .section-lbl{padding:13px 16px 6px;font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
-.course-wrap{padding:0 14px 90px;display:flex;flex-direction:column;gap:11px}
+.course-wrap{padding:0 14px;display:flex;flex-direction:column;gap:11px}
 .cc{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
 .cc.urg{border-left:4px solid var(--red)}
 .cc.mine{border-color:var(--blue)}
@@ -69,7 +81,42 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .cbadge.dispo{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
 .cbadge.mine{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
 .cbadge.urg{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
-.cbadge.livree{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+
+/* ── GAINS PAGE ── */
+.gains-wrap{padding:16px 14px 90px}
+
+.gains-header{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center;position:relative;overflow:hidden}
+.gains-header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow)}
+.gains-total-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.gains-total{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;color:var(--yellow);line-height:1}
+.gains-total-sub{font-size:.78rem;color:var(--muted);margin-top:4px}
+
+.gains-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.gcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.gcard-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800}
+.gcard-val.g{color:var(--green)}.gcard-val.b{color:var(--blue)}.gcard-val.o{color:var(--orange)}.gcard-val.y{color:var(--yellow)}
+.gcard-lbl{font-size:.7rem;color:var(--muted);margin-top:3px}
+
+.period-tabs{display:flex;gap:7px;margin-bottom:14px}
+.ptab{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border);font-size:.78rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);transition:all .2s}
+.ptab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+
+.history-title{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+
+.gain-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.gain-icon{width:38px;height:38px;border-radius:50%;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.gain-info{flex:1}
+.gain-route{font-size:.85rem;font-weight:600;margin-bottom:2px}
+.gain-meta{font-size:.73rem;color:var(--muted)}
+.gain-amount{text-align:right}
+.gain-fcfa{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;color:var(--green)}
+.gain-date{font-size:.7rem;color:var(--muted);margin-top:2px}
+
+.empty-gains{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-gains-ico{font-size:2.8rem;margin-bottom:10px}
+.empty-gains-txt{font-size:.85rem;line-height:1.6}
+
+/* ALERT */
 .alert-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}
 .alert-overlay.show{display:flex}
 .sheet{background:var(--card);border:2px solid var(--yellow);border-radius:22px 22px 0 0;padding:24px 22px 34px;width:100%;max-width:480px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
@@ -84,16 +131,23 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .srow .sl{color:var(--muted)}.srow .sv{font-weight:600;text-align:right;max-width:62%}
 .sbtns{display:flex;gap:9px}
 .sbtns .btn{flex:1;padding:13px}
+
+/* TOAST */
 .toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:7px;width:calc(100% - 28px);max-width:380px}
 .toast{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 15px;display:flex;align-items:center;gap:9px;animation:tdrop .3s ease;box-shadow:0 4px 18px rgba(0,0,0,.4)}
 .toast.s{border-left:3px solid var(--green)}.toast.w{border-left:3px solid var(--yellow)}.toast.e{border-left:3px solid var(--red)}
 @keyframes tdrop{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
 .t-ico{font-size:1.1rem}.t-txt{font-size:.81rem;font-weight:600}
+
 .empty{text-align:center;padding:46px 18px;color:var(--muted)}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:9px 0 18px}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
-.ni-ico{font-size:1.2rem}.ni-lbl{font-size:.65rem;color:var(--muted)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:9px 0 18px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s}
+.ni-ico{font-size:1.2rem}
+.ni-lbl{font-size:.65rem;color:var(--muted)}
 .ni.active .ni-lbl{color:var(--yellow)}
+.ni.active .ni-ico{transform:scale(1.1)}
 </style>
 </head>
 <body>
@@ -119,7 +173,8 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
     <div class="field"><label>Zone principale</label>
       <select id="c_zone">
         <option>Cocody</option><option>Plateau</option><option>Yopougon</option>
-        <option>Marcory</option><option>Treichville</option><option>Adjamé</option><option>Abobo</option><option>Koumassi</option>
+        <option>Marcory</option><option>Treichville</option><option>Adjamé</option>
+        <option>Abobo</option><option>Koumassi</option>
       </select>
     </div>
     <button class="btn-login" onclick="connectFirebase()">🛵 PRENDRE LA ROUTE →</button>
@@ -131,8 +186,13 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 <div class="app" id="appScreen">
   <div class="app-header">
     <div><div class="hname" id="hName">Livreur</div><div class="hrole">🛵 TropRapide · Espace Livreur</div></div>
-    <div class="dtoggle" onclick="toggleDispo()"><div class="ddot on" id="dispoDot"></div><span id="dispoLabel" style="font-size:.78rem;font-weight:600">Disponible</span></div>
+    <div class="dtoggle" onclick="toggleDispo()">
+      <div class="ddot on" id="dispoDot"></div>
+      <span id="dispoLabel" style="font-size:.78rem;font-weight:600">Disponible</span>
+    </div>
   </div>
+
+  <!-- STATS BAR -->
   <div class="earn-bar">
     <div class="ei"><div class="ev y" id="e-courses">0</div><div class="el">Courses<br>aujourd'hui</div></div>
     <div class="esep"></div>
@@ -140,15 +200,73 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
     <div class="esep"></div>
     <div class="ei"><div class="ev b" id="e-dispo">0</div><div class="el">Courses<br>disponibles</div></div>
   </div>
-  <div class="section-lbl">Courses disponibles</div>
-  <div class="course-wrap" id="courseWrap"></div>
+
+  <!-- PAGE COURSES -->
+  <div class="page active" id="page-courses">
+    <div class="section-lbl">Courses disponibles</div>
+    <div class="course-wrap" id="courseWrap"></div>
+  </div>
+
+  <!-- PAGE GAINS -->
+  <div class="page" id="page-gains">
+    <div class="gains-wrap">
+
+      <!-- TOTAL -->
+      <div class="gains-header">
+        <div class="gains-total-lbl">Total gains cumulés</div>
+        <div class="gains-total" id="g-total">0 FCFA</div>
+        <div class="gains-total-sub" id="g-total-sub">0 courses livrées au total</div>
+      </div>
+
+      <!-- STATS GRID -->
+      <div class="gains-grid">
+        <div class="gcard">
+          <div class="gcard-val y" id="g-today-fcfa">0</div>
+          <div class="gcard-lbl">FCFA aujourd'hui</div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-val g" id="g-today-courses">0</div>
+          <div class="gcard-lbl">Courses aujourd'hui</div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-val b" id="g-week-fcfa">0</div>
+          <div class="gcard-lbl">FCFA cette semaine</div>
+        </div>
+        <div class="gcard">
+          <div class="gcard-val o" id="g-moy">0</div>
+          <div class="gcard-lbl">FCFA moyen/course</div>
+        </div>
+      </div>
+
+      <!-- FILTRE PÉRIODE -->
+      <div class="period-tabs">
+        <div class="ptab active" onclick="setPeriod('today',this)">Aujourd'hui</div>
+        <div class="ptab" onclick="setPeriod('week',this)">Cette semaine</div>
+        <div class="ptab" onclick="setPeriod('all',this)">Tout</div>
+      </div>
+
+      <!-- HISTORIQUE -->
+      <div class="history-title">📋 Historique des livraisons</div>
+      <div id="gainsList"></div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
   <div class="bottom-nav">
-    <div class="ni active"><div class="ni-ico">🛵</div><div class="ni-lbl">Courses</div></div>
-    <div class="ni"><div class="ni-ico">💰</div><div class="ni-lbl">Gains</div></div>
-    <div class="ni" onclick="logout()"><div class="ni-ico">🚪</div><div class="ni-lbl">Quitter</div></div>
+    <div class="ni active" id="nav-courses" onclick="showPage('courses')">
+      <div class="ni-ico">🛵</div><div class="ni-lbl">Courses</div>
+    </div>
+    <div class="ni" id="nav-gains" onclick="showPage('gains')">
+      <div class="ni-ico">💰</div><div class="ni-lbl">Mes gains</div>
+    </div>
+    <div class="ni" onclick="logout()">
+      <div class="ni-ico">🚪</div><div class="ni-lbl">Quitter</div>
+    </div>
   </div>
 </div>
 
+<!-- ALERT -->
 <div class="alert-overlay" id="alertOverlay">
   <div class="sheet">
     <div class="sh"></div>
@@ -170,69 +288,86 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 const CFG_KEY = 'troprapide_livreur_cfg';
-let db = null, myName = '', myZone = '', isDispo = true;
-let orders = {}, alertPending = null;
-let prevAvailCount = 0, coursesToday = 0, fcfaToday = 0;
+const GAINS_KEY = 'troprapide_gains_';
+let db=null, myName='', myZone='', isDispo=true;
+let orders={}, alertPending=null;
+let prevAvailCount=0, currentPeriod='today';
+let gainsHistory=[];
 
 window.connectFirebase = function() {
-  const dburl = document.getElementById('c_dburl').value.trim();
-  const apiKey = document.getElementById('c_apikey').value.trim();
-  const projectId = document.getElementById('c_projectid').value.trim();
-  const name = document.getElementById('c_name').value;
-  const zone = document.getElementById('c_zone').value;
-  if (!dburl||!apiKey||!projectId) { alert('Remplissez tous les champs !'); return; }
-  const cfg = {dburl,apiKey,projectId,name,zone};
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  const dburl=document.getElementById('c_dburl').value.trim();
+  const apiKey=document.getElementById('c_apikey').value.trim();
+  const projectId=document.getElementById('c_projectid').value.trim();
+  const name=document.getElementById('c_name').value;
+  const zone=document.getElementById('c_zone').value;
+  if(!dburl||!apiKey||!projectId){alert('Remplissez tous les champs !');return;}
+  const cfg={dburl,apiKey,projectId,name,zone};
+  localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
   initApp(cfg);
 };
 
 function initApp(cfg) {
   myName=cfg.name; myZone=cfg.zone;
-  const app = initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId}, 'livreur-'+Date.now());
-  db = getDatabase(app);
+  // Load saved gains history
+  const saved=localStorage.getItem(GAINS_KEY+myName);
+  gainsHistory=saved?JSON.parse(saved):[];
+
+  const app=initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId},'livreur-'+Date.now());
+  db=getDatabase(app);
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appScreen').style.display='flex';
   document.getElementById('hName').textContent=myName;
   startListening();
+  updateGainsDisplay();
   requestNotifPermission();
 }
 
 function startListening() {
   onValue(ref(db,'orders'), snap => {
-    orders = snap.val() || {};
-    const available = Object.entries(orders).filter(([k,v]) =>
-      (v.status==='nouvelle'||v.status==='prete') && v.livreur !== myName
+    orders=snap.val()||{};
+    const available=Object.entries(orders).filter(([k,v])=>
+      (v.status==='nouvelle'||v.status==='prete')&&v.livreur!==myName
     );
-    if (isDispo && available.length > prevAvailCount) {
-      const newest = available[available.length-1];
-      showAlert({...newest[1], _key:newest[0]});
+    if(isDispo&&available.length>prevAvailCount){
+      const newest=available[available.length-1];
+      showAlert({...newest[1],_key:newest[0]});
       playBeep();
       sendNotif(newest[1]);
     }
-    prevAvailCount = available.length;
-    document.getElementById('e-dispo').textContent = available.length;
+    prevAvailCount=available.length;
+    document.getElementById('e-dispo').textContent=available.length;
     renderCourses();
   });
 }
 
-function renderCourses() {
-  const all = Object.entries(orders).map(([k,v])=>({...v,_key:k}));
-  const available = all.filter(o=>(o.status==='nouvelle'||o.status==='prete')&&o.livreur!==myName);
-  const mine = all.filter(o=>o.livreur===myName&&o.status==='en-route');
-  const list = [...mine, ...available].sort((a,b)=>b.createdAt-a.createdAt);
+// ── PAGES ──
+window.showPage = function(page) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  if(page==='gains') updateGainsDisplay();
+};
 
-  const wrap = document.getElementById('courseWrap');
-  if (!list.length) {
+// ── COURSES ──
+function renderCourses() {
+  const all=Object.entries(orders).map(([k,v])=>({...v,_key:k}));
+  const available=all.filter(o=>(o.status==='nouvelle'||o.status==='prete')&&o.livreur!==myName);
+  const mine=all.filter(o=>o.livreur===myName&&o.status==='en-route');
+  const list=[...mine,...available].sort((a,b)=>b.createdAt-a.createdAt);
+
+  const wrap=document.getElementById('courseWrap');
+  if(!list.length){
     wrap.innerHTML=`<div class="empty">🛵<br><br>Aucune course disponible.<br><span style="font-size:.8rem">Restez disponible, ça va arriver !</span></div>`;
     return;
   }
   const TYPES={repas:{e:'🍽',l:'Repas'},colis:{e:'📦',l:'Colis'},courses:{e:'🛒',l:'Courses'},medicaments:{e:'💊',l:'Médic.'},documents:{e:'📄',l:'Docs'},entreprise:{e:'🏢',l:'Entrep.'}};
   const PAYLBL={cash:'💵 Cash',momo:'📱 MoMo',wave:'🌊 Wave',prepaye:'✅ Prépayé'};
-  wrap.innerHTML = list.map(o => {
-    const isMine = o.livreur===myName;
-    const elapsed = Math.floor((Date.now()-o.createdAt)/60000);
-    const cfg = TYPES[o.type]||TYPES.repas;
-    const comm = Math.max(500, Math.round(Number(o.amount)*0.1/100)*100);
+  wrap.innerHTML=list.map(o=>{
+    const isMine=o.livreur===myName;
+    const elapsed=Math.floor((Date.now()-o.createdAt)/60000);
+    const cfg=TYPES[o.type]||TYPES.repas;
+    const comm=Math.max(500,Math.round(Number(o.amount)*0.1/100)*100);
     return `<div class="cc ${o.priority==='urgente'?'urg':''} ${isMine?'mine':''} ${o.isNew&&!isMine?'new-a':''}">
       <div class="ch">
         <div>
@@ -258,12 +393,11 @@ function renderCourses() {
           <span class="chip">💰 ${Number(o.amount).toLocaleString()} FCFA</span>
           <span class="chip comm">🛵 ~${comm.toLocaleString()} FCFA commission</span>
           <span class="chip">${PAYLBL[o.paiement]||''}</span>
-          <span class="chip">${o.items.substring(0,32)}${o.items.length>32?'...':''}</span>
           ${o.notes?`<span class="chip">📝 ${o.notes}</span>`:''}
         </div>
         <div class="cactions">
-          ${!isMine?`<button class="btn btn-take" onclick="takeCourse('${o._key}',${comm})">🛵 Prendre</button>`:''}
-          ${isMine?`<button class="btn btn-done" onclick="markDone('${o._key}',${comm})">✅ Livré !</button>`:''}
+          ${!isMine?`<button class="btn btn-take" onclick="takeCourse('${o._key}',${comm},'${o.restaurant}','${o.zone}','${o.type||'repas'}')">🛵 Prendre</button>`:''}
+          ${isMine?`<button class="btn btn-done" onclick="markDone('${o._key}',${comm},'${o.restaurant}','${o.zone}','${o.type||'repas'}','${o.items||''}')">✅ Livré !</button>`:''}
           ${isMine?`<button class="btn btn-nav" onclick="navigate('${o.zone}')">🗺</button>`:''}
           <button class="btn btn-call" onclick="callClient('${o.phone}')">📞</button>
         </div>
@@ -272,40 +406,122 @@ function renderCourses() {
   }).join('');
 }
 
-window.takeCourse = async function(key, comm) {
-  if (!db) return;
-  await update(ref(db,'orders/'+key), {livreur:myName, status:'en-route'});
+window.takeCourse=async function(key,comm,resto,zone,type){
+  if(!db)return;
+  await update(ref(db,'orders/'+key),{livreur:myName,status:'en-route'});
   toast('🛵 Course prise ! En route','s');
 };
 
-window.markDone = async function(key, comm) {
-  if (!db) return;
-  await update(ref(db,'orders/'+key), {status:'livree'});
-  coursesToday++;
-  fcfaToday+=comm;
-  document.getElementById('e-courses').textContent=coursesToday;
-  document.getElementById('e-fcfa').textContent=fcfaToday.toLocaleString();
-  toast(`✅ Livré ! +${comm.toLocaleString()} FCFA`,'s');
+window.markDone=async function(key,comm,resto,zone,type,items){
+  if(!db)return;
+  await update(ref(db,'orders/'+key),{status:'livree'});
+
+  // Save to gains history
+  const gain={
+    id: key,
+    date: Date.now(),
+    restaurant: resto,
+    zone: zone,
+    type: type,
+    items: items,
+    commission: comm
+  };
+  gainsHistory.unshift(gain);
+  localStorage.setItem(GAINS_KEY+myName, JSON.stringify(gainsHistory));
+
+  // Update header stats
+  const todayGains=getTodayGains();
+  document.getElementById('e-courses').textContent=todayGains.count;
+  document.getElementById('e-fcfa').textContent=todayGains.total.toLocaleString();
+
+  toast(`✅ Livré ! +${comm.toLocaleString()} FCFA gagné 💰`,'s');
+  updateGainsDisplay();
 };
 
-window.navigate = function(zone) { window.open(`https://www.google.com/maps/search/${encodeURIComponent(zone+' Abidjan')}`,'_blank'); };
-window.callClient = function(phone) { window.open(`tel:${phone}`,'_self'); };
+// ── GAINS ──
+function getTodayGains(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayItems=gainsHistory.filter(g=>g.date>=today.getTime());
+  return{count:todayItems.length,total:todayItems.reduce((s,g)=>s+g.commission,0)};
+}
+function getWeekGains(){
+  const week=new Date(); week.setDate(week.getDate()-7); week.setHours(0,0,0,0);
+  return gainsHistory.filter(g=>g.date>=week.getTime());
+}
 
-window.toggleDispo = function() {
-  isDispo=!isDispo;
-  document.getElementById('dispoDot').className='ddot '+(isDispo?'on':'off');
-  document.getElementById('dispoLabel').textContent=isDispo?'Disponible':'Pause';
-  toast(isDispo?'🟢 Vous êtes disponible':'⏸ En pause', isDispo?'s':'w');
-};
+function setPeriod(p,el){
+  currentPeriod=p;
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderGainsList();
+}
+window.setPeriod=setPeriod;
 
-function showAlert(o) {
+function updateGainsDisplay(){
+  const all=gainsHistory;
+  const today=getTodayGains();
+  const week=getWeekGains();
+  const totalFcfa=all.reduce((s,g)=>s+g.commission,0);
+  const moy=all.length?Math.round(totalFcfa/all.length):0;
+
+  document.getElementById('g-total').textContent=totalFcfa.toLocaleString()+' FCFA';
+  document.getElementById('g-total-sub').textContent=all.length+' courses livrées au total';
+  document.getElementById('g-today-fcfa').textContent=today.total.toLocaleString();
+  document.getElementById('g-today-courses').textContent=today.count;
+  document.getElementById('g-week-fcfa').textContent=week.reduce((s,g)=>s+g.commission,0).toLocaleString();
+  document.getElementById('g-moy').textContent=moy.toLocaleString();
+
+  // Update header bar
+  document.getElementById('e-courses').textContent=today.count;
+  document.getElementById('e-fcfa').textContent=today.total.toLocaleString();
+
+  renderGainsList();
+}
+
+function renderGainsList(){
+  const el=document.getElementById('gainsList');
+  let list=gainsHistory;
+  if(currentPeriod==='today'){
+    const today=new Date();today.setHours(0,0,0,0);
+    list=gainsHistory.filter(g=>g.date>=today.getTime());
+  } else if(currentPeriod==='week'){
+    list=getWeekGains();
+  }
+
+  if(!list.length){
+    el.innerHTML=`<div class="empty-gains"><div class="empty-gains-ico">💰</div><div class="empty-gains-txt">Aucune livraison ${currentPeriod==='today'?'aujourd\'hui':currentPeriod==='week'?'cette semaine':'enregistrée'}.<br>Prenez des courses pour voir vos gains ici !</div></div>`;
+    return;
+  }
+
+  const TYPES={repas:'🍽',colis:'📦',courses:'🛒',medicaments:'💊',documents:'📄',entreprise:'🏢'};
+  el.innerHTML=list.map(g=>{
+    const d=new Date(g.date);
+    const dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    const timeStr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const ico=TYPES[g.type]||'🛵';
+    return `<div class="gain-item">
+      <div class="gain-icon">${ico}</div>
+      <div class="gain-info">
+        <div class="gain-route">${g.restaurant} → ${g.zone}</div>
+        <div class="gain-meta">${g.items?g.items.substring(0,30)+'...':''}</div>
+      </div>
+      <div class="gain-amount">
+        <div class="gain-fcfa">+${g.commission.toLocaleString()} F</div>
+        <div class="gain-date">${dateStr} · ${timeStr}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── ALERT ──
+function showAlert(o){
   alertPending=o;
   const comm=Math.max(500,Math.round(Number(o.amount)*0.1/100)*100);
   document.getElementById('shSub').textContent=`Zone: ${o.zone} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
   document.getElementById('shDetail').innerHTML=`
     <div class="srow"><span class="sl">Restaurant</span><span class="sv">${o.restaurant}</span></div>
     <div class="srow"><span class="sl">Livraison</span><span class="sv">📍 ${o.zone}</span></div>
-    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items.substring(0,40)}</span></div>
+    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items?o.items.substring(0,40):''}</span></div>
     <div class="srow"><span class="sl">Commission</span><span class="sv" style="color:var(--green)">~${comm.toLocaleString()} FCFA 💰</span></div>
     <div class="srow"><span class="sl">Paiement</span><span class="sv">${{cash:'💵 Cash',momo:'📱 MoMo',wave:'🌊 Wave',prepaye:'✅ Prépayé'}[o.paiement]||''}</span></div>
     <div class="srow"><span class="sl">Priorité</span><span class="sv">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
@@ -314,9 +530,22 @@ function showAlert(o) {
 }
 window.closeAlert=function(){document.getElementById('alertOverlay').classList.remove('show');};
 window.takeFromAlert=function(){
-  if(alertPending){const comm=Math.max(500,Math.round(Number(alertPending.amount)*0.1/100)*100);takeCourse(alertPending._key,comm);}
+  if(alertPending){
+    const comm=Math.max(500,Math.round(Number(alertPending.amount)*0.1/100)*100);
+    takeCourse(alertPending._key,comm,alertPending.restaurant,alertPending.zone,alertPending.type||'repas');
+  }
   closeAlert();
 };
+
+window.toggleDispo=function(){
+  isDispo=!isDispo;
+  document.getElementById('dispoDot').className='ddot '+(isDispo?'on':'off');
+  document.getElementById('dispoLabel').textContent=isDispo?'Disponible':'Pause';
+  toast(isDispo?'🟢 Vous êtes disponible':'⏸ En pause',isDispo?'s':'w');
+};
+
+window.navigate=function(zone){window.open(`https://www.google.com/maps/search/${encodeURIComponent(zone+' Abidjan')}`,'_blank');};
+window.callClient=function(phone){window.open(`tel:${phone}`,'_self');};
 
 function playBeep(){
   try{
@@ -334,11 +563,16 @@ function playBeep(){
 }
 function requestNotifPermission(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
 function sendNotif(o){if('Notification'in window&&Notification.permission==='granted')new Notification('🛵 Nouvelle course',{body:`${o.restaurant} → ${o.zone}`});}
+
 function toast(msg,type='s'){
   const w=document.getElementById('tw'),el=document.createElement('div');
-  el.className=`toast ${type}`;el.innerHTML=`<span class="t-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="t-txt">${msg}</span>`;
-  w.prepend(el);setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);setTimeout(()=>el.remove(),3200);
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span class="t-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="t-txt">${msg}</span>`;
+  w.prepend(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
+  setTimeout(()=>el.remove(),3200);
 }
+
 window.logout=function(){localStorage.removeItem(CFG_KEY);location.reload();};
 
 const saved=localStorage.getItem(CFG_KEY);
