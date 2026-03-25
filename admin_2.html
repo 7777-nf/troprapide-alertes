@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TropRapide · Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#111;
+    --card:#1A1A1A;--border:#2A2A2A;--text:#E8E8E8;--muted:#888;
+    --green:#22C55E;--red:#EF4444;--blue:#3B82F6;--orange:#F97316;--purple:#A855F7;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--border);background:var(--dark);position:sticky;top:0;z-index:100}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;color:var(--yellow);letter-spacing:-.5px}
+  .logo-dot{width:10px;height:10px;background:var(--yellow);border-radius:50%;animation:pulse-dot 1.5s infinite}
+  @keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+  .live-badge{display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green);padding:5px 14px;border-radius:100px;font-size:.78rem;font-weight:500}
+  .live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse-dot 1s infinite}
+  .header-actions{display:flex;align-items:center;gap:10px}
+  .hbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:8px;cursor:pointer;font-size:.8rem;transition:all .2s;display:flex;align-items:center;gap:5px}
+  .hbtn:hover{border-color:var(--yellow);color:var(--yellow)}
+  .hbtn.active{background:rgba(245,200,0,.1);border-color:var(--yellow);color:var(--yellow)}
+  .container{display:grid;grid-template-columns:1fr 320px;gap:0;height:calc(100vh - 65px)}
+  .main{padding:24px 28px;overflow-y:auto}
+
+  /* TYPE BUTTONS */
+  .type-btn{padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:600;border:1px solid var(--border);transition:all .2s;color:var(--muted);white-space:nowrap}
+  .type-btn:hover{border-color:#555;color:var(--text)}
+  .type-btn.active{border-color:var(--yellow);color:var(--black);background:var(--yellow)}
+
+  /* TYPE COLOR ACCENTS */
+  .type-btn[data-type="repas"].active{background:var(--yellow);color:var(--black)}
+  .type-btn[data-type="colis"].active{background:var(--orange);border-color:var(--orange);color:#fff}
+  .type-btn[data-type="courses"].active{background:var(--green);border-color:var(--green);color:#fff}
+  .type-btn[data-type="medicaments"].active{background:var(--red);border-color:var(--red);color:#fff}
+  .type-btn[data-type="documents"].active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .type-btn[data-type="entreprise"].active{background:var(--purple);border-color:var(--purple);color:#fff}
+
+  .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+  .stat-card.yellow::before{background:var(--yellow)}.stat-card.green::before{background:var(--green)}.stat-card.blue::before{background:var(--blue)}.stat-card.orange::before{background:var(--orange)}
+  .stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .stat-value{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;line-height:1}
+  .stat-value.yellow{color:var(--yellow)}.stat-value.green{color:var(--green)}.stat-value.blue{color:var(--blue)}.stat-value.orange{color:var(--orange)}
+  .new-order-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:22px}
+  .form-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:14px;color:var(--yellow);display:flex;align-items:center;gap:8px}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+  .form-group{display:flex;flex-direction:column;gap:4px}
+  .form-group.full{grid-column:1/-1}
+  .form-group label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .form-group input,.form-group select,.form-group textarea{background:var(--dark);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;-webkit-appearance:none}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--yellow)}
+  .form-group select option{background:var(--dark)}
+  .form-group textarea{resize:vertical;min-height:56px}
+  .btn-create{width:100%;padding:12px;background:var(--yellow);color:var(--black);border:none;border-radius:10px;font-size:.9rem;font-weight:800;cursor:pointer;font-family:'Syne',sans-serif;transition:all .15s}
+  .btn-create:hover{background:var(--yellow-dark);transform:scale(1.01)}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .section-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:8px}
+  .badge-count{background:var(--yellow);color:var(--black);font-size:.7rem;font-weight:800;padding:2px 8px;border-radius:100px}
+  .tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .tab{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:500;border:1px solid var(--border);transition:all .2s;color:var(--muted)}
+  .tab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:700}
+  .order-list{display:flex;flex-direction:column;gap:10px}
+  .order-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;transition:transform .15s}
+  .order-card:hover{transform:translateX(3px);border-color:#444}
+  .order-card.new-order{border-color:var(--yellow);animation:slide-in .4s ease-out,glow-border 2s ease 3}
+  @keyframes slide-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes glow-border{0%,100%{border-color:var(--yellow)}50%{border-color:rgba(245,200,0,.2)}}
+  .order-card.urgente{border-left:3px solid var(--red)}
+  .order-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+  .order-id{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow)}
+  .order-time{font-size:.72rem;color:var(--muted)}
+  .order-restaurant{font-weight:600;font-size:.92rem;margin-bottom:3px}
+  .order-items{font-size:.8rem;color:var(--muted);margin-bottom:8px}
+  .order-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .order-price{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem}
+  .s-badge{padding:4px 10px;border-radius:100px;font-size:.7rem;font-weight:600}
+  .s-badge.nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
+  .s-badge.acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
+  .s-badge.prete{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+  .s-badge.en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+  .s-badge.livree{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+
+  /* TYPE BADGE on card */
+  .type-badge{padding:3px 8px;border-radius:6px;font-size:.68rem;font-weight:700}
+  .type-badge.repas{background:rgba(245,200,0,.12);color:var(--yellow)}
+  .type-badge.colis{background:rgba(249,115,22,.12);color:var(--orange)}
+  .type-badge.courses{background:rgba(34,197,94,.12);color:var(--green)}
+  .type-badge.medicaments{background:rgba(239,68,68,.12);color:var(--red)}
+  .type-badge.documents{background:rgba(59,130,246,.12);color:var(--blue)}
+  .type-badge.entreprise{background:rgba(168,85,247,.12);color:var(--purple)}
+
+  .action-btns{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap}
+  .btn{padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:flex;align-items:center;gap:4px}
+  .btn-primary{background:var(--yellow);color:var(--black)}.btn-primary:hover{background:var(--yellow-dark)}
+  .btn-secondary{background:var(--border);color:var(--text)}.btn-secondary:hover{background:#333}
+  .btn-danger{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+  .btn-wa{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+  .sidebar{background:var(--dark);border-left:1px solid var(--border);padding:22px 18px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
+  .sidebar-section-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+  .livreur-card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;transition:all .2s}
+  .lav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;position:relative}
+  .lav.dispo{background:rgba(34,197,94,.12);border:2px solid var(--green)}
+  .lav.occupe{background:rgba(59,130,246,.12);border:2px solid var(--blue)}
+  .lav.offline{background:rgba(255,255,255,.04);border:2px solid #333;opacity:.5}
+  .sr{position:absolute;bottom:0;right:0;width:10px;height:10px;border-radius:50%;border:2px solid var(--dark)}
+  .sr.dispo{background:var(--green)}.sr.occupe{background:var(--blue)}.sr.offline{background:#555}
+  .lv-name{font-weight:600;font-size:.85rem}.lv-zone{font-size:.72rem;color:var(--muted)}
+  .lv-status{margin-left:auto;font-size:.7rem}
+  .lv-status.dispo{color:var(--green)}.lv-status.occupe{color:var(--blue)}
+  .resto-card{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:9px 12px;margin-bottom:7px}
+  .ri{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .ri.ouvert{background:var(--green);animation:pulse-dot 2s infinite}.ri.ferme{background:#444}
+  .rp{background:var(--yellow);color:var(--black);font-size:.68rem;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .share-box{background:rgba(245,200,0,.06);border:1px solid rgba(245,200,0,.2);border-radius:12px;padding:14px;margin-bottom:0}
+  .share-title{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow);margin-bottom:10px}
+  .share-link{display:flex;align-items:center;justify-content:space-between;background:var(--dark);border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:.75rem}
+  .share-link .sname{color:var(--muted)}.share-link .scopy{color:var(--yellow);cursor:pointer;font-weight:600}
+  .alert-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);align-items:center;justify-content:center}
+  .alert-overlay.active{display:flex}
+  .alert-modal{background:var(--card);border:2px solid var(--yellow);border-radius:20px;padding:28px;max-width:420px;width:90%;animation:modal-pop .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes modal-pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+  .modal-emoji{font-size:2.8rem;text-align:center;margin-bottom:10px}
+  .modal-title{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;text-align:center;color:var(--yellow);margin-bottom:4px}
+  .modal-sub{text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:20px}
+  .modal-details{background:var(--dark);border-radius:12px;padding:14px;margin-bottom:18px}
+  .modal-row{display:flex;justify-content:space-between;padding:5px 0;font-size:.85rem}
+  .modal-row:not(:last-child){border-bottom:1px solid var(--border)}
+  .modal-row .label{color:var(--muted)}.modal-row .val{font-weight:600;text-align:right;max-width:65%}
+  .modal-actions{display:flex;gap:10px}
+  .modal-actions .btn{flex:1;justify-content:center;padding:11px;font-size:.85rem}
+  .toast-container{position:fixed;top:80px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+  .toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;max-width:300px;min-width:240px;animation:toast-in .3s ease-out;display:flex;align-items:flex-start;gap:10px}
+  .toast.success{border-left:3px solid var(--green)}.toast.warning{border-left:3px solid var(--yellow)}.toast.error{border-left:3px solid var(--red)}.toast.info{border-left:3px solid var(--blue)}
+  @keyframes toast-in{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
+  .toast-title{font-weight:700;font-size:.83rem;margin-bottom:1px}.toast-body{font-size:.75rem;color:var(--muted)}
+  ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  .empty{text-align:center;padding:36px 20px;color:var(--muted)}
+  @media(max-width:900px){.container{grid-template-columns:1fr}.sidebar{display:none}.stats-bar{grid-template-columns:repeat(2,1fr)}}
+
+  /* STATS PAR TYPE */
+  .type-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+  .ts-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;text-align:center;cursor:pointer;transition:all .2s}
+  .ts-card:hover{border-color:#444}
+  .ts-card.active-filter{border-color:var(--yellow)}
+  .ts-ico{font-size:1.3rem;margin-bottom:2px}
+  .ts-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem}
+  .ts-lbl{font-size:.68rem;color:var(--muted)}
+
+  /* PAIEMENT BADGE */
+  .pay-badge{font-size:.72rem;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.06);color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><div class="logo-dot"></div>TROPRAPIDE</div>
+  <div class="live-badge"><div class="live-dot"></div>ADMIN · Live</div>
+  <div class="header-actions">
+    <button class="hbtn active" id="soundBtn" onclick="toggleSound()">🔔 Son</button>
+    <button class="hbtn" onclick="clearAll()" style="color:var(--red)">🗑 Vider</button>
+  </div>
+</header>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-modal">
+    <div class="modal-emoji" id="modalEmoji">🛵</div>
+    <div class="modal-title">Nouvelle commande !</div>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="modal-details" id="modalDetails"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="acceptOrder()">✓ Accepter</button>
+      <button class="btn btn-wa" onclick="notifyWhatsApp()">💬 WhatsApp</button>
+      <button class="btn btn-danger" onclick="closeModal()">✕</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="main">
+
+    <!-- FORM -->
+    <div class="new-order-form">
+      <div class="form-title">⚡ Nouvelle commande</div>
+
+      <!-- SÉLECTEUR DE TYPE -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <div class="type-btn active" onclick="setType('repas',this)" data-type="repas">🍽 Repas</div>
+        <div class="type-btn" onclick="setType('colis',this)" data-type="colis">📦 Colis</div>
+        <div class="type-btn" onclick="setType('courses',this)" data-type="courses">🛒 Courses</div>
+        <div class="type-btn" onclick="setType('medicaments',this)" data-type="medicaments">💊 Médicaments</div>
+        <div class="type-btn" onclick="setType('documents',this)" data-type="documents">📄 Documents</div>
+        <div class="type-btn" onclick="setType('entreprise',this)" data-type="entreprise">🏢 Entreprise</div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group"><label>Client / Expéditeur</label><input type="text" id="f_client" placeholder="Nom"></div>
+        <div class="form-group"><label>Téléphone</label><input type="text" id="f_phone" placeholder="+225 07 ..."></div>
+
+        <!-- RESTAURANT (repas seulement) -->
+        <div class="form-group" id="field-resto"><label>Restaurant</label>
+          <select id="f_resto">
+            <option>Le Palais du Poulet</option><option>Saveurs du Soleil</option>
+            <option>Pizza House Abidjan</option><option>Street Burger Corner</option>
+            <option>Délices Asiatiques</option><option>Juice & Smoothies Bar</option>
+          </select>
+        </div>
+
+        <!-- ADRESSE RETRAIT (autres types) -->
+        <div class="form-group" id="field-retrait" style="display:none"><label>Adresse de retrait</label>
+          <input type="text" id="f_retrait" placeholder="Quartier / Rue de départ">
+        </div>
+
+        <div class="form-group"><label>Zone de livraison</label>
+          <select id="f_zone">
+            <option>Cocody</option><option>Plateau</option><option>Yopougon</option>
+            <option>Marcory</option><option>Treichville</option><option>Adjamé</option><option>Abobo</option><option>Koumassi</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label id="f_items_label">Articles commandés</label>
+          <input type="text" id="f_items" placeholder="Détail de la commande">
+        </div>
+
+        <!-- ENTREPRISE -->
+        <div class="form-group" id="field-entreprise" style="display:none"><label>Nom entreprise</label>
+          <input type="text" id="f_entreprise" placeholder="Raison sociale">
+        </div>
+
+        <!-- NOTES SPECIALES -->
+        <div class="form-group" id="field-notes" style="display:none"><label>Instructions spéciales</label>
+          <input type="text" id="f_notes" placeholder="Fragile, urgent, réfrigéré...">
+        </div>
+
+        <div class="form-group"><label>Montant (FCFA)</label><input type="number" id="f_amount" placeholder="0"></div>
+
+        <div class="form-group"><label>Paiement</label>
+          <select id="f_paiement">
+            <option value="cash">💵 Cash livraison</option>
+            <option value="momo">📱 Mobile Money</option>
+            <option value="wave">🌊 Wave</option>
+            <option value="prepaye">✅ Prépayé</option>
+          </select>
+        </div>
+
+        <div class="form-group"><label>Priorité</label>
+          <select id="f_priority"><option value="normale">Normale</option><option value="urgente">Urgente 🔴</option></select>
+        </div>
+      </div>
+      <button class="btn-create" id="createBtn" onclick="createOrder()">⚡ DÉCLENCHER L'ALERTE</button>
+    </div>
+
+    <!-- STATS GLOBALES -->
+    <div class="stats-bar">
+      <div class="stat-card yellow"><div class="stat-label">En attente</div><div class="stat-value yellow" id="stat-waiting">0</div></div>
+      <div class="stat-card orange"><div class="stat-label">En route</div><div class="stat-value orange" id="stat-inprogress">0</div></div>
+      <div class="stat-card green"><div class="stat-label">Livrées</div><div class="stat-value green" id="stat-done">0</div></div>
+      <div class="stat-card blue"><div class="stat-label">Revenu FCFA</div><div class="stat-value blue" id="stat-revenue">0</div></div>
+    </div>
+
+    <!-- STATS PAR TYPE -->
+    <div class="type-stats">
+      <div class="ts-card" onclick="filterType('all',this)">
+        <div class="ts-ico">📋</div><div class="ts-num" id="ts-all">0</div><div class="ts-lbl">Toutes</div>
+      </div>
+      <div class="ts-card" onclick="filterType('repas',this)">
+        <div class="ts-ico">🍽</div><div class="ts-num" id="ts-repas">0</div><div class="ts-lbl">Repas</div>
+      </div>
+      <div class="ts-card" onclick="filterType('colis',this)">
+        <div class="ts-ico">📦</div><div class="ts-num" id="ts-colis">0</div><div class="ts-lbl">Colis</div>
+      </div>
+      <div class="ts-card" onclick="filterType('courses',this)">
+        <div class="ts-ico">🛒</div><div class="ts-num" id="ts-courses">0</div><div class="ts-lbl">Courses</div>
+      </div>
+      <div class="ts-card" onclick="filterType('medicaments',this)">
+        <div class="ts-ico">💊</div><div class="ts-num" id="ts-medicaments">0</div><div class="ts-lbl">Médic.</div>
+      </div>
+      <div class="ts-card" onclick="filterType('documents',this)">
+        <div class="ts-ico">📄</div><div class="ts-num" id="ts-documents">0</div><div class="ts-lbl">Docs</div>
+      </div>
+      <div class="ts-card" onclick="filterType('entreprise',this)">
+        <div class="ts-ico">🏢</div><div class="ts-num" id="ts-entreprise">0</div><div class="ts-lbl">Entreprise</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Commandes <span class="badge-count" id="activeCount">0</span></div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="filterStatus('all',this)">Toutes</div>
+      <div class="tab" onclick="filterStatus('nouvelle',this)">Nouvelles</div>
+      <div class="tab" onclick="filterStatus('en-route',this)">En route</div>
+      <div class="tab" onclick="filterStatus('livree',this)">Livrées</div>
+    </div>
+    <div class="order-list" id="orderList">
+      <div class="empty">📋 Aucune commande. Créez-en une ci-dessus.</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div>
+      <div class="share-box">
+        <div class="share-title">🔗 Liens équipe</div>
+        <div class="share-link"><span class="sname">🍽 Page Restaurant</span><span class="scopy" onclick="copyLink('restaurant')">Copier</span></div>
+        <div class="share-link"><span class="sname">🛵 Page Livreur</span><span class="scopy" onclick="copyLink('livreur')">Copier</span></div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Envoyez par WhatsApp à votre équipe</div>
+      </div>
+    </div>
+    <div>
+      <div class="sidebar-section-title">🛵 Livreurs</div>
+      <div class="livreur-card"><div class="lav dispo">🧑🏾<span class="sr dispo"></span></div><div><div class="lv-name">Mamadou T.</div><div class="lv-zone">Cocody · Plateau</div></div><div class="lv-status dispo">Disponible</div></div>
+      <div class="livreur-card"><div class="lav dispo">👨🏿<span class="sr dispo"></span></div><div><div class="lv-name">Kouassi B.</div><div class="lv-zone">Yopougon</div></div><div class="lv-status dispo">Disponible</div></div>
+      <div class="livreur-card"><div class="lav occupe">👨🏾<span class="sr occupe"></span></div><div><div class="lv-name">Ibrahim D.</div><div class="lv-zone">Marcory</div></div><div class="lv-status occupe">En livraison</div></div>
+      <div class="livreur-card"><div class="lav offline">👱🏾<span class="sr offline"></span></div><div><div class="lv-name">Narcisse K.</div><div class="lv-zone">Port-Bouët</div></div><div class="lv-status" style="color:var(--muted)">Hors ligne</div></div>
+    </div>
+    <div>
+      <div class="sidebar-section-title">🍽️ Restaurants</div>
+      <div class="resto-card"><div class="ri ouvert"></div><div style="flex:1;font-size:.83rem">Le Palais du Poulet</div><div class="rp" id="rp-0">0</div></div>
+      <div class="resto-card"><div class="ri ouvert"></div><div style="flex:1;font-size:.83rem">Saveurs du Soleil</div><div class="rp" id="rp-1">0</div></div>
+      <div class="resto-card"><div class="ri ouvert"></div><div style="flex:1;font-size:.83rem">Pizza House Abidjan</div><div class="rp" id="rp-2">0</div></div>
+      <div class="resto-card"><div class="ri ouvert"></div><div style="flex:1;font-size:.83rem">Street Burger Corner</div><div class="rp" id="rp-3">0</div></div>
+      <div class="resto-card"><div class="ri ferme"></div><div style="flex:1;font-size:.83rem">Délices Asiatiques</div><div class="rp" id="rp-4">0</div></div>
+      <div class="resto-card"><div class="ri ouvert"></div><div style="flex:1;font-size:.83rem">Juice & Smoothies Bar</div><div class="rp" id="rp-5">0</div></div>
+    </div>
+    <div>
+      <div class="sidebar-section-title">📜 Journal</div>
+      <div id="logList" style="font-size:.76rem;color:var(--muted);line-height:1.9">
+        <div style="color:#444;font-style:italic;text-align:center;padding:8px 0">Aucun événement</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'troprapide_orders_v1';
+let soundEnabled=true, pendingModal=null, currentStatusFilter='all', currentTypeFilter='all';
+let orderCounter=0, totalDone=0, totalRevenue=0, logs=[];
+let currentType='repas';
+
+const TYPE_CONFIG = {
+  repas:       { emoji:'🍽', label:'Repas restaurant',   itemsLabel:'Articles commandés',      color:'var(--yellow)' },
+  colis:       { emoji:'📦', label:'Envoi de colis',      itemsLabel:'Description du colis',    color:'var(--orange)' },
+  courses:     { emoji:'🛒', label:'Courses / Achats',    itemsLabel:'Liste des articles',       color:'var(--green)'  },
+  medicaments: { emoji:'💊', label:'Médicaments',         itemsLabel:'Médicaments / ordonnance', color:'var(--red)'    },
+  documents:   { emoji:'📄', label:'Documents urgents',   itemsLabel:'Type de documents',        color:'var(--blue)'   },
+  entreprise:  { emoji:'🏢', label:'Livraison entreprise',itemsLabel:'Description / référence',  color:'var(--purple)' },
+};
+
+const PAIEMENT_LABEL = { cash:'💵 Cash', momo:'📱 Mobile Money', wave:'🌊 Wave', prepaye:'✅ Prépayé' };
+
+function setType(type, el) {
+  currentType = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const cfg = TYPE_CONFIG[type];
+
+  // Champs dynamiques
+  const isRepas = type === 'repas';
+  const isEntreprise = type === 'entreprise';
+  document.getElementById('field-resto').style.display = isRepas ? '' : 'none';
+  document.getElementById('field-retrait').style.display = isRepas ? 'none' : '';
+  document.getElementById('field-entreprise').style.display = isEntreprise ? '' : 'none';
+  document.getElementById('field-notes').style.display = (type==='colis'||type==='medicaments') ? '' : 'none';
+  document.getElementById('f_items_label').textContent = cfg.itemsLabel;
+  document.getElementById('f_items').placeholder = cfg.itemsLabel;
+
+  // Bouton couleur
+  const btn = document.getElementById('createBtn');
+  btn.style.background = cfg.color === 'var(--yellow)' ? 'var(--yellow)' : '';
+  btn.style.color = cfg.color === 'var(--yellow)' ? 'var(--black)' : '';
+  btn.textContent = `⚡ DÉCLENCHER L'ALERTE — ${cfg.label.toUpperCase()}`;
+}
+
+function getOrders() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); } catch(e){ return []; } }
+function saveOrders(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+function toggleSound() {
+  soundEnabled=!soundEnabled;
+  const b=document.getElementById('soundBtn');
+  b.textContent=soundEnabled?'🔔 Son':'🔕 Son';
+  b.classList.toggle('active',soundEnabled);
+}
+
+function addLog(msg) {
+  const t=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  logs.unshift({t,msg});
+  if(logs.length>25)logs.pop();
+  document.getElementById('logList').innerHTML=logs.map(l=>`<div style="padding:3px 0;border-bottom:1px solid var(--border);display:flex;gap:5px"><span style="color:#555;white-space:nowrap">${l.t}</span><span>${l.msg}</span></div>`).join('');
+}
+
+function showToast(title,body,type='success') {
+  const icons={success:'✅',warning:'⚠️',error:'🔴',info:'ℹ️'};
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<div style="font-size:1.1rem">${icons[type]||'📢'}</div><div><div class="toast-title">${title}</div><div class="toast-body">${body}</div></div>`;
+  c.prepend(t);
+  setTimeout(()=>t.style.opacity='0',3000);
+  setTimeout(()=>t.remove(),3400);
+}
+
+function playAlert() {
+  if(!soundEnabled)return;
+  try {
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;o.type='sine';
+      g.gain.setValueAtTime(0,ctx.currentTime+t);
+      g.gain.linearRampToValueAtTime(.3,ctx.currentTime+t+.05);
+      g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15);
+    });
+  }catch(e){}
+}
+
+function createOrder() {
+  const client = document.getElementById('f_client').value || 'Client';
+  const phone  = document.getElementById('f_phone').value  || '+225...';
+  const zone   = document.getElementById('f_zone').value;
+  const items  = document.getElementById('f_items').value  || 'Commande';
+  const amount = document.getElementById('f_amount').value || '0';
+  const priority = document.getElementById('f_priority').value;
+  const paiement = document.getElementById('f_paiement').value;
+  const notes  = document.getElementById('f_notes') ? document.getElementById('f_notes').value : '';
+  const restaurant = currentType === 'repas'
+    ? document.getElementById('f_resto').value
+    : (document.getElementById('f_retrait').value || 'À récupérer');
+  const entreprise = currentType === 'entreprise' ? document.getElementById('f_entreprise').value : '';
+
+  const all = getOrders();
+  orderCounter = Math.max(orderCounter, ...all.map(o=>o.id||0), 0) + 1;
+  const order = {
+    id:orderCounter, client, phone, restaurant, zone, items, amount,
+    priority, paiement, notes, entreprise,
+    type: currentType, status:'nouvelle', createdAt:Date.now(), isNew:true
+  };
+  all.unshift(order);
+  saveOrders(all);
+
+  const cfg = TYPE_CONFIG[currentType];
+  pendingModal = order;
+  showAlertModal(order);
+  playAlert();
+  showToast(`${cfg.emoji} Commande ${cfg.label}`, `${items} · ${zone}`, 'warning');
+  setTimeout(()=>showToast('🛵 Livreurs alertés', `Zone: ${zone} · ${amount} FCFA`, 'info'), 700);
+  addLog(`🆕 ${cfg.emoji} #CMD-${String(order.id).padStart(4,'0')} [${cfg.label}] · ${zone}`);
+  renderOrders();
+  setTimeout(()=>{
+    const a=getOrders(); const idx=a.findIndex(o=>o.id===order.id);
+    if(idx!==-1){a[idx].isNew=false;saveOrders(a);renderOrders();}
+  },6000);
+}
+
+function showAlertModal(o) {
+  const cfg = TYPE_CONFIG[o.type] || TYPE_CONFIG.repas;
+  document.getElementById('modalEmoji').textContent = cfg.emoji;
+  document.getElementById('modalSub').textContent = `${cfg.label} · Zone: ${o.zone}`;
+  document.getElementById('modalDetails').innerHTML = `
+    <div class="modal-row"><span class="label">Type</span><span class="val">${cfg.emoji} ${cfg.label}</span></div>
+    <div class="modal-row"><span class="label">Client</span><span class="val">${o.client}</span></div>
+    <div class="modal-row"><span class="label">Téléphone</span><span class="val">${o.phone}</span></div>
+    <div class="modal-row"><span class="label">${o.type==='repas'?'Restaurant':'Retrait'}</span><span class="val">${o.restaurant}</span></div>
+    <div class="modal-row"><span class="label">Détail</span><span class="val">${o.items}</span></div>
+    ${o.notes?`<div class="modal-row"><span class="label">Notes</span><span class="val">${o.notes}</span></div>`:''}
+    <div class="modal-row"><span class="label">Montant</span><span class="val">${Number(o.amount).toLocaleString()} FCFA</span></div>
+    <div class="modal-row"><span class="label">Paiement</span><span class="val">${PAIEMENT_LABEL[o.paiement]||o.paiement}</span></div>
+    <div class="modal-row"><span class="label">Priorité</span><span class="val">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
+  `;
+  document.getElementById('alertOverlay').classList.add('active');
+}
+function closeModal(){document.getElementById('alertOverlay').classList.remove('active')}
+
+function acceptOrder() {
+  if(!pendingModal)return;
+  updateStatus(pendingModal.id,'acceptee');
+  closeModal();
+  showToast('✓ Commande acceptée',`#CMD-${String(pendingModal.id).padStart(4,'0')}`,'success');
+}
+
+function notifyWhatsApp() {
+  if(!pendingModal)return;
+  const o=pendingModal;
+  const cfg=TYPE_CONFIG[o.type]||TYPE_CONFIG.repas;
+  const msg=encodeURIComponent(
+    `🛵 TROPRAPIDE — NOUVELLE COMMANDE\n\n` +
+    `📋 #CMD-${String(o.id).padStart(4,'0')}\n` +
+    `${cfg.emoji} Type: ${cfg.label}\n` +
+    `👤 Client: ${o.client} — ${o.phone}\n` +
+    `📦 Détail: ${o.items}\n` +
+    `${o.notes?'📝 Notes: '+o.notes+'\n':''}` +
+    `📍 Zone: ${o.zone}\n` +
+    `💰 Montant: ${o.amount} FCFA\n` +
+    `💳 Paiement: ${PAIEMENT_LABEL[o.paiement]||o.paiement}\n` +
+    `${o.priority==='urgente'?'🔴 PRIORITÉ URGENTE\n':''}\n` +
+    `Merci de confirmer !`
+  );
+  window.open(`https://wa.me/2250140503030?text=${msg}`,'_blank');
+  closeModal();
+}
+
+function updateStatus(id, newStatus) {
+  const all=getOrders();
+  const idx=all.findIndex(o=>o.id===id);
+  if(idx===-1)return;
+  all[idx].status=newStatus;
+  if(newStatus==='livree'){totalDone++;totalRevenue+=Number(all[idx].amount);}
+  saveOrders(all);
+  addLog(`↻ #CMD-${String(id).padStart(4,'0')} → ${newStatus}`);
+  renderOrders();
+}
+
+function cancelOrder(id) {
+  saveOrders(getOrders().filter(o=>o.id!==id));
+  addLog(`✕ #CMD-${String(id).padStart(4,'0')} annulée`);
+  showToast('Commande annulée','','error');
+  renderOrders();
+}
+
+function clearAll() {
+  if(confirm('Vider toutes les commandes ?')){saveOrders([]);renderOrders();}
+}
+
+function filterStatus(s,el) {
+  currentStatusFilter=s;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders();
+}
+
+function filterType(t,el) {
+  currentTypeFilter=t;
+  document.querySelectorAll('.ts-card').forEach(c=>c.classList.remove('active-filter'));
+  el.classList.add('active-filter');
+  renderOrders();
+}
+
+function renderOrders() {
+  const all=getOrders();
+  let list=all;
+  if(currentStatusFilter!=='all') list=list.filter(o=>o.status===currentStatusFilter);
+  if(currentTypeFilter!=='all') list=list.filter(o=>o.type===currentTypeFilter);
+
+  const listEl=document.getElementById('orderList');
+  if(!list.length){listEl.innerHTML='<div class="empty">📋 Aucune commande ici.</div>';updateStats(all);return;}
+
+  const statusLabel={nouvelle:'🔴 Nouvelle',acceptee:'🟠 Acceptée',prete:'🍽 Prête','en-route':'🔵 En route',livree:'✅ Livrée'};
+  listEl.innerHTML=list.map(o=>{
+    const cfg=TYPE_CONFIG[o.type]||TYPE_CONFIG.repas;
+    const elapsed=Math.floor((Date.now()-o.createdAt)/60000);
+    return `<div class="order-card ${o.isNew?'new-order':''} ${o.priority==='urgente'?'urgente':''}">
+      <div class="order-top">
+        <div>
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+            <div class="order-id">#CMD-${String(o.id).padStart(4,'0')}</div>
+            <span class="type-badge ${o.type||'repas'}">${cfg.emoji} ${cfg.label}</span>
+          </div>
+          <div class="order-time">⏱ ${elapsed} min · 📍 ${o.zone}</div>
+        </div>
+        <span class="s-badge ${o.status}">${statusLabel[o.status]||o.status}</span>
+      </div>
+      <div class="order-restaurant">${o.type==='repas'?'🍽':'📌'} ${o.restaurant}</div>
+      <div class="order-items">${o.items}${o.notes?` · <em>${o.notes}</em>`:''}</div>
+      <div class="order-footer">
+        <span class="order-price">${Number(o.amount).toLocaleString()} FCFA</span>
+        <span class="pay-badge">${PAIEMENT_LABEL[o.paiement]||'💵'}</span>
+        <span style="font-size:.72rem;color:var(--muted)">👤 ${o.client} · ${o.phone}</span>
+      </div>
+      <div class="action-btns">
+        ${o.status==='nouvelle'?`<button class="btn btn-primary" onclick="updateStatus(${o.id},'acceptee')">✓ Accepter</button>`:''}
+        ${o.status==='acceptee'?`<button class="btn btn-primary" onclick="updateStatus(${o.id},'en-route')">🛵 En route</button>`:''}
+        ${o.status==='en-route'?`<button class="btn btn-primary" onclick="updateStatus(${o.id},'livree')">✅ Livrée</button>`:''}
+        <button class="btn btn-wa" onclick="notifyWAOrder(${o.id})">💬 WhatsApp</button>
+        ${o.status!=='livree'?`<button class="btn btn-danger" onclick="cancelOrder(${o.id})">✕ Annuler</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  updateStats(all);
+}
+
+function notifyWAOrder(id) {
+  const all=getOrders();
+  const o=all.find(x=>x.id===id);
+  if(!o)return;
+  const cfg=TYPE_CONFIG[o.type]||TYPE_CONFIG.repas;
+  const msg=encodeURIComponent(`🛵 TROPRAPIDE\n${cfg.emoji} ${cfg.label}\n#CMD-${String(o.id).padStart(4,'0')}\n📦 ${o.items}\n💰 ${o.amount} FCFA\n📍 ${o.zone}\n👤 ${o.client} — ${o.phone}`);
+  window.open(`https://wa.me/2250140503030?text=${msg}`,'_blank');
+}
+
+function updateStats(all) {
+  if(!all)all=getOrders();
+  document.getElementById('stat-waiting').textContent=all.filter(o=>o.status==='nouvelle'||o.status==='acceptee').length;
+  document.getElementById('stat-inprogress').textContent=all.filter(o=>o.status==='en-route').length;
+  document.getElementById('stat-done').textContent=totalDone+all.filter(o=>o.status==='livree').length;
+  document.getElementById('stat-revenue').textContent=(totalRevenue+all.filter(o=>o.status==='livree').reduce((s,o)=>s+Number(o.amount),0)).toLocaleString('fr-FR');
+  document.getElementById('activeCount').textContent=all.filter(o=>o.status!=='livree').length;
+
+  // Stats par type
+  ['all','repas','colis','courses','medicaments','documents','entreprise'].forEach(t=>{
+    const el=document.getElementById(`ts-${t}`);
+    if(el)el.textContent=t==='all'?all.length:all.filter(o=>o.type===t).length;
+  });
+
+  // Restos
+  ['Le Palais du Poulet','Saveurs du Soleil','Pizza House Abidjan','Street Burger Corner','Délices Asiatiques','Juice & Smoothies Bar'].forEach((r,i)=>{
+    const el=document.getElementById(`rp-${i}`);
+    if(el)el.textContent=all.filter(o=>o.restaurant===r&&o.status!=='livree').length;
+  });
+}
+
+function copyLink(type) {
+  const base=window.location.href.replace('admin.html','').replace('admin_v2.html','');
+  const url=base+type+'.html';
+  navigator.clipboard.writeText(url).then(()=>showToast('Lien copié !','Envoyez par WhatsApp','success')).catch(()=>showToast('Lien: '+url,'','info'));
+}
+
+setInterval(renderOrders, 2000);
+renderOrders();
+addLog('🟢 Admin v2 démarré · TropRapide');
+</script>
+</body>
+</html>
