@@ -353,7 +353,7 @@ window.showPage = function(page) {
 function renderCourses() {
   const all=Object.entries(orders).map(([k,v])=>({...v,_key:k}));
   const available=all.filter(o=>(o.status==='nouvelle'||o.status==='prete')&&o.livreur!==myName);
-  const mine=all.filter(o=>o.livreur===myName&&o.status==='en-route');
+  const mine=all.filter(o=>o.livreur===myName&&(o.status==='en-route'||o.status==='acceptee'));
   const list=[...mine,...available].sort((a,b)=>b.createdAt-a.createdAt);
 
   const wrap=document.getElementById('courseWrap');
@@ -396,8 +396,8 @@ function renderCourses() {
           ${o.notes?`<span class="chip">📝 ${o.notes}</span>`:''}
         </div>
         <div class="cactions">
-          ${!isMine?`<button class="btn btn-take" onclick="takeCourse('${o._key}',${comm},'${o.restaurant}','${o.zone}','${o.type||'repas'}')">🛵 Prendre</button>`:''}
-          ${isMine?`<button class="btn btn-done" onclick="markDone('${o._key}',${comm},'${o.restaurant}','${o.zone}','${o.type||'repas'}','${o.items||''}')">✅ Livré !</button>`:''}
+          ${!isMine?`<button class="btn btn-take" onclick="takeCourse('${o._key}')">🛵 Prendre</button>`:''}
+          ${isMine?`<button class="btn btn-done" onclick="markDone('${o._key}')">✅ Livré !</button>`:''}
           ${isMine?`<button class="btn btn-nav" onclick="navigate('${o.zone}')">🗺</button>`:''}
           <button class="btn btn-call" onclick="callClient('${o.phone}')">📞</button>
         </div>
@@ -406,24 +406,29 @@ function renderCourses() {
   }).join('');
 }
 
-window.takeCourse=async function(key,comm,resto,zone,type){
+window.takeCourse=async function(key){
   if(!db)return;
+  const o=orders[key];
+  if(!o)return;
   await update(ref(db,'orders/'+key),{livreur:myName,status:'en-route'});
   toast('🛵 Course prise ! En route','s');
 };
 
-window.markDone=async function(key,comm,resto,zone,type,items){
+window.markDone=async function(key){
   if(!db)return;
+  const o=orders[key];
+  if(!o)return;
+  const comm=Math.max(500,Math.round(Number(o.amount)*0.1/100)*100);
   await update(ref(db,'orders/'+key),{status:'livree'});
 
   // Save to gains history
   const gain={
     id: key,
     date: Date.now(),
-    restaurant: resto,
-    zone: zone,
-    type: type,
-    items: items,
+    restaurant: o.restaurant||'',
+    zone: o.zone||'',
+    type: o.type||'repas',
+    items: o.items||'',
     commission: comm
   };
   gainsHistory.unshift(gain);
@@ -531,8 +536,7 @@ function showAlert(o){
 window.closeAlert=function(){document.getElementById('alertOverlay').classList.remove('show');};
 window.takeFromAlert=function(){
   if(alertPending){
-    const comm=Math.max(500,Math.round(Number(alertPending.amount)*0.1/100)*100);
-    takeCourse(alertPending._key,comm,alertPending.restaurant,alertPending.zone,alertPending.type||'repas');
+    takeCourse(alertPending._key);
   }
   closeAlert();
 };
