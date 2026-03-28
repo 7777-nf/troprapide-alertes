@@ -723,90 +723,81 @@ window.copyLink = function(type) {
 
 
 // ── GPS MAP ──
-let map = null;
-let markers = {};
 let livreurPositions = {};
+let gpsListener = null;
 
 window.showMap = function() {
   document.getElementById('mapPage').classList.add('active');
   document.querySelector('.container').style.display = 'none';
-  document.getElementById('mapBtn').classList.add('active');
-  initMap();
-  startWatchingPositions();
+  document.getElementById('mapBtn').style.background = 'rgba(245,200,0,.15)';
+  // Listen to livreur positions
+  if (db) {
+    gpsListener = onValue(ref(db, 'livreurs'), snap => {
+      livreurPositions = snap.val() || {};
+      renderMapContent();
+    });
+  } else {
+    renderMapContent();
+  }
 };
 
 window.hideMap = function() {
   document.getElementById('mapPage').classList.remove('active');
   document.querySelector('.container').style.display = 'grid';
-  document.getElementById('mapBtn').classList.remove('active');
-  stopWatchingPositions();
+  document.getElementById('mapBtn').style.background = '';
 };
 
-let posWatcher = null;
-function startWatchingPositions() {
-  if (!db) return;
-  const { onValue: ov, ref: r } = window._fbGps || {};
-  posWatcher = onValue(ref(db, 'livreurs'), snap => {
-    livreurPositions = snap.val() || {};
-    renderMapMarkers();
-    renderLivreurList();
-  });
-}
-function stopWatchingPositions() {
-  // onValue auto-unsubscribes when overwritten
-}
-
-function initMap() {
-  const container = document.getElementById('mapContainer');
-  // Use OpenStreetMap (no API key needed!)
-  container.innerHTML = '<iframe id="mapFrame" style="width:100%;height:100%;border:none" src="about:blank"></iframe>';
-  renderMapMarkers();
-}
-
-function renderMapMarkers() {
-  const positions = Object.values(livreurPositions).filter(l => l.online && l.lat && l.lng);
-  const listEl = document.getElementById('mapLivreurList');
+function renderMapContent() {
+  const positions = Object.values(livreurPositions).filter(l => l.lat && l.lng);
 
   if (!positions.length) {
     document.getElementById('mapContainer').innerHTML = `
       <div class="map-placeholder">
         <div class="map-placeholder-ico">🛵</div>
-        <div class="map-placeholder-txt">Aucun livreur n'a activé le GPS<br><span style="font-size:.75rem">Ils doivent cliquer "📍 Activer GPS" sur leur page</span></div>
+        <div class="map-placeholder-txt">
+          Aucun livreur n'a encore activé le GPS<br>
+          <span style="font-size:.75rem;color:#555">Les livreurs doivent cliquer "📍 Activer GPS" sur leur page</span>
+        </div>
       </div>`;
+    document.getElementById('mapLivreurList').innerHTML = '<div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne</div>';
     return;
   }
 
-  // Build OpenStreetMap URL with markers
-  const center = positions[0];
-  let mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${center.lng-0.05},${center.lat-0.05},${center.lng+0.05},${center.lat+0.05}&layer=mapnik&marker=${center.lat},${center.lng}`;
+  // Show map centered on first livreur (OpenStreetMap, no API key)
+  const c = positions[0];
+  const lat = c.lat.toFixed(6);
+  const lng = c.lng.toFixed(6);
+  const zoom = 14;
+  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(c.lng-0.03)},${(c.lat-0.03)},${(c.lng+0.03)},${(c.lat+0.03)}&layer=mapnik&marker=${lat},${lng}`;
 
-  // If multiple livreurs, show first one centered
   document.getElementById('mapContainer').innerHTML = `
-    <iframe style="width:100%;height:100%;border:none" 
-      src="${mapUrl}" 
-      title="Carte TropRapide">
+    <iframe 
+      src="${mapUrl}"
+      style="width:100%;height:100%;border:none;border-radius:16px"
+      loading="lazy"
+      title="Carte GPS TropRapide">
     </iframe>`;
 
-  // Show all positions as links below
-  const extraInfo = positions.map(l => {
-    const elapsed = Math.floor((Date.now() - l.updatedAt) / 60000);
-    return `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-weight:700;font-size:.85rem">🛵 ${l.name}</div>
-        <div style="font-size:.72rem;color:var(--muted)">📍 ${l.lat.toFixed(4)}, ${l.lng.toFixed(4)} · il y a ${elapsed} min</div>
+  // Livreur cards with Google Maps links
+  document.getElementById('mapLivreurList').innerHTML = positions.map(l => {
+    const elapsed = Math.floor((Date.now() - (l.updatedAt||Date.now())) / 60000);
+    const isRecent = elapsed < 5;
+    return `
+    <div style="background:var(--card);border:1px solid ${isRecent?'rgba(34,197,94,.3)':'var(--border)'};border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${isRecent?'var(--green)':'#555'};flex-shrink:0"></div>
+        <div>
+          <div style="font-weight:700;font-size:.85rem">🛵 ${l.name||'Livreur'}</div>
+          <div style="font-size:.72rem;color:var(--muted)">📍 ${l.lat.toFixed(4)}, ${l.lng.toFixed(4)}</div>
+          <div style="font-size:.68rem;color:var(--muted)">Mis à jour il y a ${elapsed} min · ±${l.acc||'?'}m</div>
+        </div>
       </div>
-      <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" 
-         style="background:var(--yellow);color:var(--black);padding:6px 12px;border-radius:8px;font-size:.75rem;font-weight:700;text-decoration:none">
-        Google Maps
+      <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank"
+         style="background:var(--yellow);color:var(--black);padding:7px 12px;border-radius:8px;font-size:.75rem;font-weight:800;text-decoration:none;white-space:nowrap;flex-shrink:0">
+        🗺 Voir
       </a>
     </div>`;
   }).join('');
-
-  document.getElementById('mapLivreurList').innerHTML = extraInfo || '<div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne</div>';
-}
-
-function renderLivreurList() {
-  // Already handled in renderMapMarkers
 }
 
 window.resetConfig = function() {
