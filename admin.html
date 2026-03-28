@@ -412,11 +412,42 @@ const saved = localStorage.getItem(CFG_KEY);
 if (saved) { try { initFirebase(JSON.parse(saved)); } catch(e) {} }
 
 // ── LISTEN ──
+let prevOrderKeys = new Set();
+let firstLoad = true;
+
 function startListening() {
   onValue(ordersRef, snap => {
     orders = snap.val() || {};
+    const currentKeys = new Set(Object.keys(orders));
+
+    if (firstLoad) {
+      // Premier chargement — pas d'alerte
+      prevOrderKeys = currentKeys;
+      firstLoad = false;
+      renderOrders();
+      addLog('🔄 Données synchronisées');
+      return;
+    }
+
+    // Détecter les nouvelles commandes
+    let hasNew = false;
+    currentKeys.forEach(key => {
+      if (!prevOrderKeys.has(key)) {
+        const o = orders[key];
+        hasNew = true;
+        const cfg = TYPES[o.type] || TYPES.repas;
+        showAlertModal({...o, _key: key});
+        playAlert();
+        showToast(`${cfg.e} Nouvelle commande !`, `${o.items||''} · ${o.zone}`, 'w');
+        setTimeout(() => showToast('🛵 Livreurs alertés', `Zone: ${o.zone} · ${o.amount} FCFA`, 'i'), 700);
+        addLog(`🆕 ${cfg.e} #${key.slice(-6).toUpperCase()} [${cfg.l}] · ${o.zone} · ${o.source==='site-web'?'🌐 Site web':'📱 Admin'}`);
+        pendingModal = {...o, _key: key};
+      }
+    });
+
+    prevOrderKeys = currentKeys;
     renderOrders();
-    addLog('🔄 Données synchronisées');
+    if (!hasNew) addLog('🔄 Mise à jour');
   }, err => { setConnected(false); addLog('❌ Erreur sync: ' + err.message); });
 }
 
