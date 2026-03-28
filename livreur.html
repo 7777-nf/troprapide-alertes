@@ -291,7 +291,7 @@ const CFG_KEY = 'troprapide_livreur_cfg';
 const GAINS_KEY = 'troprapide_gains_';
 let db=null, myName='', myZone='', isDispo=true;
 let orders={}, alertPending=null;
-let prevAvailCount=0, currentPeriod='today';
+let prevAvailCount=0, prevAvailKeys=new Map(), currentPeriod='today';
 let gainsHistory=[];
 
 window.connectFirebase = function() {
@@ -328,13 +328,22 @@ function startListening() {
     const available=Object.entries(orders).filter(([k,v])=>
       (v.status==='nouvelle'||v.status==='prete')&&v.livreur!==myName
     );
-    if(isDispo&&available.length>prevAvailCount){
-      const newest=available[available.length-1];
-      showAlert({...newest[1],_key:newest[0]});
-      playBeep();
-      sendNotif(newest[1]);
-    }
-    prevAvailCount=available.length;
+
+    // Detecte toute nouvelle commande disponible (nouvelle OU qui vient de passer à prête)
+    available.forEach(([k,v]) => {
+      const wasKnown = prevAvailKeys.has(k);
+      const prevStatus = prevAvailKeys.get(k);
+      const isNewOrJustReady = !wasKnown || (prevStatus !== v.status && v.status === 'prete');
+      if (isDispo && isNewOrJustReady) {
+        showAlert({...v, _key:k});
+        playBeep();
+        sendNotif(v);
+      }
+    });
+
+    // Mettre à jour le suivi
+    prevAvailKeys = new Map(available.map(([k,v])=>[k,v.status]));
+    prevAvailCount = available.length;
     document.getElementById('e-dispo').textContent=available.length;
     renderCourses();
   });
