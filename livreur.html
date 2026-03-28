@@ -304,9 +304,9 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 
 <div class="toast-wrap" id="tw"></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
 
 const CFG_KEY = 'troprapide_livreur_cfg';
 const GAINS_KEY = 'troprapide_gains_';
@@ -333,8 +333,8 @@ function initApp(cfg) {
   const saved=localStorage.getItem(GAINS_KEY+myName);
   gainsHistory=saved?JSON.parse(saved):[];
 
-  const app=initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId},'livreur-'+Date.now());
-  db=getDatabase(app);
+  const app=firebase.initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId},'livreur-'+Date.now());
+  db=app.database();
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('appScreen').style.display='flex';
   document.getElementById('hName').textContent=myName;
@@ -344,7 +344,7 @@ function initApp(cfg) {
 }
 
 function startListening() {
-  onValue(ref(db,'orders'), snap => {
+  db.ref('orders').on('value', snap => {
     orders=snap.val()||{};
     const available=Object.entries(orders).filter(([k,v])=>
       (v.status==='nouvelle'||v.status==='prete')&&v.livreur!==myName
@@ -440,7 +440,7 @@ window.takeCourse=async function(key){
   if(!db)return;
   const o=orders[key];
   if(!o)return;
-  await update(ref(db,'orders/'+key),{livreur:myName,status:'en-route'});
+  await db.ref('orders/'+key).update({livreur:myName,status:'en-route'});
   toast('🛵 Course prise ! En route','s');
 };
 
@@ -449,7 +449,7 @@ window.markDone=async function(key){
   const o=orders[key];
   if(!o)return;
   const comm=Math.max(500,Math.round(Number(o.amount)*0.1/100)*100);
-  await update(ref(db,'orders/'+key),{status:'livree'});
+  await db.ref('orders/'+key).update({status:'livree'});
 
   // Save to gains history
   const gain={
@@ -650,7 +650,7 @@ function stopGPS() {
   updateGPSUI(false);
   // Remove position from Firebase
   if (db && myName) {
-    const { remove } = window._fbRemove || {};
+    
     update(ref(db, 'livreurs/' + myName.replace('.','_')), {
       online: false, lat: null, lng: null, updatedAt: Date.now()
     });
@@ -665,7 +665,7 @@ async function sendPosition(pos) {
   const acc = Math.round(pos.coords.accuracy);
   const key = myName.replace(/\./g,'_').replace(/ /g,'_');
   try {
-    await update(ref(db, 'livreurs/' + key), {
+    await db.ref('livreurs/' + key).update({
       name: myName,
       zone: myZone,
       lat, lng, acc,

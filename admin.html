@@ -385,23 +385,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 <div class="tc" id="tc"></div>
 
 <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-// Bridge — rend les fonctions du module disponibles globalement avant chargement
-const _queue = {};
-['connectFirebase','createOrder','updateStatus','cancelOrder','clearAll',
- 'filterStatus','filterType','setType','notifyWAOrder','notifyWA_modal',
- 'acceptOrder','closeModal','toggleSound','copyLink','showMap','hideMap',
- 'resetConfig'].forEach(fn => {
-  window[fn] = function(...args) {
-    if (window['_'+fn]) return window['_'+fn](...args);
-    // Queue call until module loads
-    setTimeout(() => { if(window['_'+fn]) window['_'+fn](...args); }, 500);
-  };
-});
-</script>
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, push, onValue, update, remove, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── CONFIG ──
 const CFG_KEY = 'troprapide_firebase_cfg';
@@ -433,13 +419,13 @@ window._connectFirebase = window.connectFirebase = function() {
 
 function initFirebase(cfg) {
   try {
-    const app = initializeApp({
+    const app = firebase.initializeApp({
       apiKey: cfg.apiKey,
       databaseURL: cfg.dburl,
       projectId: cfg.projectId,
     });
-    db = getDatabase(app);
-    ordersRef = ref(db, 'orders');
+    db = app.database();
+    ordersRef = db.ref('orders');
     document.getElementById('configScreen').style.display = 'none';
     document.getElementById('mainApp').style.display = 'block';
     setConnected(true);
@@ -469,7 +455,7 @@ let prevOrderKeys = new Set();
 let firstLoad = true;
 
 function startListening() {
-  onValue(ordersRef, snap => {
+  ordersRef.on('value', snap => {
     orders = snap.val() || {};
     const currentKeys = new Set(Object.keys(orders));
 
@@ -526,7 +512,7 @@ window._createOrder = window.createOrder = async function() {
   };
 
   try {
-    const newRef = await push(ordersRef, order);
+    const newRef = await ordersRef.push(order);
     const cfg = TYPES[currentOrderType];
     playAlert();
     toast(`${cfg.e} Commande créée !`, `${items} · ${zone}`, 'w');
@@ -543,7 +529,7 @@ window._createOrder = window.createOrder = async function() {
 window._updateStatus = window.updateStatus = async function(key, newStatus) {
   if (!db) return;
   try {
-    await update(ref(db, 'orders/' + key), {status: newStatus});
+    await db.ref('orders/' + key).update({status: newStatus});
     addLog(`↻ Commande → ${newStatus}`);
     toast(newStatus === 'livree' ? '✅ Livrée !' : '↻ Statut mis à jour', '', 's');
   } catch(e) { toast('Erreur', e.message, 'e'); }
@@ -553,7 +539,7 @@ window._cancelOrder = window.cancelOrder = async function(key) {
   if (!db) return;
   if (!confirm('Annuler cette commande ?')) return;
   try {
-    await remove(ref(db, 'orders/' + key));
+    await db.ref('orders/' + key).remove();
     toast('Commande annulée', '', 'e');
     addLog('✕ Commande annulée');
   } catch(e) { toast('Erreur', e.message, 'e'); }
@@ -563,7 +549,7 @@ window._clearAll = window.clearAll = async function() {
   if (!db) return;
   if (!confirm('Vider toutes les commandes ?')) return;
   try {
-    await remove(ordersRef);
+    await ordersRef.remove();
     toast('Toutes les commandes supprimées', '', 'e');
   } catch(e) { toast('Erreur', e.message, 'e'); }
 };
@@ -746,7 +732,7 @@ window._showMap = window.showMap = function() {
   document.getElementById('mapBtn').style.background = 'rgba(245,200,0,.15)';
   // Listen to livreur positions
   if (db) {
-    gpsListener = onValue(ref(db, 'livreurs'), snap => {
+    gpsListener = db.ref('livreurs').on('value', snap => {
       livreurPositions = snap.val() || {};
       renderMapContent();
     });
