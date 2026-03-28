@@ -171,6 +171,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 .conn-dot.connected{background:var(--green)}.conn-dot.disconnected{background:var(--red)}
 
 .empty{text-align:center;padding:32px 16px;color:var(--muted)}
+/* MAP */
+.map-page{display:none;padding:20px;height:calc(100vh - 61px);overflow-y:auto}
+.map-page.active{display:block}
+#mapContainer{width:100%;height:500px;border-radius:16px;border:1px solid var(--border);overflow:hidden;background:var(--card);position:relative}
+.map-livreur-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px}
+.mlcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.mlcard.online{border-color:var(--green)}
+.mlcard.offline{opacity:.5}
+.ml-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.ml-dot.on{background:var(--green);animation:pdot 1.5s infinite}
+.ml-dot.off{background:#444}
+.ml-info{flex:1}
+.ml-name{font-weight:700;font-size:.85rem}
+.ml-pos{font-size:.72rem;color:var(--muted)}
+.ml-time{font-size:.68rem;color:var(--muted)}
+.map-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px}
+.map-placeholder-ico{font-size:3rem}
+.map-placeholder-txt{font-size:.85rem;text-align:center;line-height:1.6}
+
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 @media(max-width:860px){.container{grid-template-columns:1fr}.sidebar{display:none}.stats-bar{grid-template-columns:repeat(2,1fr)}.type-stats{grid-template-columns:repeat(3,1fr)}}
 </style>
@@ -219,6 +238,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
     <div class="conn-badge connected" id="connBadge"><div class="conn-dot connected" id="connDot"></div><span id="connText">Firebase</span></div>
     <button class="hbtn active" id="soundBtn" onclick="toggleSound()">🔔 Son</button>
     <button class="hbtn" onclick="clearAll()" style="color:var(--red)">🗑 Vider</button>
+    <button class="hbtn" onclick="showMap()" id="mapBtn">🗺 Carte GPS</button>
     <button class="hbtn" onclick="resetConfig()">⚙️</button>
   </div>
 </header>
@@ -325,6 +345,25 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
     <div id="logList" style="font-size:.74rem;color:var(--muted);line-height:1.9"><div style="color:#444;font-style:italic;text-align:center;padding:6px 0">Aucun événement</div></div>
   </div>
 </div>
+
+<!-- MAP PAGE -->
+<div class="map-page" id="mapPage">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700">🗺 Positions des livreurs</div>
+    <button class="hbtn active" onclick="hideMap()">← Retour</button>
+  </div>
+  <div id="mapContainer">
+    <div class="map-placeholder">
+      <div class="map-placeholder-ico">🗺</div>
+      <div class="map-placeholder-txt">Chargement de la carte...<br><span style="font-size:.75rem">Les livreurs doivent activer le GPS sur leur téléphone</span></div>
+    </div>
+  </div>
+  <div style="font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 10px">Livreurs en ligne</div>
+  <div class="map-livreur-list" id="mapLivreurList">
+    <div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne pour le moment</div>
+  </div>
+</div>
+
 </div>
 </div>
 
@@ -681,6 +720,94 @@ window.copyLink = function(type) {
     .then(() => toast('Lien copié !','Envoyez par WhatsApp','s'))
     .catch(() => toast('Lien: '+url,'','i'));
 };
+
+
+// ── GPS MAP ──
+let map = null;
+let markers = {};
+let livreurPositions = {};
+
+window.showMap = function() {
+  document.getElementById('mapPage').classList.add('active');
+  document.querySelector('.container').style.display = 'none';
+  document.getElementById('mapBtn').classList.add('active');
+  initMap();
+  startWatchingPositions();
+};
+
+window.hideMap = function() {
+  document.getElementById('mapPage').classList.remove('active');
+  document.querySelector('.container').style.display = 'grid';
+  document.getElementById('mapBtn').classList.remove('active');
+  stopWatchingPositions();
+};
+
+let posWatcher = null;
+function startWatchingPositions() {
+  if (!db) return;
+  const { onValue: ov, ref: r } = window._fbGps || {};
+  posWatcher = onValue(ref(db, 'livreurs'), snap => {
+    livreurPositions = snap.val() || {};
+    renderMapMarkers();
+    renderLivreurList();
+  });
+}
+function stopWatchingPositions() {
+  // onValue auto-unsubscribes when overwritten
+}
+
+function initMap() {
+  const container = document.getElementById('mapContainer');
+  // Use OpenStreetMap (no API key needed!)
+  container.innerHTML = '<iframe id="mapFrame" style="width:100%;height:100%;border:none" src="about:blank"></iframe>';
+  renderMapMarkers();
+}
+
+function renderMapMarkers() {
+  const positions = Object.values(livreurPositions).filter(l => l.online && l.lat && l.lng);
+  const listEl = document.getElementById('mapLivreurList');
+
+  if (!positions.length) {
+    document.getElementById('mapContainer').innerHTML = `
+      <div class="map-placeholder">
+        <div class="map-placeholder-ico">🛵</div>
+        <div class="map-placeholder-txt">Aucun livreur n'a activé le GPS<br><span style="font-size:.75rem">Ils doivent cliquer "📍 Activer GPS" sur leur page</span></div>
+      </div>`;
+    return;
+  }
+
+  // Build OpenStreetMap URL with markers
+  const center = positions[0];
+  let mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${center.lng-0.05},${center.lat-0.05},${center.lng+0.05},${center.lat+0.05}&layer=mapnik&marker=${center.lat},${center.lng}`;
+
+  // If multiple livreurs, show first one centered
+  document.getElementById('mapContainer').innerHTML = `
+    <iframe style="width:100%;height:100%;border:none" 
+      src="${mapUrl}" 
+      title="Carte TropRapide">
+    </iframe>`;
+
+  // Show all positions as links below
+  const extraInfo = positions.map(l => {
+    const elapsed = Math.floor((Date.now() - l.updatedAt) / 60000);
+    return `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:8px;padding:8px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-weight:700;font-size:.85rem">🛵 ${l.name}</div>
+        <div style="font-size:.72rem;color:var(--muted)">📍 ${l.lat.toFixed(4)}, ${l.lng.toFixed(4)} · il y a ${elapsed} min</div>
+      </div>
+      <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank" 
+         style="background:var(--yellow);color:var(--black);padding:6px 12px;border-radius:8px;font-size:.75rem;font-weight:700;text-decoration:none">
+        Google Maps
+      </a>
+    </div>`;
+  }).join('');
+
+  document.getElementById('mapLivreurList').innerHTML = extraInfo || '<div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne</div>';
+}
+
+function renderLivreurList() {
+  // Already handled in renderMapMarkers
+}
 
 window.resetConfig = function() {
   if (confirm('Réinitialiser la configuration Firebase ?')) {

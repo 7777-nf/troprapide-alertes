@@ -32,6 +32,16 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .ddot.on{background:var(--green);animation:pulse 1.5s infinite}
 .ddot.off{background:#444}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+/* GPS */
+.gps-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between}
+.gps-status{display:flex;align-items:center;gap:7px;font-size:.78rem;font-weight:600}
+.gps-dot{width:8px;height:8px;border-radius:50%;background:#444}
+.gps-dot.on{background:var(--green);animation:pulse 1.5s infinite}
+.gps-dot.off{background:var(--red)}
+.gps-toggle{padding:6px 14px;border-radius:100px;border:1px solid var(--border);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;background:var(--card);color:var(--muted)}
+.gps-toggle.on{background:rgba(34,197,94,.12);color:var(--green);border-color:rgba(34,197,94,.3)}
+.gps-coords{font-size:.68rem;color:var(--muted)}
+
 
 /* EARNINGS BAR */
 .earn-bar{background:var(--card);border-bottom:1px solid var(--border);padding:13px 18px;display:flex;align-items:center;gap:18px}
@@ -201,6 +211,17 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
     <div class="ei"><div class="ev b" id="e-dispo">0</div><div class="el">Courses<br>disponibles</div></div>
   </div>
 
+
+  <!-- GPS BAR -->
+  <div class="gps-bar">
+    <div class="gps-status">
+      <div class="gps-dot" id="gpsDot"></div>
+      <span id="gpsStatusText">GPS désactivé</span>
+    </div>
+    <div class="gps-coords" id="gpsCoords"></div>
+    <button class="gps-toggle" id="gpsToggleBtn" onclick="toggleGPS()">📍 Activer GPS</button>
+  </div>
+
   <!-- PAGE COURSES -->
   <div class="page active" id="page-courses">
     <div class="section-lbl">Courses disponibles</div>
@@ -285,7 +306,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+import { getDatabase, ref, onValue, update, remove } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 const CFG_KEY = 'troprapide_livreur_cfg';
 const GAINS_KEY = 'troprapide_gains_';
@@ -586,7 +607,97 @@ function toast(msg,type='s'){
   setTimeout(()=>el.remove(),3200);
 }
 
-window.logout=function(){localStorage.removeItem(CFG_KEY);location.reload();};
+window.logout=function(){if(gpsActive)stopGPS();localStorage.removeItem(CFG_KEY);location.reload();};
+
+// ── GPS TRACKING ──
+let gpsWatchId = null;
+let gpsActive = false;
+
+window.toggleGPS = function() {
+  if (!gpsActive) startGPS();
+  else stopGPS();
+};
+
+function startGPS() {
+  if (!navigator.geolocation) {
+    toast('GPS non supporté sur cet appareil','e');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      gpsActive = true;
+      updateGPSUI(true);
+      sendPosition(pos);
+      // Watch position every 10 seconds
+      gpsWatchId = navigator.geolocation.watchPosition(
+        sendPosition,
+        err => { toast('Erreur GPS: '+err.message,'e'); },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 15000 }
+      );
+      toast('📍 GPS activé ! Position partagée','s');
+    },
+    err => {
+      toast('Activez la localisation sur votre téléphone','e');
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function stopGPS() {
+  if (gpsWatchId) navigator.geolocation.clearWatch(gpsWatchId);
+  gpsActive = false;
+  gpsWatchId = null;
+  updateGPSUI(false);
+  // Remove position from Firebase
+  if (db && myName) {
+    const { remove } = window._fbRemove || {};
+    update(ref(db, 'livreurs/' + myName.replace('.','_')), {
+      online: false, lat: null, lng: null, updatedAt: Date.now()
+    });
+  }
+  toast('GPS désactivé','w');
+}
+
+async function sendPosition(pos) {
+  if (!db) return;
+  const lat = pos.coords.latitude;
+  const lng = pos.coords.longitude;
+  const acc = Math.round(pos.coords.accuracy);
+  const key = myName.replace(/\./g,'_').replace(/ /g,'_');
+  try {
+    await update(ref(db, 'livreurs/' + key), {
+      name: myName,
+      zone: myZone,
+      lat, lng, acc,
+      online: true,
+      dispo: isDispo,
+      updatedAt: Date.now()
+    });
+    document.getElementById('gpsCoords').textContent = lat.toFixed(4)+', '+lng.toFixed(4)+' (±'+acc+'m)';
+  } catch(e) {}
+}
+
+function updateGPSUI(active) {
+  const dot = document.getElementById('gpsDot');
+  const btn = document.getElementById('gpsToggleBtn');
+  const txt = document.getElementById('gpsStatusText');
+  if (active) {
+    dot.className = 'gps-dot on';
+    btn.className = 'gps-toggle on';
+    btn.textContent = '📍 GPS actif';
+    txt.textContent = 'Position partagée';
+  } else {
+    dot.className = 'gps-dot off';
+    btn.className = 'gps-toggle';
+    btn.textContent = '📍 Activer GPS';
+    txt.textContent = 'GPS désactivé';
+    document.getElementById('gpsCoords').textContent = '';
+  }
+}
+
+// Auto-stop GPS on page unload
+window.addEventListener('beforeunload', () => { if(gpsActive) stopGPS(); });
+
 
 const saved=localStorage.getItem(CFG_KEY);
 if(saved){try{initApp(JSON.parse(saved));}catch(e){}}
