@@ -385,6 +385,20 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 <div class="tc" id="tc"></div>
 
 <!-- Firebase SDK -->
+<script>
+// Bridge — rend les fonctions du module disponibles globalement avant chargement
+const _queue = {};
+['connectFirebase','createOrder','updateStatus','cancelOrder','clearAll',
+ 'filterStatus','filterType','setType','notifyWAOrder','notifyWA_modal',
+ 'acceptOrder','closeModal','toggleSound','copyLink','showMap','hideMap',
+ 'resetConfig'].forEach(fn => {
+  window[fn] = function(...args) {
+    if (window['_'+fn]) return window['_'+fn](...args);
+    // Queue call until module loads
+    setTimeout(() => { if(window['_'+fn]) window['_'+fn](...args); }, 500);
+  };
+});
+</script>
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, push, onValue, update, remove, get } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
@@ -407,7 +421,7 @@ const TYPES = {
 let currentOrderType = 'repas';
 
 // ── FIREBASE CONNECT ──
-window.connectFirebase = function() {
+window._connectFirebase = window.connectFirebase = function() {
   const dburl = document.getElementById('cfg_dburl').value.trim();
   const apiKey = document.getElementById('cfg_apikey').value.trim();
   const projectId = document.getElementById('cfg_projectid').value.trim();
@@ -491,7 +505,7 @@ function startListening() {
 }
 
 // ── CREATE ORDER ──
-window.createOrder = async function() {
+window._createOrder = window.createOrder = async function() {
   if (!db) { alert('Firebase non connecté !'); return; }
   const client   = document.getElementById('f_client').value || 'Client';
   const phone    = document.getElementById('f_phone').value  || '+225...';
@@ -526,7 +540,7 @@ window.createOrder = async function() {
 };
 
 // ── UPDATE STATUS ──
-window.updateStatus = async function(key, newStatus) {
+window._updateStatus = window.updateStatus = async function(key, newStatus) {
   if (!db) return;
   try {
     await update(ref(db, 'orders/' + key), {status: newStatus});
@@ -535,7 +549,7 @@ window.updateStatus = async function(key, newStatus) {
   } catch(e) { toast('Erreur', e.message, 'e'); }
 };
 
-window.cancelOrder = async function(key) {
+window._cancelOrder = window.cancelOrder = async function(key) {
   if (!db) return;
   if (!confirm('Annuler cette commande ?')) return;
   try {
@@ -545,7 +559,7 @@ window.cancelOrder = async function(key) {
   } catch(e) { toast('Erreur', e.message, 'e'); }
 };
 
-window.clearAll = async function() {
+window._clearAll = window.clearAll = async function() {
   if (!db) return;
   if (!confirm('Vider toutes les commandes ?')) return;
   try {
@@ -617,13 +631,13 @@ function updateStats(all) {
 }
 
 // ── FILTERS ──
-window.filterStatus = function(s, el) {
+window._filterStatus = window.filterStatus = function(s, el) {
   currentStatus = s;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
   renderOrders();
 };
-window.filterType = function(t, el) {
+window._filterType = window.filterType = function(t, el) {
   currentType = t;
   document.querySelectorAll('.ts').forEach(c=>c.classList.remove('af'));
   el.classList.add('af');
@@ -631,7 +645,7 @@ window.filterType = function(t, el) {
 };
 
 // ── TYPE SWITCH ──
-window.setType = function(type, el) {
+window._setType = window.setType = function(type, el) {
   currentOrderType = type;
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
@@ -645,7 +659,7 @@ window.setType = function(type, el) {
 };
 
 // ── WHATSAPP ──
-window.notifyWAOrder = function(key) {
+window._notifyWAOrder = window.notifyWAOrder = function(key) {
   const o = orders[key];
   if (!o) return;
   const cfg = TYPES[o.type]||TYPES.repas;
@@ -653,22 +667,22 @@ window.notifyWAOrder = function(key) {
   window.open(`https://wa.me/2250140503030?text=${msg}`, '_blank');
 };
 
-window.notifyWA_modal = function() {
+window._notifyWA_modal = window.notifyWA_modal = function() {
   if (!pendingModal) return;
   notifyWAOrder(pendingModal._key);
   closeModal();
 };
 
 // ── MODAL ──
-window.acceptOrder = function() {
+window._acceptOrder = window.acceptOrder = function() {
   if (!pendingModal) return;
   updateStatus(pendingModal._key, 'acceptee');
   closeModal();
 };
-window.closeModal = function() { document.getElementById('overlay').classList.remove('on'); };
+window._closeModal = window.closeModal = function() { document.getElementById('overlay').classList.remove('on'); };
 
 // ── SOUND ──
-window.toggleSound = function() {
+window._toggleSound = window.toggleSound = function() {
   soundEnabled = !soundEnabled;
   const b = document.getElementById('soundBtn');
   b.textContent = soundEnabled ? '🔔 Son' : '🔕 Son';
@@ -713,7 +727,7 @@ function toast(title, body='', type='s') {
 }
 
 // ── COPY LINK ──
-window.copyLink = function(type) {
+window._copyLink = window.copyLink = function(type) {
   const base = window.location.href.replace('admin.html','');
   const url = base + type + '.html';
   navigator.clipboard.writeText(url)
@@ -726,7 +740,7 @@ window.copyLink = function(type) {
 let livreurPositions = {};
 let gpsListener = null;
 
-window.showMap = function() {
+window._showMap = window.showMap = function() {
   document.getElementById('mapPage').classList.add('active');
   document.querySelector('.container').style.display = 'none';
   document.getElementById('mapBtn').style.background = 'rgba(245,200,0,.15)';
@@ -741,7 +755,7 @@ window.showMap = function() {
   }
 };
 
-window.hideMap = function() {
+window._hideMap = window.hideMap = function() {
   document.getElementById('mapPage').classList.remove('active');
   document.querySelector('.container').style.display = 'grid';
   document.getElementById('mapBtn').style.background = '';
@@ -800,7 +814,7 @@ function renderMapContent() {
   }).join('');
 }
 
-window.resetConfig = function() {
+window._resetConfig = window.resetConfig = function() {
   if (confirm('Réinitialiser la configuration Firebase ?')) {
     localStorage.removeItem(CFG_KEY);
     location.reload();
