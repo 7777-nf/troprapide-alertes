@@ -290,6 +290,7 @@ function initApp(cfg){
   document.getElementById('hRestoName').textContent=myResto;
   startListening();
   requestNotifPermission();
+  registerPush();
 }
 
 function startListening(){
@@ -490,7 +491,7 @@ function playBeep(){
   }catch(e){}
 }
 function requestNotifPermission(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
-function sendNotif(o){if('Notification'in window&&Notification.permission==='granted')new Notification('🔔 Nouvelle commande',{body:`${o.items} · ${o.zone}`});}
+function sendNotif(o){showLocalNotification('🔔 TropRapide - Nouvelle commande', `${o.items||''} · Zone: ${o.zone}`, window.location.href);}
 
 function toast(msg,type='s'){
   const w=document.getElementById('tw'),el=document.createElement('div');
@@ -500,6 +501,73 @@ function toast(msg,type='s'){
   setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
   setTimeout(()=>el.remove(),3200);
 }
+
+// ── PUSH NOTIFICATIONS ──
+const VAPID_PUBLIC_KEY = 'BJfInU0rBhiJFuXv5tfZK67vDT4HUcdhtaZ5hkJH7bWJsfedQ8lqJPYyI2niFal6Aiy6ZYDu0Ofsya9bzk_kM0Q'; // sera remplacé
+
+async function registerPush() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    console.log('Push non supporté');
+    return;
+  }
+  try {
+    // Register service worker
+    const reg = await navigator.serviceWorker.register('./sw.js');
+    console.log('SW enregistré:', reg.scope);
+
+    // Request permission
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      toast('Activez les notifications pour recevoir les alertes', 'w');
+      return;
+    }
+
+    // Subscribe to push
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+
+    // Save subscription to Firebase
+    if (db) {
+      const key = myName ? myName.replace(/[^a-zA-Z0-9]/g,'_') : 'user_' + Date.now();
+      await db.ref('push_subscriptions/' + key).set({
+        subscription: JSON.stringify(sub),
+        name: myName || 'Utilisateur',
+        type: 'livreur',
+        updatedAt: Date.now()
+      });
+      toast('🔔 Notifications activées !', 's');
+    }
+  } catch(err) {
+    console.error('Erreur push:', err);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
+
+// Notification locale quand page OUVERTE (son + notification)
+function showLocalNotification(title, body, url) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const notif = new Notification(title, {
+      body,
+      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg',
+      vibrate: [200, 100, 200],
+      requireInteraction: true,
+      tag: 'troprapide-' + Date.now()
+    });
+    notif.onclick = () => { window.focus(); notif.close(); };
+    setTimeout(() => notif.close(), 8000);
+  }
+}
+
 window.logout=function(){localStorage.removeItem(CFG_KEY);location.reload();};
 
 const saved=localStorage.getItem(CFG_KEY);
