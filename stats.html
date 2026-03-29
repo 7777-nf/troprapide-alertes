@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TropRapide · Statistiques</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root{
+  --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#0F0F0F;
+  --card:#161616;--border:#222;--text:#F0F0F0;--muted:#555;
+  --green:#22C55E;--red:#EF4444;--blue:#3B82F6;--orange:#F97316;--purple:#A855F7;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+
+/* CFG */
+.cfg{display:flex;position:fixed;inset:0;z-index:100;background:var(--black);align-items:center;justify-content:center;padding:24px}
+.cfg-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:400px}
+.cfg-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;color:var(--yellow);text-align:center;margin-bottom:4px}
+.cfg-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-bottom:20px}
+.fg{margin-bottom:12px}
+.fg label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px}
+.fg input{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 13px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none}
+.fg input:focus{border-color:var(--yellow)}
+.btn-cfg{width:100%;padding:12px;background:var(--yellow);color:var(--black);border:none;border-radius:10px;font-size:.9rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
+
+/* NAV */
+nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:900;font-size:1.1rem;color:var(--yellow);display:flex;align-items:center;gap:8px}
+.nav-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;animation:pdot 1.5s infinite}
+@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.nav-actions{display:flex;gap:8px}
+.nbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.78rem;text-decoration:none;transition:all .2s}
+.nbtn:hover{border-color:var(--yellow);color:var(--yellow)}
+.nbtn.active{background:rgba(245,200,0,.1);border-color:var(--yellow);color:var(--yellow)}
+
+/* PERIOD TABS */
+.period-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:8px}
+.ptab{padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;border:1px solid var(--border);color:var(--muted);transition:all .2s}
+.ptab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.period-info{margin-left:auto;font-size:.75rem;color:var(--muted)}
+
+/* MAIN */
+.main{padding:24px;max-width:1200px;margin:0 auto}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.y::before{background:var(--yellow)}.kpi.g::before{background:var(--green)}
+.kpi.b::before{background:var(--blue)}.kpi.o::before{background:var(--orange)}.kpi.p::before{background:var(--purple)}
+.kpi-icon{font-size:1.5rem;margin-bottom:10px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;line-height:1;margin-bottom:4px}
+.kpi-val.y{color:var(--yellow)}.kpi-val.g{color:var(--green)}.kpi-val.b{color:var(--blue)}.kpi-val.o{color:var(--orange)}.kpi-val.p{color:var(--purple)}
+.kpi-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.kpi-trend{font-size:.72rem;margin-top:6px;display:flex;align-items:center;gap:4px}
+.kpi-trend.up{color:var(--green)}.kpi-trend.down{color:var(--red)}
+
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:24px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
+.chart-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.chart-title span{color:var(--muted);font-size:.72rem;font-weight:400}
+.chart-wrap{position:relative;height:220px}
+
+/* SECOND ROW */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+
+/* TABLES */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
+.table-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--text)}
+.rank-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.rank-item:last-child{border-bottom:none}
+.rank-num{font-family:'Syne',sans-serif;font-weight:900;font-size:.9rem;width:24px;color:var(--muted)}
+.rank-num.top{color:var(--yellow)}
+.rank-info{flex:1}
+.rank-name{font-size:.85rem;font-weight:600}
+.rank-sub{font-size:.72rem;color:var(--muted)}
+.rank-val{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;text-align:right}
+.rank-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
+.rank-bar{height:3px;border-radius:2px;background:var(--yellow);transition:width .6s ease}
+
+/* HEATMAP */
+.heatmap-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
+.heatmap-grid{display:grid;grid-template-columns:40px repeat(16,1fr);gap:3px;margin-top:14px}
+.hm-label{font-size:.65rem;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.hm-cell{height:22px;border-radius:3px;background:var(--border);transition:all .3s;cursor:default}
+.hm-cell:hover{transform:scale(1.1)}
+.hm-header{font-size:.62rem;color:var(--muted);text-align:center}
+
+/* TYPE CHART */
+.type-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.type-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
+.type-ico{font-size:1.8rem;margin-bottom:6px}
+.type-count{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900}
+.type-lbl{font-size:.72rem;color:var(--muted)}
+.type-pct{font-size:.75rem;font-weight:600;margin-top:2px}
+
+/* RECENT */
+.recent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
+.recent-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.recent-row:last-child{border-bottom:none}
+.r-badge{padding:3px 8px;border-radius:6px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.r-badge.livree{background:rgba(34,197,94,.1);color:var(--green)}
+.r-badge.en-route{background:rgba(59,130,246,.1);color:var(--blue)}
+.r-badge.nouvelle{background:rgba(245,200,0,.1);color:var(--yellow)}
+.r-badge.acceptee{background:rgba(249,115,22,.1);color:var(--orange)}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:.88rem}
+
+@media(max-width:900px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-row{grid-template-columns:1fr}
+  .row2{grid-template-columns:1fr}
+  .type-row{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:500px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .type-row{grid-template-columns:repeat(2,1fr)}
+  .main{padding:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- CONFIG -->
+<div class="cfg" id="cfgScreen">
+  <div class="cfg-card">
+    <div class="cfg-logo">📊 TROPRAPIDE</div>
+    <div class="cfg-sub">Statistiques — connexion Firebase</div>
+    <div class="fg"><label>Database URL</label>
+      <input id="c_db" placeholder="https://troprapide-xxx.firebaseio.com"></div>
+    <div class="fg"><label>API Key</label>
+      <input id="c_key" placeholder="AIzaSy..."></div>
+    <div class="fg"><label>Project ID</label>
+      <input id="c_pid" placeholder="troprapide-xxxxx"></div>
+    <button class="btn-cfg" onclick="connectDB()">📊 ACCÉDER AUX STATS</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><div class="nav-dot"></div>TROPRAPIDE · Stats</div>
+  <div class="nav-actions">
+    <a href="admin.html" class="nbtn">← Admin</a>
+    <button class="nbtn" onclick="refreshData()">🔄 Actualiser</button>
+    <button class="nbtn" onclick="resetCfg()" style="color:var(--red)">⚙️</button>
+  </div>
+</nav>
+
+<!-- PERIOD TABS -->
+<div class="period-bar">
+  <div class="ptab active" onclick="setPeriod('today',this)">Aujourd'hui</div>
+  <div class="ptab" onclick="setPeriod('week',this)">7 jours</div>
+  <div class="ptab" onclick="setPeriod('month',this)">30 jours</div>
+  <div class="ptab" onclick="setPeriod('all',this)">Tout</div>
+  <div class="period-info" id="periodInfo">Chargement...</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPI -->
+  <div class="kpi-grid">
+    <div class="kpi y">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-val y" id="kpi-total">0</div>
+      <div class="kpi-lbl">Commandes totales</div>
+      <div class="kpi-trend up" id="kpi-total-trend"></div>
+    </div>
+    <div class="kpi g">
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-val g" id="kpi-livrees">0</div>
+      <div class="kpi-lbl">Livrées</div>
+      <div class="kpi-trend" id="kpi-taux"></div>
+    </div>
+    <div class="kpi b">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-val b" id="kpi-revenu">0</div>
+      <div class="kpi-lbl">FCFA collectés</div>
+      <div class="kpi-trend up" id="kpi-moy"></div>
+    </div>
+    <div class="kpi o">
+      <div class="kpi-icon">⏱</div>
+      <div class="kpi-val o" id="kpi-enroute">0</div>
+      <div class="kpi-lbl">En cours</div>
+      <div class="kpi-trend" id="kpi-attente"></div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">📈 Commandes par jour <span id="chartPeriodLabel"></span></div>
+      <div class="chart-wrap"><canvas id="chartCommandes"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🍕 Par type</div>
+      <div class="chart-wrap"><canvas id="chartTypes"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TYPE STATS -->
+  <div class="type-row" id="typeRow"></div>
+
+  <!-- CHARTS ROW 2 -->
+  <div class="row2">
+    <div class="table-card">
+      <div class="table-title">🍽 Top Restaurants</div>
+      <div id="topRestos"><div class="loading">Chargement...</div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-title">🛵 Top Livreurs</div>
+      <div id="topLivreurs"><div class="loading">Chargement...</div></div>
+    </div>
+  </div>
+
+  <!-- ZONE CHART -->
+  <div class="chart-card" style="margin-bottom:24px">
+    <div class="chart-title">📍 Commandes par zone</div>
+    <div class="chart-wrap" style="height:180px"><canvas id="chartZones"></canvas></div>
+  </div>
+
+  <!-- PAIEMENT CHART -->
+  <div class="charts-row" style="margin-bottom:24px">
+    <div class="chart-card">
+      <div class="chart-title">💳 Mode de paiement</div>
+      <div class="chart-wrap"><canvas id="chartPaiement"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">⏰ Commandes par heure</div>
+      <div class="chart-wrap"><canvas id="chartHeures"></canvas></div>
+    </div>
+  </div>
+
+  <!-- RECENT ORDERS -->
+  <div class="recent-card">
+    <div class="table-title">🕐 Dernières commandes</div>
+    <div id="recentOrders"><div class="loading">Chargement...</div></div>
+  </div>
+
+</div>
+
+<script>
+const CFG_KEY = 'troprapide_firebase_cfg';
+let db = null, allOrders = [], currentPeriod = 'today';
+let chartCmds = null, chartTypes = null, chartZones = null, chartPay = null, chartH = null;
+
+// ── CONNECT ──
+function connectDB() {
+  const dburl = document.getElementById('c_db').value.trim();
+  const apiKey = document.getElementById('c_key').value.trim();
+  const pid    = document.getElementById('c_pid').value.trim();
+  if (!dburl||!apiKey||!pid) { alert('Remplissez tous les champs'); return; }
+  const cfg = {dburl,apiKey,pid};
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  initDB(cfg);
+}
+
+function initDB(cfg) {
+  try {
+    const app = firebase.initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.pid},'stats-'+Date.now());
+    db = app.database();
+    document.getElementById('cfgScreen').style.display = 'none';
+    loadData();
+  } catch(e) { alert('Erreur: '+e.message); }
+}
+
+function resetCfg() {
+  if(confirm('Réinitialiser ?')) { localStorage.removeItem(CFG_KEY); location.reload(); }
+}
+
+// Auto-connect
+const saved = localStorage.getItem(CFG_KEY);
+if (saved) { try { initDB(JSON.parse(saved)); } catch(e) {} }
+
+// ── LOAD DATA ──
+function loadData() {
+  if (!db) return;
+  db.ref('orders').on('value', snap => {
+    const raw = snap.val() || {};
+    allOrders = Object.entries(raw).map(([k,v]) => ({...v, _key:k}));
+    render();
+  });
+}
+
+function refreshData() { render(); }
+
+function setPeriod(p, el) {
+  currentPeriod = p;
+  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+// ── FILTER BY PERIOD ──
+function filterByPeriod(orders) {
+  const now = Date.now();
+  const DAY = 86400000;
+  if (currentPeriod === 'today') {
+    const start = new Date(); start.setHours(0,0,0,0);
+    return orders.filter(o => o.createdAt >= start.getTime());
+  }
+  if (currentPeriod === 'week')  return orders.filter(o => o.createdAt >= now - 7*DAY);
+  if (currentPeriod === 'month') return orders.filter(o => o.createdAt >= now - 30*DAY);
+  return orders;
+}
+
+// ── MAIN RENDER ──
+function render() {
+  const filtered = filterByPeriod(allOrders);
+  const livrees  = filtered.filter(o => o.status === 'livree');
+  const enRoute  = filtered.filter(o => o.status === 'en-route');
+  const attente  = filtered.filter(o => o.status === 'nouvelle' || o.status === 'acceptee');
+  const revenu   = livrees.reduce((s,o) => s+Number(o.amount||0), 0);
+  const taux     = filtered.length ? Math.round(livrees.length/filtered.length*100) : 0;
+  const moy      = livrees.length ? Math.round(revenu/livrees.length) : 0;
+
+  // Period info
+  const pLabels = {today:"Aujourd'hui",week:"7 derniers jours",month:"30 derniers jours",all:"Toutes les données"};
+  document.getElementById('periodInfo').textContent = `${pLabels[currentPeriod]} · ${filtered.length} commandes`;
+
+  // KPIs
+  document.getElementById('kpi-total').textContent = filtered.length;
+  document.getElementById('kpi-livrees').textContent = livrees.length;
+  document.getElementById('kpi-revenu').textContent = revenu.toLocaleString('fr-FR');
+  document.getElementById('kpi-enroute').textContent = enRoute.length;
+  document.getElementById('kpi-taux').className = 'kpi-trend ' + (taux >= 80 ? 'up' : 'down');
+  document.getElementById('kpi-taux').textContent = `${taux}% taux de livraison`;
+  document.getElementById('kpi-moy').textContent = `Moy: ${moy.toLocaleString()} FCFA/commande`;
+  document.getElementById('kpi-attente').textContent = `${attente.length} en attente`;
+
+  renderChartCommandes(filtered);
+  renderChartTypes(filtered);
+  renderChartZones(filtered);
+  renderChartPaiement(filtered);
+  renderChartHeures(filtered);
+  renderTopRestos(filtered);
+  renderTopLivreurs(filtered);
+  renderTypeRow(filtered);
+  renderRecent(filtered);
+}
+
+// ── CHART COMMANDES PAR JOUR ──
+function renderChartCommandes(orders) {
+  const days = currentPeriod === 'today' ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
+  const labels = [], data = [], dataLivrees = [];
+  for (let i = days-1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0);
+    const next = new Date(d); next.setDate(next.getDate()+1);
+    const label = days === 1
+      ? d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+      : d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    labels.push(days === 1 ? '' : label);
+    const dayOrders = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
+    data.push(dayOrders.length);
+    dataLivrees.push(dayOrders.filter(o=>o.status==='livree').length);
+  }
+  document.getElementById('chartPeriodLabel').textContent = `(${days === 1 ? "aujourd'hui" : days+' jours'})`;
+
+  if (chartCmds) chartCmds.destroy();
+  chartCmds = new Chart(document.getElementById('chartCommandes'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label:'Commandes', data, backgroundColor:'rgba(245,200,0,.3)', borderColor:'#F5C800', borderWidth:2, borderRadius:4 },
+        { label:'Livrées', data:dataLivrees, backgroundColor:'rgba(34,197,94,.2)', borderColor:'#22C55E', borderWidth:2, borderRadius:4 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#888', font:{size:11} } } },
+      scales:{
+        x:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555', maxRotation:0} },
+        y:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555'}, beginAtZero:true }
+      }
+    }
+  });
+}
+
+// ── CHART TYPES ──
+function renderChartTypes(orders) {
+  const types = {repas:0,colis:0,courses:0,medicaments:0,documents:0,entreprise:0};
+  orders.forEach(o => { if(types[o.type]!==undefined) types[o.type]++; else types.repas++; });
+  const labels = ['🍽 Repas','📦 Colis','🛒 Courses','💊 Médic.','📄 Docs','🏢 Pro'];
+  const data = Object.values(types);
+  const colors = ['#F5C800','#F97316','#22C55E','#EF4444','#3B82F6','#A855F7'];
+
+  if (chartTypes) chartTypes.destroy();
+  chartTypes = new Chart(document.getElementById('chartTypes'), {
+    type: 'doughnut',
+    data: { labels, datasets:[{ data, backgroundColor:colors.map(c=>c+'88'), borderColor:colors, borderWidth:2 }] },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
+    }
+  });
+}
+
+// ── CHART ZONES ──
+function renderChartZones(orders) {
+  const zones = {};
+  orders.forEach(o => { zones[o.zone] = (zones[o.zone]||0)+1; });
+  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,10);
+
+  if (chartZones) chartZones.destroy();
+  chartZones = new Chart(document.getElementById('chartZones'), {
+    type: 'bar',
+    data: {
+      labels: sorted.map(([z])=>z),
+      datasets:[{ label:'Commandes', data:sorted.map(([,n])=>n), backgroundColor:'rgba(59,130,246,.3)', borderColor:'#3B82F6', borderWidth:2, borderRadius:4 }]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#555'}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#888'}} }
+    }
+  });
+}
+
+// ── CHART PAIEMENT ──
+function renderChartPaiement(orders) {
+  const pays = {cash:0,momo:0,wave:0,prepaye:0};
+  orders.forEach(o => { if(pays[o.paiement]!==undefined) pays[o.paiement]++; else pays.cash++; });
+  const labels = ['💵 Cash','📱 Mobile Money','🌊 Wave','✅ Prépayé'];
+  const data = Object.values(pays);
+  const colors = ['#F5C800','#3B82F6','#22C55E','#A855F7'];
+
+  if (chartPay) chartPay.destroy();
+  chartPay = new Chart(document.getElementById('chartPaiement'), {
+    type: 'pie',
+    data: { labels, datasets:[{ data, backgroundColor:colors.map(c=>c+'99'), borderColor:colors, borderWidth:2 }] },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
+    }
+  });
+}
+
+// ── CHART HEURES ──
+function renderChartHeures(orders) {
+  const hours = Array(24).fill(0);
+  orders.forEach(o => { const h = new Date(o.createdAt).getHours(); hours[h]++; });
+  const labels = Array.from({length:24},(_,i)=>i+'h');
+
+  if (chartH) chartH.destroy();
+  chartH = new Chart(document.getElementById('chartHeures'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets:[{ label:'Commandes', data:hours, fill:true, backgroundColor:'rgba(168,85,247,.1)', borderColor:'#A855F7', borderWidth:2, tension:.4, pointRadius:2 }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false} },
+      scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#555',maxRotation:0,font:{size:9}}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#555'},beginAtZero:true} }
+    }
+  });
+}
+
+// ── TOP RESTOS ──
+function renderTopRestos(orders) {
+  const restos = {};
+  orders.forEach(o => {
+    if (!restos[o.restaurant]) restos[o.restaurant] = {count:0,revenu:0};
+    restos[o.restaurant].count++;
+    if(o.status==='livree') restos[o.restaurant].revenu += Number(o.amount||0);
+  });
+  const sorted = Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,6);
+  const max = sorted[0]?.[1].count || 1;
+
+  document.getElementById('topRestos').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
+    <div class="rank-item">
+      <div class="rank-num ${i<3?'top':''}">${i+1}</div>
+      <div class="rank-info">
+        <div class="rank-name">${name}</div>
+        <div class="rank-sub">${d.revenu.toLocaleString()} FCFA générés</div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(d.count/max*100)}%"></div></div>
+      </div>
+      <div class="rank-val" style="color:var(--yellow)">${d.count} cmd</div>
+    </div>`).join('') : '<div class="loading">Aucune donnée</div>';
+}
+
+// ── TOP LIVREURS ──
+function renderTopLivreurs(orders) {
+  const livreurs = {};
+  orders.filter(o=>o.livreur).forEach(o => {
+    if (!livreurs[o.livreur]) livreurs[o.livreur] = {count:0,livrees:0};
+    livreurs[o.livreur].count++;
+    if(o.status==='livree') livreurs[o.livreur].livrees++;
+  });
+  const sorted = Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,6);
+  const max = sorted[0]?.[1].livrees || 1;
+
+  document.getElementById('topLivreurs').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
+    <div class="rank-item">
+      <div class="rank-num ${i<3?'top':''}">${i+1}</div>
+      <div class="rank-info">
+        <div class="rank-name">🛵 ${name}</div>
+        <div class="rank-sub">${d.count} courses prises</div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(d.livrees/max*100)}%;background:var(--green)"></div></div>
+      </div>
+      <div class="rank-val" style="color:var(--green)">${d.livrees} livrées</div>
+    </div>`).join('') : '<div class="loading">Aucun livreur assigné</div>';
+}
+
+// ── TYPE ROW ──
+function renderTypeRow(orders) {
+  const TYPES = {
+    repas:{e:'🍽',l:'Repas'},colis:{e:'📦',l:'Colis'},
+    courses:{e:'🛒',l:'Courses'},medicaments:{e:'💊',l:'Médic.'},
+    documents:{e:'📄',l:'Docs'},entreprise:{e:'🏢',l:'Pro'}
+  };
+  const total = orders.length || 1;
+  document.getElementById('typeRow').innerHTML = Object.entries(TYPES).map(([k,v]) => {
+    const count = orders.filter(o=>(o.type||'repas')===k).length;
+    const pct = Math.round(count/total*100);
+    return `<div class="type-stat">
+      <div class="type-ico">${v.e}</div>
+      <div class="type-count" style="color:var(--yellow)">${count}</div>
+      <div class="type-lbl">${v.l}</div>
+      <div class="type-pct" style="color:var(--muted)">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ── RECENT ──
+function renderRecent(orders) {
+  const recent = [...orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,10);
+  const TYPES = {repas:'🍽',colis:'📦',courses:'🛒',medicaments:'💊',documents:'📄',entreprise:'🏢'};
+  const SL = {nouvelle:'nouvelle',acceptee:'acceptee','en-route':'en-route',livree:'livree'};
+
+  document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => {
+    const d = new Date(o.createdAt);
+    const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const ico = TYPES[o.type||'repas']||'🍽';
+    return `<div class="recent-row">
+      <span>${ico}</span>
+      <span style="flex:1;font-weight:600">${o.items?o.items.substring(0,35):'Commande'}${o.items&&o.items.length>35?'...':''}</span>
+      <span style="color:var(--muted);font-size:.75rem">${o.restaurant||''}</span>
+      <span style="color:var(--muted);font-size:.75rem">📍${o.zone||''}</span>
+      <span style="font-weight:700;color:var(--yellow)">${Number(o.amount||0).toLocaleString()} F</span>
+      <span class="r-badge ${SL[o.status]||'nouvelle'}">${{nouvelle:'🔴 Nouvelle',acceptee:'🟠 Acceptée','en-route':'🔵 En route',livree:'✅ Livrée'}[o.status]||o.status}</span>
+      <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">${dateStr}</span>
+    </div>`;
+  }).join('') : '<div class="loading">Aucune commande</div>';
+}
+</script>
+</body>
+</html>
