@@ -2,13 +2,17 @@
   "name": "TropRapide - Livraison Express Abidjan",
   "short_name": "TropRapide",
   "description": "Commandez vos repas et envoyez vos colis partout à Abidjan en moins de 25 minutes.",
-  "start_url": "/app.html",
+  "start_url": "/troprapide-alertes/app.html",
   "display": "standalone",
   "background_color": "#0A0A0A",
   "theme_color": "#F5C800",
   "orientation": "portrait",
   "lang": "fr",
-  "categories": ["food", "shopping", "lifestyle"],
+  "categories": [
+    "food",
+    "shopping",
+    "lifestyle"
+  ],
   "icons": [
     {
       "src": "https://www.troprapide.com/images/logo/yellow/eccursson.svg",
@@ -28,5 +32,7 @@
       "url": "/app.html?action=colis",
       "description": "Envoyez un colis rapidement"
     }
-  ]
+  ],
+  "scope": "/troprapide-alertes/",
+  "id": "/troprapide-alertes/app.html"
 }
