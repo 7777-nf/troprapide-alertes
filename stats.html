@@ -48,7 +48,7 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 .main{padding:24px;max-width:1200px;margin:0 auto}
 
 /* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
 .kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .kpi.y::before{background:var(--yellow)}.kpi.g::before{background:var(--green)}
@@ -113,14 +113,32 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 /* LOADING */
 .loading{text-align:center;padding:40px;color:var(--muted);font-size:.88rem}
 
+
+/* TOP PLATS & ZONES KPI */
+.kpi2-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.kpi2{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.kpi2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi2.g::before{background:var(--green)}.kpi2.p::before{background:var(--purple)}
+.kpi2-title{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.top-item:last-child{border-bottom:none}
+.top-rank{font-family:'Syne',sans-serif;font-weight:900;font-size:.85rem;width:20px;color:var(--muted);flex-shrink:0}
+.top-rank.gold{color:#FFD700}.top-rank.silver{color:#C0C0C0}.top-rank.bronze{color:#CD7F32}
+.top-item-info{flex:1;min-width:0}
+.top-item-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-item-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:3px}
+.top-item-bar{height:3px;border-radius:2px;transition:width .6s ease}
+.top-item-count{font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;white-space:nowrap;flex-shrink:0}
 @media(max-width:900px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi2-grid{grid-template-columns:1fr}
   .charts-row{grid-template-columns:1fr}
   .row2{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:500px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi2-grid{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(2,1fr)}
   .main{padding:14px}
 }
@@ -190,6 +208,18 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
       <div class="kpi-val o" id="kpi-enroute">0</div>
       <div class="kpi-lbl">En cours</div>
       <div class="kpi-trend" id="kpi-attente"></div>
+    </div>
+  </div>
+
+  <!-- TOP PLATS & ZONES -->
+  <div class="kpi2-grid">
+    <div class="kpi2 g">
+      <div class="kpi2-title">🍽 Plats les plus commandés</div>
+      <div id="topPlats"><div class="loading">Chargement...</div></div>
+    </div>
+    <div class="kpi2 p">
+      <div class="kpi2-title">📍 Zones les plus actives</div>
+      <div id="topZonesKpi"><div class="loading">Chargement...</div></div>
     </div>
   </div>
 
@@ -343,6 +373,8 @@ function render() {
   renderTopRestos(filtered);
   renderTopLivreurs(filtered);
   renderTypeRow(filtered);
+  renderTopPlats(filtered);
+  renderTopZonesKpi(filtered);
   renderRecent(filtered);
 }
 
@@ -550,6 +582,69 @@ function renderRecent(orders) {
       <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">${dateStr}</span>
     </div>`;
   }).join('') : '<div class="loading">Aucune commande</div>';
+}
+
+// ── TOP PLATS ──
+function renderTopPlats(orders) {
+  // Extract individual items from orders
+  const plats = {};
+  orders.forEach(o => {
+    if (!o.items) return;
+    // Split by comma or + to get individual items
+    const items = o.items.split(/[,+\n]/).map(s => s.trim()).filter(s => s.length > 2);
+    items.forEach(item => {
+      // Clean quantity prefix like "1x", "2x", etc.
+      const clean = item.replace(/^\d+[xX]\s*/, '').trim();
+      if (clean.length > 2) {
+        plats[clean] = (plats[clean] || 0) + 1;
+      }
+    });
+  });
+
+  const sorted = Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const max = sorted[0]?.[1] || 1;
+  const rankColors = ['gold','silver','bronze','','','',''];
+
+  document.getElementById('topPlats').innerHTML = sorted.length ? sorted.map(([name,count],i) => `
+    <div class="top-item">
+      <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
+      <div class="top-item-info">
+        <div class="top-item-name">${name}</div>
+        <div class="top-item-bar-wrap">
+          <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--green)"></div>
+        </div>
+      </div>
+      <div class="top-item-count" style="color:var(--green)">${count}x</div>
+    </div>`).join('') 
+  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucun plat enregistré</div>';
+}
+
+// ── TOP ZONES KPI ──
+function renderTopZonesKpi(orders) {
+  const zones = {};
+  orders.forEach(o => { if(o.zone) zones[o.zone] = (zones[o.zone]||0)+1; });
+  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const max = sorted[0]?.[1] || 1;
+  const total = orders.length || 1;
+  const rankColors = ['gold','silver','bronze','','','',''];
+  const zoneEmojis = {
+    'Cocody':'🏘','Plateau':'🏙','Yopougon':'🏗','Marcory':'🌆',
+    'Treichville':'🌃','Adjamé':'🏪','Abobo':'🏠','Koumassi':'🏭',
+    'Port-Bouët':'✈️','Bingerville':'🌿','Attécoubé':'🏘','Songon':'🌾'
+  };
+
+  document.getElementById('topZonesKpi').innerHTML = sorted.length ? sorted.map(([zone,count],i) => `
+    <div class="top-item">
+      <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
+      <div class="top-item-info">
+        <div class="top-item-name">${zoneEmojis[zone]||'📍'} ${zone}</div>
+        <div class="top-item-bar-wrap">
+          <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--purple)"></div>
+        </div>
+      </div>
+      <div class="top-item-count" style="color:var(--purple)">${count} <span style="font-size:.65rem;color:var(--muted)">(${Math.round(count/total*100)}%)</span></div>
+    </div>`).join('')
+  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucune zone enregistrée</div>';
 }
 </script>
 </body>
