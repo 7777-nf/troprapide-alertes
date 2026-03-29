@@ -294,6 +294,61 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.w{border-left:3px solid var(--yellow)}
 @keyframes tup{from{transform:translateY(-12px);opacity:0}to{transform:translateY(0);opacity:1}}
 
+
+/* ── MENU PAGE ── */
+.menu-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.menu-resto-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
+.menu-resto-sub{font-size:.72rem;color:var(--muted)}
+.menu-hero{position:relative;height:160px;overflow:hidden}
+.menu-hero img{width:100%;height:100%;object-fit:cover}
+.menu-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent)}
+.menu-hero-info{position:absolute;bottom:12px;left:16px;right:16px}
+.menu-hero-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;color:#fff}
+.menu-hero-meta{display:flex;gap:10px;margin-top:4px}
+.menu-hero-badge{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);color:#fff;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600}
+
+.menu-cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--dark);position:sticky;top:57px;z-index:9}
+.menu-cats::-webkit-scrollbar{display:none}
+.mcat{padding:6px 14px;border-radius:100px;border:1px solid var(--border);font-size:.78rem;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--muted);flex-shrink:0;transition:all .2s}
+.mcat.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+
+.menu-section{padding:16px 16px 0}
+.menu-section-title{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.menu-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.menu-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative}
+.menu-item:active{transform:scale(.97)}
+.menu-item.in-cart{border-color:var(--yellow)}
+.mi-img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--border)}
+.mi-info{flex:1}
+.mi-name{font-size:.9rem;font-weight:700;margin-bottom:3px}
+.mi-desc{font-size:.74rem;color:var(--muted);line-height:1.4;margin-bottom:6px}
+.mi-footer{display:flex;align-items:center;justify-content:space-between}
+.mi-price{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:900;color:var(--yellow)}
+.mi-qty{display:flex;align-items:center;gap:8px}
+.mi-btn{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mi-btn:active{transform:scale(.88)}
+.mi-btn.minus{background:var(--card2);color:var(--text)}
+.mi-btn.plus{background:var(--yellow);color:var(--black)}
+.mi-qty-num{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;min-width:16px;text-align:center}
+.mi-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:100px}
+
+/* CART BAR */
+.cart-bar{
+  position:fixed;bottom:calc(64px + var(--safe-bottom));left:16px;right:16px;
+  background:var(--yellow);color:var(--black);border-radius:14px;
+  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
+  z-index:50;animation:cartslide .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 32px rgba(245,200,0,.3);
+}
+@keyframes cartslide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.cart-bar.hide{display:none}
+.cb-left{display:flex;align-items:center;gap:10px}
+.cb-count{background:var(--black);color:var(--yellow);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:.8rem}
+.cb-text{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem}
+.cb-total{font-family:'Syne',sans-serif;font-weight:900;font-size:.88rem}
+.cb-btn{background:var(--black);color:var(--yellow);border:none;padding:8px 16px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer}
+
 /* LOADING */
 .loading-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center}
 .loading-overlay.show{display:flex}
@@ -392,7 +447,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <div id="restoSection">
         <div class="section-title">Restaurants partenaires</div>
         <div class="resto-list" id="restoList">
-          <div class="resto-card" onclick="goToOrder('repas','Mémé Choco')">
+          <div class="resto-card" onclick="openMenu('Mémé Choco')">
             <img class="resto-img" src="https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60'" alt="Mémé Choco">
             <div class="resto-info">
               <div class="resto-name">Mémé Choco</div>
@@ -408,7 +463,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
               </div>
             </div>
           </div>
-          <div class="resto-card" onclick="goToOrder('repas','Le Palais du Poulet')">
+          <div class="resto-card" onclick="openMenu('Le Palais du Poulet')">
             <img class="resto-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60" alt="Le Palais du Poulet">
             <div class="resto-info">
               <div class="resto-name">Le Palais du Poulet</div>
@@ -423,7 +478,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
               </div>
             </div>
           </div>
-          <div class="resto-card" onclick="goToOrder('repas','Saveurs du Soleil')">
+          <div class="resto-card" onclick="openMenu('Saveurs du Soleil')">
             <img class="resto-img" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60" alt="Saveurs du Soleil">
             <div class="resto-info">
               <div class="resto-name">Saveurs du Soleil</div>
@@ -438,7 +493,7 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
               </div>
             </div>
           </div>
-          <div class="resto-card" onclick="goToOrder('repas','Pizza House Abidjan')">
+          <div class="resto-card" onclick="openMenu('Pizza House Abidjan')">
             <img class="resto-img" src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60" alt="Pizza House">
             <div class="resto-info">
               <div class="resto-name">Pizza House Abidjan</div>
@@ -459,36 +514,36 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <!-- PLATS POPULAIRES -->
       <div class="section-title">Plats populaires</div>
       <div class="plat-grid">
-        <div class="plat-card" onclick="quickOrder('Poulet braisé','Mémé Choco',3000)">
+        <div class="plat-card" onclick="openMenu('Mémé Choco')">
           <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/poulet-braisé.jpg" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=60'" alt="Poulet braisé">
           <div class="plat-body">
             <div class="plat-name">Poulet braisé</div>
             <div class="plat-resto">Mémé Choco</div>
             <div class="plat-footer">
               <div class="plat-price">3 000 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();addToCart('Poulet braisé',3000)">+</button>
+              <button class="plat-add" onclick="event.stopPropagation();openMenu('Mémé Choco')">+</button>
             </div>
           </div>
         </div>
-        <div class="plat-card" onclick="quickOrder('Attiéké poisson','Saveurs du Soleil',2500)">
+        <div class="plat-card" onclick="openMenu('Saveurs du Soleil')">
           <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/attieke-poisson.png" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=60'" alt="Attiéké poisson">
           <div class="plat-body">
             <div class="plat-name">Attiéké poisson</div>
             <div class="plat-resto">Saveurs du Soleil</div>
             <div class="plat-footer">
               <div class="plat-price">2 500 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();addToCart('Attiéké poisson',2500)">+</button>
+              <button class="plat-add" onclick="event.stopPropagation();openMenu('Saveurs du Soleil')">+</button>
             </div>
           </div>
         </div>
-        <div class="plat-card" onclick="quickOrder('Garba complet','Saveurs du Soleil',1500)">
+        <div class="plat-card" onclick="openMenu('Saveurs du Soleil')">
           <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/garba.jpg" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=60'" alt="Garba complet">
           <div class="plat-body">
             <div class="plat-name">Garba complet</div>
             <div class="plat-resto">Saveurs du Soleil</div>
             <div class="plat-footer">
               <div class="plat-price">1 500 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();addToCart('Garba complet',1500)">+</button>
+              <button class="plat-add" onclick="event.stopPropagation();openMenu('Saveurs du Soleil')">+</button>
             </div>
           </div>
         </div>
@@ -724,6 +779,29 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
       <div style="padding:0 20px 20px;text-align:center">
         <div style="font-size:.72rem;color:var(--muted)">TropRapide v1.0 · By Oppin SARL<br>© 2026 · Abidjan, Côte d'Ivoire</div>
       </div>
+    </div>
+
+
+    <!-- MENU RESTAURANT PAGE -->
+    <div class="page" id="page-menu">
+      <div class="menu-header">
+        <div class="back-btn" onclick="closeMenu()">←</div>
+        <div>
+          <div class="menu-resto-name" id="menuRestoName">Restaurant</div>
+          <div class="menu-resto-sub" id="menuRestoSub">Menu complet</div>
+        </div>
+      </div>
+      <div id="menuContent"></div>
+    </div>
+
+    <!-- CART BAR -->
+    <div class="cart-bar hide" id="cartBar">
+      <div class="cb-left">
+        <div class="cb-count" id="cbCount">0</div>
+        <div class="cb-text" id="cbText">articles</div>
+      </div>
+      <div class="cb-total" id="cbTotal">0 FCFA</div>
+      <button class="cb-btn" onclick="goToCheckout()">Commander →</button>
     </div>
 
   </div><!-- end scroll-area -->
@@ -1093,6 +1171,266 @@ function toast(msg, type='s') {
   setTimeout(()=>el.remove(),3200);
 }
 window.toast = toast;
+
+// ── MENUS DATA ──
+const MENUS = {
+  "Meme_Choco": {
+    restoName: "Meme Choco",
+    img: "https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg",
+    type: "Cuisine ivoirienne", time: "20-25 min", rating: "4.9",
+    categories: ["Populaires","Plats","Boissons"],
+    items: [
+      {id:"mc1",cat:"Populaires",name:"Poulet braise + Attieke",desc:"Poulet braise au charbon avec attieke et sauce tomate",price:3500,img:"https://www.troprapide.com/images/restauration/foody/poulet-br%C3%A9.jpg",popular:true},
+      {id:"mc2",cat:"Populaires",name:"Riz Soumara",desc:"Riz gras avec legumes et viande de boeuf",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"mc3",cat:"Plats",name:"Garba complet",desc:"Thon grille avec attieke et sauce piquante",price:1500,img:"https://www.troprapide.com/images/restauration/foody/garba.jpg"},
+      {id:"mc4",cat:"Plats",name:"Kedjenou de poulet",desc:"Poulet mijote aux epices ivoiriennes",price:4000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"mc5",cat:"Plats",name:"Alloco + poisson",desc:"Bananes plantains frites avec poisson braise",price:2000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"mc6",cat:"Plats",name:"Sauce graine + fufu",desc:"Sauce graine de palme avec fufu de manioc",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"mc7",cat:"Boissons",name:"Jus de gingembre",desc:"Jus de gingembre frais naturel",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"mc8",cat:"Boissons",name:"Bissap frais",desc:"Jus de fleurs hibiscus sucre",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Le_Palais_du_Poulet": {
+    restoName: "Le Palais du Poulet",
+    img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=70",
+    type: "Specialites ivoiriennes", time: "20-25 min", rating: "4.8",
+    categories: ["Populaires","Poulet","Accompagnements","Boissons"],
+    items: [
+      {id:"pp1",cat:"Populaires",name:"Poulet braise entier",desc:"Poulet entier braise au charbon de bois",price:8000,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60",popular:true},
+      {id:"pp2",cat:"Populaires",name:"Demi-poulet + Attieke",desc:"Demi-poulet braise avec attieke et sauce piment",price:4500,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60",popular:true},
+      {id:"pp3",cat:"Poulet",name:"Cuisse de poulet x2",desc:"2 cuisses de poulet braisees",price:3000,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60"},
+      {id:"pp4",cat:"Poulet",name:"Ailes de poulet x4",desc:"4 ailes de poulet croustillantes",price:2500,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60"},
+      {id:"pp5",cat:"Accompagnements",name:"Attieke seul",desc:"Portion attieke avec sauce tomate",price:500,img:"https://www.troprapide.com/images/restauration/foody/attieke-poisson.png"},
+      {id:"pp6",cat:"Accompagnements",name:"Salade fraiche",desc:"Salade de crudites avec vinaigrette",price:800,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"pp7",cat:"Boissons",name:"Eau minerale",desc:"Bouteille eau 50cl",price:300,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"pp8",cat:"Boissons",name:"Boisson sucree",desc:"Coca, Fanta, Sprite 33cl",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Saveurs_du_Soleil": {
+    restoName: "Saveurs du Soleil",
+    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=70",
+    type: "Fusion africaine", time: "25-30 min", rating: "4.8",
+    categories: ["Populaires","Plats africains","Grillades","Boissons"],
+    items: [
+      {id:"ss1",cat:"Populaires",name:"Attieke poisson braise",desc:"Attieke avec poisson braise et sauce tomate",price:2500,img:"https://www.troprapide.com/images/restauration/foody/attieke-poisson.png",popular:true},
+      {id:"ss2",cat:"Populaires",name:"Garba complet",desc:"Attieke avec thon grille special",price:1500,img:"https://www.troprapide.com/images/restauration/foody/garba.jpg",popular:true},
+      {id:"ss3",cat:"Plats africains",name:"Riz gras au poulet",desc:"Riz jollof avec poulet et legumes",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"ss4",cat:"Plats africains",name:"Alloco complet",desc:"Alloco frit avec oeuf et poisson",price:1500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"ss5",cat:"Plats africains",name:"Accra de haricots",desc:"Beignets de haricots croustillants",price:1000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"ss6",cat:"Grillades",name:"Brochettes boeuf x5",desc:"5 brochettes de boeuf marinees et grillees",price:2500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"ss7",cat:"Grillades",name:"Thieboudienne",desc:"Riz au poisson senegalais aux legumes",price:3500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"ss8",cat:"Boissons",name:"Jus naturel",desc:"Jus de fruits frais orange citron ananas",price:600,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Pizza_House_Abidjan": {
+    restoName: "Pizza House Abidjan",
+    img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=70",
+    type: "Pizzeria italienne", time: "18-22 min", rating: "4.7",
+    categories: ["Populaires","Pizzas","Pates","Desserts","Boissons"],
+    items: [
+      {id:"ph1",cat:"Populaires",name:"Pizza Margherita",desc:"Sauce tomate, mozzarella, basilic frais",price:5000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60",popular:true},
+      {id:"ph2",cat:"Populaires",name:"Pizza Reine",desc:"Jambon, champignons, mozzarella, olives",price:6500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60",popular:true},
+      {id:"ph3",cat:"Pizzas",name:"Pizza 4 Fromages",desc:"Mozzarella, emmental, gorgonzola, parmesan",price:7000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"ph4",cat:"Pizzas",name:"Pizza Poulet BBQ",desc:"Poulet grille, sauce BBQ, oignons, poivrons",price:7500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"ph5",cat:"Pates",name:"Spaghetti Bolognaise",desc:"Pates fraiches sauce bolognaise maison",price:4500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"ph6",cat:"Pates",name:"Penne Arrabiata",desc:"Pates au piment fort et sauce tomate",price:4000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
+      {id:"ph7",cat:"Desserts",name:"Tiramisu",desc:"Tiramisu maison au mascarpone",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"ph8",cat:"Boissons",name:"Limonade maison",desc:"Limonade fraiche avec citron et menthe",price:800,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Street_Burger_Corner": {
+    restoName: "Street Burger Corner",
+    img: "https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=500&q=70",
+    type: "Fast food gourmand", time: "15-20 min", rating: "4.6",
+    categories: ["Populaires","Burgers","Accompagnements","Boissons"],
+    items: [
+      {id:"sb1",cat:"Populaires",name:"Classic Burger",desc:"Steak boeuf, salade, tomate, sauce maison",price:3500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60",popular:true},
+      {id:"sb2",cat:"Populaires",name:"Double Cheese Burger",desc:"Double steak, double fromage fondu, cornichons",price:5000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60",popular:true},
+      {id:"sb3",cat:"Burgers",name:"Chicken Burger",desc:"Poulet croustillant, coleslaw, sauce ranch",price:4000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
+      {id:"sb4",cat:"Burgers",name:"Burger Vegetarien",desc:"Galette de legumes, avocat, roquette",price:3500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
+      {id:"sb5",cat:"Accompagnements",name:"Frites maison",desc:"Frites fraiches croustillantes avec sauce",price:1000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
+      {id:"sb6",cat:"Accompagnements",name:"Hot Dog",desc:"Saucisse grillee, moutarde, ketchup, oignons",price:2000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
+      {id:"sb7",cat:"Boissons",name:"Milkshake",desc:"Milkshake vanille chocolat ou fraise",price:1500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"sb8",cat:"Boissons",name:"Soda 33cl",desc:"Coca, Fanta, Sprite",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Delices_Asiatiques": {
+    restoName: "Delices Asiatiques",
+    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=70",
+    type: "Cuisine asiatique", time: "22-28 min", rating: "4.9",
+    categories: ["Populaires","Nouilles","Riz","Entrees","Boissons"],
+    items: [
+      {id:"da1",cat:"Populaires",name:"Pho au boeuf",desc:"Soupe de nouilles au boeuf et herbes fraiches",price:4500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60",popular:true},
+      {id:"da2",cat:"Populaires",name:"Riz saute poulet",desc:"Riz saute oeuf avec poulet et legumes wok",price:3500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60",popular:true},
+      {id:"da3",cat:"Nouilles",name:"Nouilles sautees crevettes",desc:"Nouilles de riz sautees aux crevettes",price:5000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"da4",cat:"Nouilles",name:"Ramen epice",desc:"Ramen japonais au bouillon epice et oeuf",price:4500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"da5",cat:"Riz",name:"Riz cantonais",desc:"Riz saute aux oeufs jambon et petits pois",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"da6",cat:"Entrees",name:"Nems x4",desc:"4 nems frits avec sauce nuoc-mam",price:2000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"da7",cat:"Entrees",name:"Rouleaux printemps x3",desc:"3 rouleaux frais avec sauce cacahuete",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
+      {id:"da8",cat:"Boissons",name:"The vert froid",desc:"The vert japonais servi froid",price:700,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
+    ]
+  },
+  "Juice_Smoothies_Bar": {
+    restoName: "Juice and Smoothies Bar",
+    img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=70",
+    type: "Boissons saines", time: "10-15 min", rating: "4.8",
+    categories: ["Populaires","Smoothies","Jus frais","Cafes","Snacks"],
+    items: [
+      {id:"js1",cat:"Populaires",name:"Smoothie Tropical",desc:"Mangue ananas banane lait de coco",price:2000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60",popular:true},
+      {id:"js2",cat:"Populaires",name:"Jus ananas frais",desc:"Ananas presse frais sans sucre ajoute",price:1200,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60",popular:true},
+      {id:"js3",cat:"Smoothies",name:"Smoothie Detox Vert",desc:"Epinards concombre pomme verte gingembre",price:2500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"js4",cat:"Smoothies",name:"Smoothie Fraise Banane",desc:"Fraises banane yaourt nature miel",price:2000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"js5",cat:"Jus frais",name:"Jus gingembre citron",desc:"Gingembre frais citron miel",price:1000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"js6",cat:"Jus frais",name:"Jus de papaye",desc:"Papaye fraiche mixee avec citron",price:1200,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"js7",cat:"Cafes",name:"Cafe latte",desc:"Espresso double avec lait vapeur",price:1500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
+      {id:"js8",cat:"Snacks",name:"Sandwich club",desc:"Poulet salade tomate mayo sur pain de mie",price:2500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"}
+    ]
+  }
+};
+
+// Lookup by display name
+function findMenu(restoName) {
+  return Object.values(MENUS).find(m => m.restoName === restoName) ||
+         Object.values(MENUS).find(m => restoName.includes(m.restoName.split(' ')[0]));
+}
+
+
+
+// ── CART (simple) ──
+window.addToCart = function(name, price) {
+  cart.push({name, price});
+  const count = document.getElementById('cartCount');
+  count.textContent = cart.length;
+  count.style.display = 'flex';
+  toast('🛒 ' + name + ' ajouté', 's');
+};
+
+// ── NOTIFICATIONS ──
+function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+// ── TOAST ──
+function toast(msg, type='s') {
+  const w=document.getElementById('toastWrap'), el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span style="font-size:1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]||'📢'}</span><span style="font-size:.82rem;font-weight:600">${msg}</span>`;
+  w.prepend(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
+  setTimeout(()=>el.remove(),3200);
+}
+window.toast = toast;
+
+// ── MENUS DATA ──
+
+function renderMenuItem(item) {
+  const qty = menuCart[item.id] || 0;
+  return `<div class="menu-item ${qty>0?'in-cart':''}" id="mi-${item.id}">
+    <img class="mi-img" src="${item.img}" onerror="this.style.background='#2a2a2a'" alt="${item.name}">
+    <div class="mi-info">
+      <div class="mi-name">${item.name}${item.popular?'<span style="margin-left:5px;font-size:.65rem;background:rgba(245,200,0,.15);color:var(--yellow);padding:1px 6px;border-radius:4px">⭐ Populaire</span>':''}</div>
+      <div class="mi-desc">${item.desc}</div>
+      <div class="mi-footer">
+        <div class="mi-price">${item.price.toLocaleString('fr-FR')} FCFA</div>
+        <div class="mi-qty">
+          ${qty > 0 ? `
+            <button class="mi-btn minus" onclick="event.stopPropagation();changeQty('${item.id}',-1)">−</button>
+            <span class="mi-qty-num">${qty}</span>
+          ` : ''}
+          <button class="mi-btn plus" onclick="event.stopPropagation();changeQty('${item.id}',1)">+</button>
+        </div>
+      </div>
+    </div>
+    ${qty>0?'<div class="mi-badge">✓ '+qty+'</div>':''}
+  </div>`;
+}
+
+window.changeQty = function(itemId, delta) {
+  const menu = MENUS[currentResto];
+  if (!menu) return;
+  const item = menu.items.find(i => i.id === itemId);
+  if (!item) return;
+
+  menuCart[itemId] = Math.max(0, (menuCart[itemId]||0) + delta);
+  if (menuCart[itemId] === 0) delete menuCart[itemId];
+
+  // Re-render just this item
+  const el = document.getElementById('mi-'+itemId);
+  if (el) el.outerHTML = renderMenuItem(item);
+
+  updateCartBar();
+};
+
+window.filterMenuCat = function(cat, el) {
+  currentMenuCat = cat;
+  document.querySelectorAll('.mcat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  // Scroll to section
+  const section = document.getElementById('mcat-'+cat.replace(/\s/g,'_'));
+  if (section) section.scrollIntoView({behavior:'smooth', block:'start'});
+};
+
+function updateCartBar() {
+  const items = Object.entries(menuCart);
+  const totalQty = items.reduce((s,[,q])=>s+q, 0);
+  const menu = MENUS[currentResto];
+
+  if (!totalQty || !menu) {
+    document.getElementById('cartBar').classList.add('hide');
+    return;
+  }
+
+  const totalPrice = items.reduce((s,[id,q]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return s + (item ? item.price * q : 0);
+  }, 0);
+
+  document.getElementById('cbCount').textContent = totalQty;
+  document.getElementById('cbText').textContent = totalQty > 1 ? 'articles' : 'article';
+  document.getElementById('cbTotal').textContent = totalPrice.toLocaleString('fr-FR') + ' FCFA';
+  document.getElementById('cartBar').classList.remove('hide');
+}
+
+window.goToCheckout = function() {
+  const menu = MENUS[currentResto];
+  if (!menu) return;
+
+  // Build items string from cart
+  const itemsList = Object.entries(menuCart).map(([id,qty]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return item ? qty+'x '+item.name : '';
+  }).filter(Boolean).join(', ');
+
+  const totalPrice = Object.entries(menuCart).reduce((s,[id,q]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return s + (item ? item.price * q : 0);
+  }, 0);
+
+  // Pre-fill order form
+  document.getElementById('f_resto').value = currentResto;
+  // Set the value even if option not found
+  const sel = document.getElementById('f_resto');
+  let found = false;
+  for (let o of sel.options) { if (o.value === currentResto || o.text === currentResto) { sel.value = o.value; found=true; break; } }
+  if (!found) {
+    const opt = new Option(currentResto, currentResto);
+    sel.add(opt);
+    sel.value = currentResto;
+  }
+
+  document.getElementById('f_items').value = itemsList;
+  document.getElementById('f_amount').value = totalPrice;
+
+  // Hide cart bar
+  document.getElementById('cartBar').classList.add('hide');
+
+  // Go to order form step 1
+  goToOrder('repas', currentResto);
+  // Skip to step 2 since items are filled
+  setTimeout(() => nextStep(2), 100);
+};
+
 </script>
 </body>
-</html>
