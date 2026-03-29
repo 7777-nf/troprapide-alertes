@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#F5C800">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TropRapide">
+<meta name="description" content="Commandez vos repas et envoyez vos colis partout à Abidjan en moins de 25 minutes.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://www.troprapide.com/images/logo/yellow/eccursson.svg">
+<title>TropRapide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+:root{
+  --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#111;
+  --card:#1A1A1A;--border:#242424;--text:#F5F5F0;--muted:#666;
+  --green:#22C55E;--red:#EF4444;--blue:#3B82F6;--orange:#F97316;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--black)}
+body{color:var(--text);font-family:'DM Sans',sans-serif;display:flex;flex-direction:column}
+
+/* ── SPLASH SCREEN ── */
+.splash{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--black);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:0;
+  transition:opacity .5s ease;
+}
+.splash.hide{opacity:0;pointer-events:none}
+.splash-logo{width:100px;height:100px;background:var(--yellow);border-radius:28px;display:flex;align-items:center;justify-content:center;font-size:3rem;margin-bottom:20px;animation:splash-bounce .6s ease-out}
+@keyframes splash-bounce{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.splash-title{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;color:var(--yellow);letter-spacing:-1px}
+.splash-sub{color:var(--muted);font-size:.88rem;margin-top:6px}
+.splash-loader{margin-top:40px;display:flex;gap:6px}
+.sl-dot{width:8px;height:8px;border-radius:50%;background:var(--yellow);animation:sl-anim 1.2s infinite}
+.sl-dot:nth-child(2){animation-delay:.2s}.sl-dot:nth-child(3){animation-delay:.4s}
+@keyframes sl-anim{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+/* ── INSTALL BANNER ── */
+.install-banner{
+  background:var(--yellow);color:var(--black);
+  padding:12px 16px;display:none;align-items:center;gap:10px;
+  font-size:.82rem;font-weight:600;flex-shrink:0;
+}
+.install-banner.show{display:flex}
+.ib-ico{font-size:1.3rem;flex-shrink:0}
+.ib-text{flex:1;line-height:1.4}
+.ib-btn{background:var(--black);color:var(--yellow);border:none;padding:7px 14px;border-radius:8px;font-size:.78rem;font-weight:800;cursor:pointer;white-space:nowrap;font-family:'Syne',sans-serif}
+.ib-close{background:none;border:none;color:rgba(0,0,0,.5);font-size:1.2rem;cursor:pointer;padding:0 4px}
+
+/* ── STATUS BAR ── */
+.status-bar{
+  background:var(--dark);border-bottom:1px solid var(--border);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.sb-logo{font-family:'Syne',sans-serif;font-weight:900;font-size:1.1rem;color:var(--yellow);display:flex;align-items:center;gap:7px}
+.sb-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow);animation:pdot 1.5s infinite}
+@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.sb-right{display:flex;align-items:center;gap:8px}
+.sb-badge{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green);padding:4px 10px;border-radius:100px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}
+.sb-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pdot 1s infinite}
+.cart-btn{position:relative;background:var(--card);border:1px solid var(--border);padding:7px 12px;border-radius:10px;color:var(--text);font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:5px}
+.cart-count{position:absolute;top:-6px;right:-6px;background:var(--red);color:#fff;width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;display:none}
+.cart-count.show{display:flex}
+
+/* ── SCROLL AREA ── */
+.scroll-area{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scroll-area::-webkit-scrollbar{display:none}
+
+/* ── PAGES ── */
+.page{display:none;padding-bottom:80px}
+.page.active{display:block}
+
+/* ── HOME PAGE ── */
+.hero-section{
+  background:radial-gradient(ellipse 120% 80% at 50% -20%, rgba(245,200,0,.15) 0%, transparent 60%);
+  padding:24px 16px 20px;
+}
+.hero-greeting{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.hero-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;line-height:1.1;margin-bottom:4px}
+.hero-title em{color:var(--yellow);font-style:normal}
+.hero-sub{font-size:.82rem;color:var(--muted);margin-bottom:16px}
+.hero-stats{display:flex;gap:12px;margin-bottom:20px}
+.hstat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 12px;text-align:center;flex:1}
+.hstat-val{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--yellow)}
+.hstat-lbl{font-size:.62rem;color:var(--muted)}
+
+/* SEARCH */
+.search-bar{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin:0 16px 20px;transition:border-color .2s}
+.search-bar:focus-within{border-color:var(--yellow)}
+.search-ico{font-size:1.1rem;flex-shrink:0}
+.search-input{background:none;border:none;color:var(--text);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;flex:1}
+.search-input::placeholder{color:var(--muted)}
+
+/* CATEGORIES */
+.section-label{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;padding:0 16px;margin-bottom:10px}
+.cats-row{display:flex;gap:8px;padding:0 16px;overflow-x:auto;margin-bottom:20px}
+.cats-row::-webkit-scrollbar{display:none}
+.cat-chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.cat-chip:active{transform:scale(.95)}
+.cat-chip.active{border-color:var(--yellow);background:rgba(245,200,0,.08)}
+.cat-ico{font-size:1.4rem}
+.cat-lbl{font-size:.68rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.cat-chip.active .cat-lbl{color:var(--yellow)}
+
+/* RESTAURANTS */
+.resto-list{padding:0 16px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.resto-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .2s;active:scale(.98)}
+.resto-card:active{transform:scale(.98)}
+.resto-img{height:120px;background:linear-gradient(135deg, #1a1a1a, #2a2a2a);display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
+.resto-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.resto-badges{position:absolute;top:8px;left:8px;display:flex;gap:6px}
+.rbadge{background:rgba(0,0,0,.7);backdrop-filter:blur(4px);color:#fff;padding:3px 8px;border-radius:100px;font-size:.68rem;font-weight:600}
+.rbadge.star{background:rgba(245,200,0,.9);color:var(--black)}
+.resto-info{padding:12px 14px}
+.resto-name{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;margin-bottom:2px}
+.resto-type{font-size:.75rem;color:var(--muted);margin-bottom:8px}
+.resto-meta{display:flex;gap:10px;font-size:.72rem;color:var(--muted)}
+.rmeta-item{display:flex;align-items:center;gap:3px}
+
+/* PLATS */
+.plats-grid{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.plat-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s}
+.plat-card:active{transform:scale(.97)}
+.plat-img{height:90px;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);display:flex;align-items:center;justify-content:center;font-size:2.5rem;position:relative;overflow:hidden}
+.plat-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.plat-info{padding:8px 10px}
+.plat-name{font-size:.8rem;font-weight:700;margin-bottom:1px;line-height:1.2}
+.plat-resto{font-size:.68rem;color:var(--muted);margin-bottom:5px}
+.plat-footer{display:flex;align-items:center;justify-content:space-between}
+.plat-price{font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;color:var(--yellow)}
+.plat-add{width:24px;height:24px;border-radius:8px;background:var(--yellow);border:none;color:var(--black);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:800}
+
+/* ── ORDER PAGE ── */
+.order-form{padding:16px}
+.of-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px}
+.tcard{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s}
+.tcard.active{border-color:var(--yellow);background:rgba(245,200,0,.07)}
+.tcard:active{transform:scale(.95)}
+.tcard-ico{font-size:1.5rem;margin-bottom:4px}
+.tcard-lbl{font-size:.7rem;font-weight:600;color:var(--muted)}
+.tcard.active .tcard-lbl{color:var(--yellow)}
+.fg{margin-bottom:12px}
+.fg label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px;font-weight:500}
+.fg input,.fg select,.fg textarea{
+  width:100%;background:var(--dark);border:1.5px solid var(--border);
+  border-radius:10px;color:var(--text);padding:12px 14px;
+  font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;
+  transition:border-color .2s;-webkit-appearance:none;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--yellow)}
+.fg select option{background:var(--dark)}
+.fg textarea{resize:none;height:70px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.pcard{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;transition:all .2s}
+.pcard.active{border-color:var(--yellow);background:rgba(245,200,0,.07)}
+.pcard-ico{font-size:1.2rem;margin-bottom:3px}
+.pcard-lbl{font-size:.72rem;font-weight:600;color:var(--muted)}
+.pcard.active .pcard-lbl{color:var(--yellow)}
+.btn-order{
+  width:100%;padding:15px;background:var(--yellow);color:var(--black);
+  border:none;border-radius:12px;font-size:.95rem;font-weight:900;
+  font-family:'Syne',sans-serif;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-order:active{transform:scale(.98);background:var(--yellow-dark)}
+
+/* ── SUIVI PAGE ── */
+.suivi-page{padding:16px}
+.suivi-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.suivi-empty-ico{font-size:3rem;margin-bottom:12px}
+.order-track-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.otc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.otc-id{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--yellow)}
+.otc-time{font-size:.72rem;color:var(--muted)}
+.otc-items{font-size:.85rem;font-weight:600;margin-bottom:4px}
+.otc-resto{font-size:.75rem;color:var(--muted);margin-bottom:12px}
+.track-steps{display:flex;align-items:center;gap:0;margin-bottom:14px}
+.ts{display:flex;flex-direction:column;align-items:center;flex:1}
+.ts-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--dark);display:flex;align-items:center;justify-content:center;font-size:.8rem;transition:all .3s;z-index:1}
+.ts-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.ts-dot.active{background:var(--yellow);border-color:var(--yellow);color:var(--black);animation:ts-pulse 1s infinite}
+@keyframes ts-pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,200,0,.4)}50%{box-shadow:0 0 0 8px rgba(245,200,0,0)}}
+.ts-lbl{font-size:.62rem;color:var(--muted);margin-top:4px;text-align:center}
+.ts-lbl.active{color:var(--yellow);font-weight:700}
+.ts-lbl.done{color:var(--green)}
+.ts-line{flex:1;height:2px;background:var(--border);margin-top:-16px}
+.ts-line.done{background:var(--green)}
+.otc-amount{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;color:var(--yellow)}
+.btn-wa-track{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);padding:9px 16px;border-radius:10px;font-size:.8rem;font-weight:700;cursor:pointer;width:100%;margin-top:10px}
+
+/* ── PROFIL PAGE ── */
+.profil-page{padding:16px}
+.profil-header{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;text-align:center}
+.profil-avatar{width:64px;height:64px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 10px}
+.profil-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800}
+.profil-phone{font-size:.82rem;color:var(--muted);margin-top:2px}
+.profil-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.ps{background:var(--dark);border-radius:10px;padding:10px;text-align:center}
+.ps-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;color:var(--yellow)}
+.ps-lbl{font-size:.68rem;color:var(--muted)}
+.menu-section{margin-bottom:14px}
+.menu-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding:0 4px}
+.menu-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.menu-item:active{transform:scale(.98)}
+.mi-ico{font-size:1.2rem;width:36px;height:36px;border-radius:10px;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mi-text{flex:1}
+.mi-title{font-size:.88rem;font-weight:600}
+.mi-sub{font-size:.72rem;color:var(--muted)}
+.mi-arrow{color:var(--muted);font-size:.8rem}
+.fidelite-card{background:linear-gradient(135deg, rgba(245,200,0,.15), rgba(245,200,0,.05));border:1.5px solid rgba(245,200,0,.3);border-radius:16px;padding:18px;margin-bottom:16px}
+.fc-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--yellow);margin-bottom:6px}
+.fc-sub{font-size:.78rem;color:var(--muted);margin-bottom:12px}
+.fc-progress{background:var(--border);border-radius:100px;height:8px;margin-bottom:6px}
+.fc-bar{background:var(--yellow);height:8px;border-radius:100px;transition:width .6s ease}
+.fc-info{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+
+/* ── CART OVERLAY ── */
+.cart-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center}
+.cart-overlay.show{display:flex}
+.cart-sheet{background:var(--card);border:1px solid var(--border);border-radius:22px 22px 0 0;padding:20px;width:100%;max-width:480px;max-height:70vh;overflow-y:auto;animation:sup .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.cs-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.cs-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin-bottom:14px}
+.cart-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.cart-item:last-of-type{border-bottom:none}
+.ci-ico{font-size:1.4rem;flex-shrink:0}
+.ci-name{flex:1;font-size:.85rem;font-weight:600}
+.ci-price{font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:var(--yellow)}
+.ci-remove{background:rgba(239,68,68,.1);border:none;color:var(--red);width:26px;height:26px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.cart-total{display:flex;justify-content:space-between;padding:14px 0 10px;font-family:'Syne',sans-serif;font-weight:800}
+.ct-val{color:var(--yellow);font-size:1.1rem}
+.btn-checkout{width:100%;padding:14px;background:var(--yellow);color:var(--black);border:none;border-radius:12px;font-size:.92rem;font-weight:900;font-family:'Syne',sans-serif;cursor:pointer;margin-top:6px}
+
+/* ── SUCCESS SCREEN ── */
+.success-overlay{display:none;position:fixed;inset:0;z-index:300;background:var(--black);flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center}
+.success-overlay.show{display:flex}
+.s-emoji{font-size:5rem;margin-bottom:16px;animation:bounce .6s ease}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.s-title{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:900;color:var(--yellow);margin-bottom:6px}
+.s-sub{color:var(--muted);font-size:.88rem;margin-bottom:24px;line-height:1.7;max-width:300px}
+.s-id{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 24px;margin-bottom:20px}
+.s-id-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;margin-bottom:3px}
+.s-id-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;color:var(--yellow)}
+.s-btns{display:flex;gap:10px;width:100%;max-width:340px}
+.s-wa{flex:1;padding:13px;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);border-radius:11px;font-size:.85rem;font-weight:700;cursor:pointer}
+.s-new{flex:1;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:11px;font-size:.85rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  background:var(--dark);border-top:1px solid var(--border);
+  display:flex;padding:8px 0 max(16px, env(safe-area-inset-bottom));
+  flex-shrink:0;
+}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s;padding:4px 0}
+.bn-ico{font-size:1.3rem;transition:transform .2s}
+.bn-lbl{font-size:.62rem;color:var(--muted);font-weight:500}
+.bn.active .bn-lbl{color:var(--yellow)}
+.bn.active .bn-ico{transform:scale(1.15)}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:7px;width:calc(100% - 32px);max-width:360px;pointer-events:none}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 16px;display:flex;align-items:center;gap:9px;animation:tup .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.w{border-left:3px solid var(--yellow)}
+@keyframes tup{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* FIREBASE CFG */
+.cfg-overlay{display:none;position:fixed;inset:0;z-index:500;background:var(--black);align-items:center;justify-content:center;padding:24px}
+.cfg-overlay.show{display:flex}
+.cfg-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;width:100%;max-width:380px}
+.cfg-logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;color:var(--yellow);text-align:center;margin-bottom:4px}
+.cfg-sub{text-align:center;color:var(--muted);font-size:.8rem;margin-bottom:20px}
+.btn-cfg{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:10px;font-size:.88rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
+.skip-cfg{text-align:center;margin-top:10px;font-size:.75rem;color:var(--muted);cursor:pointer;text-decoration:underline}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-logo">🛵</div>
+  <div class="splash-title">TROPRAPIDE</div>
+  <div class="splash-sub">Livraison express Abidjan</div>
+  <div class="splash-loader">
+    <div class="sl-dot"></div><div class="sl-dot"></div><div class="sl-dot"></div>
+  </div>
+</div>
+
+<!-- FIREBASE CONFIG -->
+<div class="cfg-overlay" id="cfgOverlay">
+  <div class="cfg-card">
+    <div class="cfg-logo">🔥 Connexion</div>
+    <div class="cfg-sub">Entrez vos infos Firebase une seule fois</div>
+    <div class="fg"><label>Database URL</label>
+      <input id="c_db" placeholder="https://troprapide-xxx.firebaseio.com" type="url"></div>
+    <div class="fg"><label>API Key</label>
+      <input id="c_key" placeholder="AIzaSy..." type="text"></div>
+    <div class="fg"><label>Project ID</label>
+      <input id="c_pid" placeholder="troprapide-xxxxx" type="text"></div>
+    <button class="btn-cfg" onclick="connectFirebase()">🚀 LANCER L'APP</button>
+    <div class="skip-cfg" onclick="skipCfg()">Continuer sans Firebase (mode démo)</div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <div class="ib-ico">📲</div>
+  <div class="ib-text">Installez TropRapide sur votre téléphone pour un accès rapide !</div>
+  <button class="ib-btn" onclick="installPWA()">Installer</button>
+  <button class="ib-close" onclick="dismissInstall()">✕</button>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="sb-logo"><div class="sb-dot"></div>TROPRAPIDE</div>
+  <div class="sb-right">
+    <div class="sb-badge"><div class="sb-badge-dot"></div>En ligne</div>
+    <div class="cart-btn" onclick="showCart()">
+      🛒 <span id="cartTotal">0 F</span>
+      <div class="cart-count" id="cartCount">0</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll-area">
+
+  <!-- PAGE ACCUEIL -->
+  <div class="page active" id="page-home">
+    <div class="hero-section">
+      <div class="hero-greeting">Bonjour 👋</div>
+      <div class="hero-title">Livraison express<br><em>en 25 min.</em></div>
+      <div class="hero-sub">Abidjan · 7j/7 · 7h–22h</div>
+      <div class="hero-stats">
+        <div class="hstat"><div class="hstat-val">25 min</div><div class="hstat-lbl">Délai moyen</div></div>
+        <div class="hstat"><div class="hstat-val">⭐ 4.9</div><div class="hstat-lbl">Note clients</div></div>
+        <div class="hstat"><div class="hstat-val">12</div><div class="hstat-lbl">Quartiers</div></div>
+      </div>
+    </div>
+
+    <div class="search-bar">
+      <div class="search-ico">🔍</div>
+      <input class="search-input" placeholder="Rechercher un plat, un restaurant..." id="searchInput" oninput="filterContent()">
+    </div>
+
+    <div class="section-label">Catégories</div>
+    <div class="cats-row">
+      <div class="cat-chip active" onclick="filterCat('all',this)"><div class="cat-ico">🍽</div><div class="cat-lbl">Tout</div></div>
+      <div class="cat-chip" onclick="filterCat('ivoirien',this)"><div class="cat-ico">🇨🇮</div><div class="cat-lbl">Ivoirien</div></div>
+      <div class="cat-chip" onclick="filterCat('fast',this)"><div class="cat-ico">🍔</div><div class="cat-lbl">Fast Food</div></div>
+      <div class="cat-chip" onclick="filterCat('pizza',this)"><div class="cat-ico">🍕</div><div class="cat-lbl">Pizza</div></div>
+      <div class="cat-chip" onclick="filterCat('asiatique',this)"><div class="cat-ico">🍜</div><div class="cat-lbl">Asiatique</div></div>
+      <div class="cat-chip" onclick="filterCat('boisson',this)"><div class="cat-ico">🥤</div><div class="cat-lbl">Boissons</div></div>
+    </div>
+
+    <div class="section-label">Restaurants partenaires</div>
+    <div class="resto-list" id="restoList">
+      <!-- Generé par JS -->
+    </div>
+
+    <div class="section-label">Plats populaires</div>
+    <div class="plats-grid" id="platsList">
+      <!-- Généré par JS -->
+    </div>
+  </div>
+
+  <!-- PAGE COMMANDER -->
+  <div class="page" id="page-order">
+    <div class="order-form">
+      <div class="of-title">⚡ Nouvelle commande</div>
+
+      <div class="type-grid">
+        <div class="tcard active" onclick="setOrderType('repas',this)"><div class="tcard-ico">🍽</div><div class="tcard-lbl">Repas</div></div>
+        <div class="tcard" onclick="setOrderType('colis',this)"><div class="tcard-ico">📦</div><div class="tcard-lbl">Colis</div></div>
+        <div class="tcard" onclick="setOrderType('courses',this)"><div class="tcard-ico">🛒</div><div class="tcard-lbl">Courses</div></div>
+        <div class="tcard" onclick="setOrderType('medicaments',this)"><div class="tcard-ico">💊</div><div class="tcard-lbl">Médic.</div></div>
+        <div class="tcard" onclick="setOrderType('documents',this)"><div class="tcard-ico">📄</div><div class="tcard-lbl">Docs</div></div>
+        <div class="tcard" onclick="setOrderType('entreprise',this)"><div class="tcard-ico">🏢</div><div class="tcard-lbl">Pro</div></div>
+      </div>
+
+      <div class="fg" id="of-resto-wrap"><label>Restaurant</label>
+        <select id="of_resto">
+          <option>Mémé Choco</option>
+          <option>Le Palais du Poulet</option>
+          <option>Saveurs du Soleil</option>
+          <option>Pizza House Abidjan</option>
+          <option>Street Burger Corner</option>
+          <option>Délices Asiatiques</option>
+          <option>Juice & Smoothies Bar</option>
+        </select>
+      </div>
+      <div class="fg" id="of-retrait-wrap" style="display:none"><label>Adresse de retrait</label>
+        <input id="of_retrait" placeholder="Quartier / adresse de départ">
+      </div>
+
+      <div class="fg"><label id="of-items-label">Articles commandés</label>
+        <textarea id="of_items" placeholder="Ex: 1x Poulet braisé + Attiéké, 2x Jus d'ananas"></textarea>
+      </div>
+      <div class="fg" id="of-notes-wrap" style="display:none"><label>Instructions spéciales</label>
+        <input id="of_notes" placeholder="Fragile, urgent, réfrigéré...">
+      </div>
+
+      <div class="grid2">
+        <div class="fg"><label>Votre nom</label><input id="of_client" placeholder="Nom complet"></div>
+        <div class="fg"><label>Téléphone</label><input id="of_phone" placeholder="+225 07..." type="tel"></div>
+      </div>
+      <div class="fg"><label>Zone de livraison</label>
+        <select id="of_zone">
+          <option value="">-- Choisir votre quartier --</option>
+          <option>Cocody</option><option>Plateau</option><option>Yopougon</option>
+          <option>Marcory</option><option>Treichville</option><option>Adjamé</option>
+          <option>Abobo</option><option>Koumassi</option><option>Port-Bouët</option>
+          <option>Bingerville</option><option>Attécoubé</option><option>Songon</option>
+        </select>
+      </div>
+      <div class="grid2">
+        <div class="fg"><label>Montant (FCFA)</label><input id="of_amount" placeholder="0" type="number"></div>
+        <div class="fg"><label>Priorité</label>
+          <select id="of_priority"><option value="normale">🟢 Normale</option><option value="urgente">🔴 Urgente</option></select>
+        </div>
+      </div>
+
+      <div class="fg"><label>Paiement</label></div>
+      <div class="pay-grid">
+        <div class="pcard active" onclick="setPay('cash',this)"><div class="pcard-ico">💵</div><div class="pcard-lbl">Cash</div></div>
+        <div class="pcard" onclick="setPay('momo',this)"><div class="pcard-ico">📱</div><div class="pcard-lbl">Mobile Money</div></div>
+        <div class="pcard" onclick="setPay('wave',this)"><div class="pcard-ico">🌊</div><div class="pcard-lbl">Wave</div></div>
+        <div class="pcard" onclick="setPay('prepaye',this)"><div class="pcard-ico">✅</div><div class="pcard-lbl">Prépayé</div></div>
+      </div>
+
+      <button class="btn-order" id="orderBtn" onclick="submitOrder()">⚡ ENVOYER MA COMMANDE</button>
+    </div>
+  </div>
+
+  <!-- PAGE SUIVI -->
+  <div class="page" id="page-track">
+    <div class="suivi-page">
+      <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:16px">📍 Suivi de commandes</div>
+      <div id="trackContent">
+        <div class="suivi-empty">
+          <div class="suivi-empty-ico">🛵</div>
+          <div style="font-size:.88rem;line-height:1.7">Aucune commande en cours.<br><span style="font-size:.78rem">Vos commandes apparaîtront ici.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE PROFIL -->
+  <div class="page" id="page-profil">
+    <div class="profil-page">
+      <div class="profil-header">
+        <div class="profil-avatar" id="profilAvatar">😊</div>
+        <div class="profil-name" id="profilName">Mon Profil</div>
+        <div class="profil-phone" id="profilPhone">Abidjan, Côte d'Ivoire</div>
+        <div class="profil-stats">
+          <div class="ps"><div class="ps-val" id="ps-total">0</div><div class="ps-lbl">Commandes</div></div>
+          <div class="ps"><div class="ps-val" id="ps-livrees">0</div><div class="ps-lbl">Livrées</div></div>
+          <div class="ps"><div class="ps-val" id="ps-fcfa">0</div><div class="ps-lbl">FCFA dépensés</div></div>
+        </div>
+      </div>
+
+      <!-- FIDÉLITÉ -->
+      <div class="fidelite-card">
+        <div class="fc-title">🎁 Programme Fidélité</div>
+        <div class="fc-sub">Encore <span id="fc-remaining">10</span> commandes pour votre livraison offerte !</div>
+        <div class="fc-progress"><div class="fc-bar" id="fc-bar" style="width:0%"></div></div>
+        <div class="fc-info"><span id="fc-count">0/10 commandes</span><span style="color:var(--yellow);font-weight:700">🎁 Livraison offerte</span></div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">Mon compte</div>
+        <div class="menu-item" onclick="editProfil()">
+          <div class="mi-ico">👤</div>
+          <div class="mi-text"><div class="mi-title">Modifier mon profil</div><div class="mi-sub">Nom, téléphone, adresse</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showHistory()">
+          <div class="mi-ico">📋</div>
+          <div class="mi-text"><div class="mi-title">Historique commandes</div><div class="mi-sub" id="history-count">0 commandes</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="showAdresses()">
+          <div class="mi-ico">📍</div>
+          <div class="mi-text"><div class="mi-title">Mes adresses</div><div class="mi-sub">Domicile, bureau...</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">Application</div>
+        <div class="menu-item" onclick="installPWA()">
+          <div class="mi-ico">📲</div>
+          <div class="mi-text"><div class="mi-title">Installer l'application</div><div class="mi-sub">Ajouter à l'écran d'accueil</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="enableNotifications()">
+          <div class="mi-ico">🔔</div>
+          <div class="mi-text"><div class="mi-title">Notifications</div><div class="mi-sub" id="notif-status">Désactivées</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="window.open('https://www.troprapide.com','_blank')">
+          <div class="mi-ico">🌐</div>
+          <div class="mi-text"><div class="mi-title">Site web TropRapide</div><div class="mi-sub">www.troprapide.com</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+        <div class="menu-item" onclick="window.open('https://wa.me/2250140503030','_blank')">
+          <div class="mi-ico">💬</div>
+          <div class="mi-text"><div class="mi-title">Contacter le support</div><div class="mi-sub">WhatsApp · +225 01 40 50 30 30</div></div>
+          <div class="mi-arrow">›</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end scroll-area -->
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay">
+  <div class="cart-sheet">
+    <div class="cs-handle"></div>
+    <div class="cs-title">🛒 Mon panier</div>
+    <div id="cartItems"></div>
+    <div class="cart-total"><span>Total</span><span class="ct-val" id="cartTotalFull">0 FCFA</span></div>
+    <button class="btn-checkout" onclick="goToCheckout()">⚡ Commander ce panier</button>
+    <button onclick="closeCart()" style="width:100%;padding:11px;background:var(--card);border:1px solid var(--border);border-radius:11px;color:var(--muted);font-size:.82rem;cursor:pointer;margin-top:8px">Fermer</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successScreen">
+  <div class="s-emoji">🛵</div>
+  <div class="s-title">Commande envoyée !</div>
+  <div class="s-sub" id="s-sub-text">Votre commande a été reçue. Notre équipe vous contacte dans 2 minutes.</div>
+  <div class="s-id"><div class="s-id-lbl">Numéro de commande</div><div class="s-id-val" id="s-order-id">#CMD-XXXX</div></div>
+  <div class="s-btns">
+    <button class="s-wa" onclick="confirmOnWA()">💬 WhatsApp</button>
+    <button class="s-new" onclick="newOrder()">+ Nouvelle</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="bn active" id="bn-home" onclick="showPage('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Accueil</div></div>
+  <div class="bn" id="bn-order" onclick="showPage('order')"><div class="bn-ico">⚡</div><div class="bn-lbl">Commander</div></div>
+  <div class="bn" id="bn-track" onclick="showPage('track')"><div class="bn-ico">📍</div><div class="bn-lbl">Suivi</div></div>
+  <div class="bn" id="bn-profil" onclick="showPage('profil')"><div class="bn-ico">👤</div><div class="bn-lbl">Profil</div></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── FIREBASE ──
+const CFG_KEY = 'troprapide_firebase_cfg';
+const USER_KEY = 'troprapide_user';
+let db = null, orderType = 'repas', selectedPay = 'cash';
+let cart = [], myOrders = [], deferredPrompt = null;
+
+// Auto-connect Firebase
+const savedCfg = localStorage.getItem(CFG_KEY);
+if (savedCfg) {
+  try {
+    const c = JSON.parse(savedCfg);
+    const app = firebase.initializeApp({apiKey:c.apiKey||c.key,databaseURL:c.dburl||c.db,projectId:c.pid},'pwa-'+Date.now());
+    db = app.database();
+  } catch(e) {}
+}
+
+function connectFirebase() {
+  const dburl = document.getElementById('c_db').value.trim();
+  const apiKey = document.getElementById('c_key').value.trim();
+  const pid    = document.getElementById('c_pid').value.trim();
+  if (!dburl||!apiKey||!pid) { toast('Remplissez tous les champs','e'); return; }
+  try {
+    const app = firebase.initializeApp({apiKey,databaseURL:dburl,projectId:pid},'pwa-'+Date.now());
+    db = app.database();
+    localStorage.setItem(CFG_KEY, JSON.stringify({apiKey,dburl,pid}));
+    document.getElementById('cfgOverlay').classList.remove('show');
+    toast('🔥 Connecté à Firebase !','s');
+    listenOrders();
+  } catch(e) { toast('Erreur: '+e.message,'e'); }
+}
+
+function skipCfg() {
+  document.getElementById('cfgOverlay').classList.remove('show');
+  toast('Mode démo activé','w');
+}
+
+// ── SPLASH ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    // Show Firebase config if not saved
+    if (!savedCfg) {
+      setTimeout(() => document.getElementById('cfgOverlay').classList.add('show'), 600);
+    } else {
+      listenOrders();
+    }
+    loadUserProfile();
+    renderRestaurants();
+    renderPlats();
+    registerSW();
+    checkInstallable();
+  }, 1800);
+});
+
+// ── SERVICE WORKER ──
+function registerSW() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./app-sw.js').catch(() => {});
+  }
+}
+
+// ── PWA INSTALL ──
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      dismissInstall();
+      toast('🎉 App installée avec succès !','s');
+    });
+  } else {
+    toast('Ouvrez dans Chrome → Menu ⋮ → "Ajouter à l\'écran d\'accueil"','w');
+  }
+}
+function dismissInstall() { document.getElementById('installBanner').classList.remove('show'); }
+function checkInstallable() {
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    dismissInstall();
+    toast('🎉 Application installée !','s');
+  }
+}
+
+// ── NOTIFICATIONS ──
+function enableNotifications() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      document.getElementById('notif-status').textContent = p === 'granted' ? 'Activées ✅' : 'Refusées';
+      if (p === 'granted') toast('🔔 Notifications activées !','s');
+    });
+  }
+}
+
+// ── NAVIGATION ──
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+  document.querySelectorAll('.bn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.getElementById('bn-'+p).classList.add('active');
+  if (p === 'track') renderTrack();
+  if (p === 'profil') renderProfil();
+}
+
+// ── RESTAURANTS DATA ──
+const RESTAURANTS = [
+  {id:'meme-choco', name:'Mémé Choco', type:'ivoirien', cuisine:'Cuisine ivoirienne', time:'20-25', star:'4.9', emoji:'🍗', img:'https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg', tags:['Poulet braisé','Attiéké','Sauce graine','Garba']},
+  {id:'palais-poulet', name:'Le Palais du Poulet', type:'ivoirien', cuisine:'Cuisine ivoirienne', time:'20-25', star:'4.8', emoji:'🍗', img:'', tags:['Poulet braisé','Attiéké','Alloco']},
+  {id:'saveurs', name:'Saveurs du Soleil', type:'ivoirien', cuisine:'Fusion africaine', time:'25-30', star:'4.8', emoji:'🍲', img:'', tags:['Kedjenou','Riz gras','Alloco']},
+  {id:'pizza-house', name:'Pizza House Abidjan', type:'pizza', cuisine:'Pizzeria italienne', time:'18-22', star:'4.7', emoji:'🍕', img:'', tags:['Pizza','Pâtes','Salade César']},
+  {id:'street-burger', name:'Street Burger Corner', type:'fast', cuisine:'Fast food gourmand', time:'15-20', star:'4.6', emoji:'🍔', img:'', tags:['Burger','Frites','Hot dog']},
+  {id:'asiatiques', name:'Délices Asiatiques', type:'asiatique', cuisine:'Cuisine asiatique', time:'22-28', star:'4.9', emoji:'🍜', img:'', tags:['Pho','Nems','Bowl']},
+  {id:'juice', name:'Juice & Smoothies Bar', type:'boisson', cuisine:'Boissons saines', time:'10-15', star:'4.8', emoji:'🥤', img:'', tags:['Smoothies','Jus bio','Café']},
+];
+
+const PLATS = [
+  {name:'Poulet braisé', resto:'Mémé Choco', price:3000, emoji:'🍗', img:'https://www.troprapide.com/images/restauration/foody/poulet-braisé.jpg', cat:'ivoirien'},
+  {name:'Attiéké poisson', resto:'Saveurs du Soleil', price:2500, emoji:'🐟', img:'https://www.troprapide.com/images/restauration/foody/attieke-poisson.png', cat:'ivoirien'},
+  {name:'Garba complet', resto:'Mémé Choco', price:1500, emoji:'🐟', img:'https://www.troprapide.com/images/restauration/foody/garba.jpg', cat:'ivoirien'},
+  {name:'Pizza Margherita', resto:'Pizza House Abidjan', price:5500, emoji:'🍕', img:'', cat:'pizza'},
+  {name:'Burger Classic', resto:'Street Burger Corner', price:4000, emoji:'🍔', img:'', cat:'fast'},
+  {name:'Riz Soumara', resto:'Mémé Choco', price:2000, emoji:'🍚', img:'', cat:'ivoirien'},
+  {name:'Pho Bo', resto:'Délices Asiatiques', price:4500, emoji:'🍜', img:'', cat:'asiatique'},
+  {name:'Smoothie Mangue', resto:'Juice & Smoothies Bar', price:1500, emoji:'🥤', img:'', cat:'boisson'},
+];
+
+let activeCat = 'all';
+
+function renderRestaurants(filter='') {
+  const el = document.getElementById('restoList');
+  let list = RESTAURANTS;
+  if (activeCat !== 'all') list = list.filter(r => r.type === activeCat);
+  if (filter) list = list.filter(r => r.name.toLowerCase().includes(filter.toLowerCase()) || r.tags.some(t => t.toLowerCase().includes(filter.toLowerCase())));
+  el.innerHTML = list.map(r => `
+    <div class="resto-card" onclick="orderFromResto('${r.name}')">
+      <div class="resto-img">
+        ${r.img ? `<img src="${r.img}" alt="${r.name}" onerror="this.style.display='none'">` : ''}
+        <span style="position:relative;z-index:1">${r.emoji}</span>
+        <div class="resto-badges">
+          <span class="rbadge">⏱ ${r.time} min</span>
+          <span class="rbadge star">⭐ ${r.star}</span>
+        </div>
+      </div>
+      <div class="resto-info">
+        <div class="resto-name">${r.name}</div>
+        <div class="resto-type">${r.cuisine}</div>
+        <div class="resto-meta">
+          <span class="rmeta-item">🏷 ${r.tags.slice(0,3).join(' · ')}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderPlats(filter='') {
+  const el = document.getElementById('platsList');
+  let list = PLATS;
+  if (activeCat !== 'all') list = list.filter(p => p.cat === activeCat);
+  if (filter) list = list.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()) || p.resto.toLowerCase().includes(filter.toLowerCase()));
+  el.innerHTML = list.map(p => `
+    <div class="plat-card">
+      <div class="plat-img">
+        ${p.img ? `<img src="${p.img}" alt="${p.name}" onerror="this.style.display='none'">` : ''}
+        <span style="position:relative;z-index:1">${p.emoji}</span>
+      </div>
+      <div class="plat-info">
+        <div class="plat-name">${p.name}</div>
+        <div class="plat-resto">${p.resto}</div>
+        <div class="plat-footer">
+          <div class="plat-price">${p.price.toLocaleString()} F</div>
+          <button class="plat-add" onclick="addToCart('${p.name}','${p.resto}',${p.price},'${p.emoji}');event.stopPropagation()">+</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterCat(cat, el) {
+  activeCat = cat;
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderRestaurants(document.getElementById('searchInput').value);
+  renderPlats(document.getElementById('searchInput').value);
+}
+
+function filterContent() {
+  const q = document.getElementById('searchInput').value;
+  renderRestaurants(q);
+  renderPlats(q);
+}
+
+function orderFromResto(name) {
+  document.getElementById('of_resto').value = name;
+  showPage('order');
+}
+
+// ── CART ──
+function addToCart(name, resto, price, emoji) {
+  cart.push({name, resto, price, emoji});
+  updateCartUI();
+  toast(`${emoji} ${name} ajouté au panier`,'s');
+}
+
+function updateCartUI() {
+  const total = cart.reduce((s,i)=>s+i.price,0);
+  const count = cart.length;
+  const countEl = document.getElementById('cartCount');
+  document.getElementById('cartTotal').textContent = total > 0 ? total.toLocaleString()+' F' : '0 F';
+  countEl.textContent = count;
+  countEl.classList.toggle('show', count > 0);
+}
+
+function showCart() {
+  if (!cart.length) { toast('Votre panier est vide','w'); return; }
+  const total = cart.reduce((s,i)=>s+i.price,0);
+  document.getElementById('cartItems').innerHTML = cart.map((item,i) => `
+    <div class="cart-item">
+      <div class="ci-ico">${item.emoji}</div>
+      <div class="ci-name">${item.name}<br><span style="font-size:.7rem;color:var(--muted)">${item.resto}</span></div>
+      <div class="ci-price">${item.price.toLocaleString()} F</div>
+      <button class="ci-remove" onclick="removeFromCart(${i})">✕</button>
+    </div>`).join('');
+  document.getElementById('cartTotalFull').textContent = total.toLocaleString() + ' FCFA';
+  document.getElementById('cartOverlay').classList.add('show');
+}
+
+function removeFromCart(i) { cart.splice(i,1); updateCartUI(); showCart(); if(!cart.length) closeCart(); }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('show'); }
+
+function goToCheckout() {
+  closeCart();
+  // Pre-fill order form with cart
+  const items = cart.map(i => `1x ${i.name}`).join(', ');
+  const resto = cart[0]?.resto || '';
+  const total = cart.reduce((s,i)=>s+i.price,0);
+  document.getElementById('of_items').value = items;
+  document.getElementById('of_resto').value = resto;
+  document.getElementById('of_amount').value = total;
+  showPage('order');
+}
+
+// ── ORDER TYPE ──
+function setOrderType(type, el) {
+  orderType = type;
+  document.querySelectorAll('.tcard').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const isRepas = type === 'repas';
+  document.getElementById('of-resto-wrap').style.display = isRepas?'':'none';
+  document.getElementById('of-retrait-wrap').style.display = isRepas?'none':'';
+  document.getElementById('of-notes-wrap').style.display = (type==='colis'||type==='medicaments')?'':'none';
+  const LABELS = {repas:'Articles commandés',colis:'Description du colis',courses:'Liste des articles',medicaments:'Médicaments',documents:'Type de documents',entreprise:'Description'};
+  document.getElementById('of-items-label').textContent = LABELS[type]||'Détail';
+}
+
+function setPay(p, el) {
+  selectedPay = p;
+  document.querySelectorAll('.pcard').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── SUBMIT ORDER ──
+async function submitOrder() {
+  const client  = document.getElementById('of_client').value.trim();
+  const phone   = document.getElementById('of_phone').value.trim();
+  const zone    = document.getElementById('of_zone').value;
+  const items   = document.getElementById('of_items').value.trim();
+  const amount  = document.getElementById('of_amount').value || '0';
+  const priority= document.getElementById('of_priority').value;
+  const notes   = document.getElementById('of_notes')?.value || '';
+  const restaurant = orderType==='repas' ? document.getElementById('of_resto').value : (document.getElementById('of_retrait').value||'À définir');
+
+  if (!client) { toast('Entrez votre nom','e'); return; }
+  if (!phone)  { toast('Entrez votre téléphone','e'); return; }
+  if (!zone)   { toast('Choisissez votre quartier','e'); return; }
+  if (!items)  { toast('Décrivez votre commande','e'); return; }
+
+  const btn = document.getElementById('orderBtn');
+  btn.disabled = true; btn.textContent = '⏳ Envoi...';
+
+  const order = {
+    client, phone, zone, items, amount, priority, notes,
+    restaurant, paiement: selectedPay, type: orderType,
+    status: 'nouvelle', createdAt: Date.now(), isNew: true,
+    source: 'pwa'
+  };
+
+  try {
+    let orderId = '#CMD-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    if (db) {
+      const ref = await db.ref('orders').push(order);
+      orderId = '#' + ref.key.slice(-6).toUpperCase();
+      // Save to local history
+      saveOrderLocally({...order, _id: orderId, _key: ref.key});
+    } else {
+      saveOrderLocally({...order, _id: orderId});
+    }
+    // Clear cart
+    cart = []; updateCartUI();
+    // Show success
+    document.getElementById('s-order-id').textContent = orderId;
+    document.getElementById('s-sub-text').textContent = `Commande ${orderId} reçue ! Notre équipe vous rappelle au ${phone} dans moins de 2 minutes.`;
+    document.getElementById('successScreen').classList.add('show');
+  } catch(e) {
+    toast('Erreur: ' + e.message, 'e');
+  } finally {
+    btn.disabled = false; btn.textContent = '⚡ ENVOYER MA COMMANDE';
+  }
+}
+
+function saveOrderLocally(order) {
+  const history = JSON.parse(localStorage.getItem('troprapide_orders_history')||'[]');
+  history.unshift(order);
+  if (history.length > 50) history.pop();
+  localStorage.setItem('troprapide_orders_history', JSON.stringify(history));
+}
+
+function confirmOnWA() {
+  const items = document.getElementById('of_items').value;
+  const phone = document.getElementById('of_phone').value;
+  const zone  = document.getElementById('of_zone').value;
+  const id    = document.getElementById('s-order-id').textContent;
+  const msg   = encodeURIComponent(`Bonjour TropRapide 👋\n\nJe viens de passer une commande via l'app.\n\n📋 Réf: ${id}\n📦 Commande: ${items}\n📍 Zone: ${zone}\n📞 ${phone}\n\nMerci de confirmer !`);
+  window.open(`https://wa.me/2250140503030?text=${msg}`, '_blank');
+}
+
+function newOrder() {
+  document.getElementById('successScreen').classList.remove('show');
+  document.getElementById('of_items').value = '';
+  document.getElementById('of_amount').value = '';
+  showPage('home');
+}
+
+// ── FIREBASE LISTEN ──
+function listenOrders() {
+  if (!db) return;
+  const phone = JSON.parse(localStorage.getItem(USER_KEY)||'{}').phone;
+  if (!phone) return;
+  db.ref('orders').orderByChild('phone').equalTo(phone).limitToLast(10).on('value', snap => {
+    myOrders = Object.entries(snap.val()||{}).map(([k,v])=>({...v,_key:k})).sort((a,b)=>b.createdAt-a.createdAt);
+    renderTrack();
+    renderProfil();
+  });
+}
+
+// ── TRACK ──
+function renderTrack() {
+  const history = JSON.parse(localStorage.getItem('troprapide_orders_history')||'[]');
+  const orders = myOrders.length ? myOrders : history;
+  const content = document.getElementById('trackContent');
+  if (!orders.length) {
+    content.innerHTML = `<div class="suivi-empty"><div class="suivi-empty-ico">🛵</div><div style="font-size:.88rem;line-height:1.7">Aucune commande.<br><span style="font-size:.78rem">Vos commandes apparaîtront ici.</span></div></div>`;
+    return;
+  }
+  const SL = {nouvelle:1,acceptee:2,'en-route':3,livree:4};
+  content.innerHTML = orders.slice(0,10).map(o => {
+    const step = SL[o.status]||1;
+    const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+    return `<div class="order-track-card">
+      <div class="otc-top">
+        <div class="otc-id">${o._id||('#'+((o._key||'').slice(-6)||'XXXX').toUpperCase())}</div>
+        <div class="otc-time">il y a ${elapsed} min</div>
+      </div>
+      <div class="otc-items">${(o.items||'').substring(0,40)}</div>
+      <div class="otc-resto">🍽 ${o.restaurant||''} · 📍 ${o.zone||''}</div>
+      <div class="track-steps">
+        <div class="ts"><div class="ts-dot ${step>=1?'done':''}">${step>=1?'✓':'1'}</div><div class="ts-lbl ${step===1?'active':step>1?'done':''}">Reçue</div></div>
+        <div class="ts-line ${step>=2?'done':''}"></div>
+        <div class="ts"><div class="ts-dot ${step>=2?'done':''}">${step>=2?'✓':'2'}</div><div class="ts-lbl ${step===2?'active':step>2?'done':''}">Acceptée</div></div>
+        <div class="ts-line ${step>=3?'done':''}"></div>
+        <div class="ts"><div class="ts-dot ${step>=3?(step>3?'done':'active'):''}">${step>3?'✓':'🛵'}</div><div class="ts-lbl ${step===3?'active':step>3?'done':''}">En route</div></div>
+        <div class="ts-line ${step>=4?'done':''}"></div>
+        <div class="ts"><div class="ts-dot ${step>=4?'done':''}">${step>=4?'✓':'4'}</div><div class="ts-lbl ${step===4?'active':''}">Livré</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="otc-amount">${Number(o.amount||0).toLocaleString()} FCFA</div>
+        <span style="font-size:.72rem;background:rgba(255,255,255,.06);padding:3px 8px;border-radius:6px;color:var(--muted)">${{cash:'💵 Cash',momo:'📱 MoMo',wave:'🌊 Wave',prepaye:'✅ Prépayé'}[o.paiement]||''}</span>
+      </div>
+      <button class="btn-wa-track" onclick="window.open('https://wa.me/2250140503030?text=Bonjour%2C%20commande%20${o._id||''}%20statut%20?','_blank')">💬 Demander le statut sur WhatsApp</button>
+    </div>`;
+  }).join('');
+}
+
+// ── PROFIL ──
+function loadUserProfile() {
+  const user = JSON.parse(localStorage.getItem(USER_KEY)||'{}');
+  if (user.name) {
+    document.getElementById('profilName').textContent = user.name;
+    document.getElementById('profilPhone').textContent = user.phone || 'Abidjan';
+    document.getElementById('profilAvatar').textContent = user.name[0] || '😊';
+  }
+  if (Notification.permission === 'granted') {
+    document.getElementById('notif-status').textContent = 'Activées ✅';
+  }
+}
+
+function renderProfil() {
+  const history = JSON.parse(localStorage.getItem('troprapide_orders_history')||'[]');
+  const orders = myOrders.length ? myOrders : history;
+  const livrees = orders.filter(o => o.status === 'livree');
+  const total = orders.reduce((s,o)=>s+Number(o.amount||0),0);
+  document.getElementById('ps-total').textContent = orders.length;
+  document.getElementById('ps-livrees').textContent = livrees.length;
+  document.getElementById('ps-fcfa').textContent = total > 0 ? (total/1000).toFixed(0)+'K' : '0';
+  document.getElementById('history-count').textContent = orders.length + ' commandes';
+
+  // Fidélité
+  const prog = (orders.length % 10);
+  document.getElementById('fc-bar').style.width = (prog*10)+'%';
+  document.getElementById('fc-count').textContent = prog+'/10 commandes';
+  document.getElementById('fc-remaining').textContent = 10-prog;
+}
+
+function editProfil() {
+  const name = prompt('Votre nom complet:');
+  const phone = prompt('Votre numéro WhatsApp:');
+  if (name && phone) {
+    localStorage.setItem(USER_KEY, JSON.stringify({name, phone}));
+    loadUserProfile();
+    listenOrders();
+    toast('Profil mis à jour ✅','s');
+  }
+}
+
+function showHistory() { showPage('track'); }
+function showAdresses() { toast('Fonctionnalité bientôt disponible !','w'); }
+
+// ── TOAST ──
+function toast(msg, type='s') {
+  const w = document.getElementById('toastWrap'), el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span style="font-size:1.1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]}</span><span style="font-size:.82rem;font-weight:600">${msg}</span>`;
+  w.prepend(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},3000);
+  setTimeout(()=>el.remove(),3400);
+}
+</script>
+</body>
+</html>
