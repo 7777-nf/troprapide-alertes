@@ -6,6 +6,8 @@
 <title>TropRapide · Statistiques</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
@@ -37,6 +39,9 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 .nbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.78rem;text-decoration:none;transition:all .2s}
 .nbtn:hover{border-color:var(--yellow);color:var(--yellow)}
 .nbtn.active{background:rgba(245,200,0,.1);border-color:var(--yellow);color:var(--yellow)}
+.btn-pdf{background:var(--yellow);color:var(--black);border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:800;font-family:'Syne',sans-serif;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-pdf:hover{background:var(--yellow-dark);transform:scale(1.02)}
+.btn-pdf:disabled{opacity:.6;cursor:not-allowed;transform:none}
 
 /* PERIOD TABS */
 .period-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:8px}
@@ -167,6 +172,7 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <div class="nav-actions">
     <a href="admin.html" class="nbtn">← Admin</a>
     <button class="nbtn" onclick="refreshData()">🔄 Actualiser</button>
+    <button class="btn-pdf" id="pdfBtn" onclick="exportPDF()">⬇️ PDF</button>
     <button class="nbtn" onclick="resetCfg()" style="color:var(--red)">⚙️</button>
   </div>
 </nav>
@@ -645,6 +651,253 @@ function renderTopZonesKpi(orders) {
       <div class="top-item-count" style="color:var(--purple)">${count} <span style="font-size:.65rem;color:var(--muted)">(${Math.round(count/total*100)}%)</span></div>
     </div>`).join('')
   : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucune zone enregistrée</div>';
+}
+
+// ── EXPORT PDF ──
+async function exportPDF() {
+  const btn = document.getElementById('pdfBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Génération...';
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const filtered = filterByPeriod(allOrders);
+    const livrees  = filtered.filter(o => o.status === 'livree');
+    const enRoute  = filtered.filter(o => o.status === 'en-route');
+    const revenu   = livrees.reduce((s,o) => s+Number(o.amount||0), 0);
+    const taux     = filtered.length ? Math.round(livrees.length/filtered.length*100) : 0;
+    const moy      = livrees.length ? Math.round(revenu/livrees.length) : 0;
+    const pLabels  = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les données"};
+    const now      = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+    const W = 210, margin = 14;
+
+    // ── HEADER ──
+    doc.setFillColor(15, 15, 15);
+    doc.rect(0, 0, W, 32, 'F');
+    doc.setFillColor(245, 200, 0);
+    doc.rect(0, 0, W, 3, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.setTextColor(245, 200, 0);
+    doc.text('TROPRAPIDE', margin, 14);
+    doc.setFontSize(9);
+    doc.setTextColor(150, 150, 150);
+    doc.text('Rapport Statistiques · ' + pLabels[currentPeriod], margin, 21);
+    doc.text('Généré le ' + now, W - margin, 21, { align: 'right' });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(filtered.length + ' commandes analysées', margin, 28);
+
+    let y = 40;
+
+    // ── KPI BOXES ──
+    const kpis = [
+      { label: 'Commandes totales', val: filtered.length, color: [245, 200, 0] },
+      { label: 'Livrées', val: livrees.length + ' (' + taux + '%)', color: [34, 197, 94] },
+      { label: 'FCFA collectés', val: revenu.toLocaleString('fr-FR'), color: [59, 130, 246] },
+      { label: 'En cours', val: enRoute.length, color: [249, 115, 22] },
+    ];
+    const boxW = (W - 2*margin - 9) / 4;
+    kpis.forEach((k, i) => {
+      const x = margin + i * (boxW + 3);
+      doc.setFillColor(22, 22, 22);
+      doc.roundedRect(x, y, boxW, 20, 2, 2, 'F');
+      doc.setFillColor(...k.color);
+      doc.rect(x, y, boxW, 1.5, 'F');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(...k.color);
+      doc.text(String(k.val), x + boxW/2, y + 11, { align: 'center' });
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7);
+      doc.setTextColor(120, 120, 120);
+      doc.text(k.label, x + boxW/2, y + 17, { align: 'center' });
+    });
+    y += 28;
+
+    // ── TOP PLATS ──
+    const plats = {};
+    filtered.forEach(o => {
+      if (!o.items) return;
+      o.items.split(/[,+\n]/).map(s=>s.trim()).filter(s=>s.length>2).forEach(item => {
+        const clean = item.replace(/^\d+[xX]\s*/,'').trim();
+        if (clean.length > 2) plats[clean] = (plats[clean]||0)+1;
+      });
+    });
+    const topPlats = Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+    // ── TOP ZONES ──
+    const zones = {};
+    filtered.forEach(o => { if(o.zone) zones[o.zone] = (zones[o.zone]||0)+1; });
+    const topZones = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+    // TWO COLUMNS
+    const colW = (W - 2*margin - 6) / 2;
+
+    // Plats table
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(245, 200, 0);
+    doc.text('🍽 Plats les plus commandés', margin, y);
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(168, 85, 247);
+    doc.text('📍 Zones les plus actives', margin + colW + 6, y);
+    y += 4;
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: margin },
+      tableWidth: colW,
+      head: [['#', 'Plat', 'Qté']],
+      body: topPlats.map(([name,cnt],i) => [i+1, name.length>28?name.substring(0,28)+'...':name, cnt+'x']),
+      theme: 'grid',
+      headStyles: { fillColor: [30,30,30], textColor: [245,200,0], fontStyle:'bold', fontSize:8 },
+      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
+      alternateRowStyles: { fillColor: [22,22,22] },
+      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14, halign:'center'} },
+    });
+
+    const afterPlats = doc.lastAutoTable.finalY;
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: margin + colW + 6 },
+      tableWidth: colW,
+      head: [['#', 'Zone', 'Cmds', '%']],
+      body: topZones.map(([zone,cnt],i) => {
+        const pct = Math.round(cnt/(filtered.length||1)*100);
+        return [i+1, zone, cnt, pct+'%'];
+      }),
+      theme: 'grid',
+      headStyles: { fillColor: [30,30,30], textColor: [168,85,247], fontStyle:'bold', fontSize:8 },
+      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
+      alternateRowStyles: { fillColor: [22,22,22] },
+      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
+    });
+
+    y = Math.max(afterPlats, doc.lastAutoTable.finalY) + 8;
+
+    // ── TOP RESTOS ──
+    const restos = {};
+    filtered.forEach(o => {
+      if (!restos[o.restaurant]) restos[o.restaurant] = {count:0, revenu:0};
+      restos[o.restaurant].count++;
+      if(o.status==='livree') restos[o.restaurant].revenu += Number(o.amount||0);
+    });
+    const topRestos = Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,8);
+
+    // ── TOP LIVREURS ──
+    const livreurs = {};
+    filtered.filter(o=>o.livreur).forEach(o => {
+      if (!livreurs[o.livreur]) livreurs[o.livreur] = {count:0, livrees:0};
+      livreurs[o.livreur].count++;
+      if(o.status==='livree') livreurs[o.livreur].livrees++;
+    });
+    const topLivreurs = Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,8);
+
+    if (y > 240) { doc.addPage(); y = 20; }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(34, 197, 94);
+    doc.text('🍽 Top Restaurants', margin, y);
+    doc.setTextColor(59, 130, 246);
+    doc.text('🛵 Top Livreurs', margin + colW + 6, y);
+    y += 4;
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: margin },
+      tableWidth: colW,
+      head: [['#', 'Restaurant', 'Cmds', 'FCFA']],
+      body: topRestos.map(([name,d],i) => [i+1, name.length>20?name.substring(0,20)+'...':name, d.count, d.revenu.toLocaleString('fr-FR')]),
+      theme: 'grid',
+      headStyles: { fillColor: [30,30,30], textColor: [34,197,94], fontStyle:'bold', fontSize:8 },
+      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
+      alternateRowStyles: { fillColor: [22,22,22] },
+      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:12,halign:'center'} },
+    });
+
+    const afterRestos = doc.lastAutoTable.finalY;
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: margin + colW + 6 },
+      tableWidth: colW,
+      head: [['#', 'Livreur', 'Prises', 'Livrées']],
+      body: topLivreurs.map(([name,d],i) => [i+1, name, d.count, d.livrees]),
+      theme: 'grid',
+      headStyles: { fillColor: [30,30,30], textColor: [59,130,246], fontStyle:'bold', fontSize:8 },
+      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
+      alternateRowStyles: { fillColor: [22,22,22] },
+      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
+    });
+
+    y = Math.max(afterRestos, doc.lastAutoTable.finalY) + 8;
+
+    // ── DERNIÈRES COMMANDES ──
+    if (y > 230) { doc.addPage(); y = 20; }
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9);
+    doc.setTextColor(245, 200, 0);
+    doc.text('🕐 Dernières commandes', margin, y);
+    y += 4;
+
+    const recent = [...filtered].sort((a,b)=>b.createdAt-a.createdAt).slice(0,15);
+    const statusLabels = {nouvelle:'Nouvelle','en-route':'En route',acceptee:'Acceptée',prete:'Prête',livree:'Livrée'};
+
+    doc.autoTable({
+      startY: y,
+      margin: { left: margin },
+      head: [['Date', 'Client', 'Restaurant', 'Zone', 'Articles', 'Montant', 'Statut']],
+      body: recent.map(o => {
+        const d = new Date(o.createdAt);
+        const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+        return [
+          dateStr,
+          (o.client||'').substring(0,12),
+          (o.restaurant||'').substring(0,14),
+          o.zone||'',
+          (o.items||'').substring(0,20)+(o.items&&o.items.length>20?'...':''),
+          Number(o.amount||0).toLocaleString('fr-FR')+' F',
+          statusLabels[o.status]||o.status
+        ];
+      }),
+      theme: 'grid',
+      headStyles: { fillColor: [30,30,30], textColor: [245,200,0], fontStyle:'bold', fontSize:7 },
+      bodyStyles: { fillColor: [18,18,18], textColor: [200,200,200], fontSize:7 },
+      alternateRowStyles: { fillColor: [22,22,22] },
+      columnStyles: { 0:{cellWidth:20}, 5:{halign:'right'} },
+    });
+
+    // ── FOOTER ──
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i=1; i<=pageCount; i++) {
+      doc.setPage(i);
+      doc.setFillColor(15,15,15);
+      doc.rect(0, 287, W, 10, 'F');
+      doc.setFont('helvetica','normal');
+      doc.setFontSize(7);
+      doc.setTextColor(80,80,80);
+      doc.text('TropRapide · Rapport statistiques · ' + now, margin, 293);
+      doc.text('Page ' + i + ' / ' + pageCount, W-margin, 293, {align:'right'});
+    }
+
+    // ── SAVE ──
+    const filename = 'TropRapide_Stats_' + new Date().toISOString().slice(0,10) + '.pdf';
+    doc.save(filename);
+
+  } catch(e) {
+    console.error(e);
+    alert('Erreur PDF: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⬇️ PDF';
+  }
 }
 </script>
 </body>
