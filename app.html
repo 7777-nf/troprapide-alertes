@@ -1175,7 +1175,7 @@ window.toast = toast;
 // ── MENUS DATA ──
 const MENUS = {
   "Meme_Choco": {
-    restoName: "Meme Choco",
+    restoName: "Mémé Choco",
     img: "https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg",
     type: "Cuisine ivoirienne", time: "20-25 min", rating: "4.9",
     categories: ["Populaires","Plats","Boissons"],
@@ -1255,7 +1255,7 @@ const MENUS = {
     ]
   },
   "Delices_Asiatiques": {
-    restoName: "Delices Asiatiques",
+    restoName: "Délices Asiatiques",
     img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=70",
     type: "Cuisine asiatique", time: "22-28 min", rating: "4.9",
     categories: ["Populaires","Nouilles","Riz","Entrees","Boissons"],
@@ -1271,7 +1271,7 @@ const MENUS = {
     ]
   },
   "Juice_Smoothies_Bar": {
-    restoName: "Juice and Smoothies Bar",
+    restoName: "Juice & Smoothies Bar",
     img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=70",
     type: "Boissons saines", time: "10-15 min", rating: "4.8",
     categories: ["Populaires","Smoothies","Jus frais","Cafes","Snacks"],
@@ -1289,9 +1289,20 @@ const MENUS = {
 };
 
 // Lookup by display name
+function normalize(s) {
+  return s.toLowerCase()
+    .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[ô]/g,'o')
+    .replace(/[îï]/g,'i').replace(/[&]/g,'and')
+    .replace(/[^a-z0-9]/g,' ').trim();
+}
 function findMenu(restoName) {
-  return Object.values(MENUS).find(m => m.restoName === restoName) ||
-         Object.values(MENUS).find(m => restoName.includes(m.restoName.split(' ')[0]));
+  // Exact match first
+  const exact = Object.values(MENUS).find(m => m.restoName === restoName);
+  if (exact) return exact;
+  // Normalized match
+  const normSearch = normalize(restoName);
+  return Object.values(MENUS).find(m => normalize(m.restoName) === normSearch) ||
+         Object.values(MENUS).find(m => normSearch.startsWith(normalize(m.restoName).split(' ')[0]));
 }
 
 
@@ -1323,6 +1334,118 @@ function toast(msg, type='s') {
 }
 window.toast = toast;
 
+// ── MENU STATE ──
+let menuCart = {};
+let currentResto = '';
+let currentMenuCat = '';
+
+// ── OPEN MENU ──
+window.openMenu = function(restoName) {
+  const menu = findMenu(restoName);
+  if (!menu) { console.log('Menu non trouve:', restoName); goToOrder('repas', restoName); return; }
+  currentResto = restoName;
+  menuCart = {};
+  currentMenuCat = menu.categories[0];
+  document.getElementById('menuRestoName').textContent = restoName;
+  document.getElementById('menuRestoSub').textContent = menu.type + ' · ⏱ ' + menu.time + ' · ⭐ ' + menu.rating;
+  renderMenu(menu);
+  showPage('menu');
+  document.getElementById('cartBar').classList.add('hide');
+};
+
+window.closeMenu = function() {
+  showPage('home');
+  menuCart = {};
+  document.getElementById('cartBar').classList.add('hide');
+};
+
+function renderMenu(menu) {
+  const catsHtml = menu.categories.map(c =>
+    `<div class="mcat ${c===currentMenuCat?'active':''}" onclick="filterMenuCat('${c}',this)">${c}</div>`
+  ).join('');
+  let itemsHtml = '';
+  menu.categories.forEach(cat => {
+    const catItems = menu.items.filter(i => i.cat === cat);
+    if (!catItems.length) return;
+    const catId = cat.replace(/\s+/g,'_');
+    itemsHtml += `<div class="menu-section" id="mcat-${catId}">
+      <div class="menu-section-title">${cat}</div>
+      ${catItems.map(item => renderMenuItem(item)).join('')}
+    </div>`;
+  });
+  document.getElementById('menuContent').innerHTML = `
+    <div class="menu-hero">
+      <img src="${menu.img}" onerror="this.style.background='#1a1a1a'" alt="">
+      <div class="menu-hero-overlay"></div>
+      <div class="menu-hero-info">
+        <div class="menu-hero-name">${currentResto}</div>
+        <div class="menu-hero-meta">
+          <span class="menu-hero-badge">⏱ ${menu.time}</span>
+          <span class="menu-hero-badge">⭐ ${menu.rating}</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-cats">${catsHtml}</div>
+    <div style="padding-bottom:100px">${itemsHtml}</div>`;
+}
+
+window.filterMenuCat = function(cat, el) {
+  document.querySelectorAll('.mcat').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  const catId = cat.replace(/\s+/g,'_');
+  const section = document.getElementById('mcat-'+catId);
+  if (section) section.scrollIntoView({behavior:'smooth',block:'start'});
+};
+
+window.changeQty = function(itemId, delta) {
+  const menu = findMenu(currentResto);
+  if (!menu) return;
+  const item = menu.items.find(i => i.id === itemId);
+  if (!item) return;
+  menuCart[itemId] = Math.max(0, (menuCart[itemId]||0) + delta);
+  if (menuCart[itemId] === 0) delete menuCart[itemId];
+  const el = document.getElementById('mi-'+itemId);
+  if (el) el.outerHTML = renderMenuItem(item);
+  updateCartBar();
+};
+
+function updateCartBar() {
+  const items = Object.entries(menuCart);
+  const totalQty = items.reduce((s,[,q])=>s+q, 0);
+  const menu = findMenu(currentResto);
+  if (!totalQty || !menu) { document.getElementById('cartBar').classList.add('hide'); return; }
+  const totalPrice = items.reduce((s,[id,q]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return s + (item ? item.price*q : 0);
+  }, 0);
+  document.getElementById('cbCount').textContent = totalQty;
+  document.getElementById('cbText').textContent = totalQty>1?'articles':'article';
+  document.getElementById('cbTotal').textContent = totalPrice.toLocaleString('fr-FR')+' FCFA';
+  document.getElementById('cartBar').classList.remove('hide');
+}
+
+window.goToCheckout = function() {
+  const menu = findMenu(currentResto);
+  if (!menu) return;
+  const itemsList = Object.entries(menuCart).map(([id,qty]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return item ? qty+'x '+item.name : '';
+  }).filter(Boolean).join(', ');
+  const totalPrice = Object.entries(menuCart).reduce((s,[id,q]) => {
+    const item = menu.items.find(i=>i.id===id);
+    return s + (item ? item.price*q : 0);
+  }, 0);
+  const sel = document.getElementById('f_resto');
+  let found = false;
+  for (let o of sel.options) { if (o.value===currentResto||o.text===currentResto){sel.value=o.value;found=true;break;} }
+  if (!found) { const opt=new Option(currentResto,currentResto); sel.add(opt); sel.value=currentResto; }
+  document.getElementById('f_items').value = itemsList;
+  document.getElementById('f_amount').value = totalPrice;
+  document.getElementById('cartBar').classList.add('hide');
+  goToOrder('repas', currentResto);
+  setTimeout(() => nextStep(2), 100);
+};
+
 // ── MENUS DATA ──
 
 function renderMenuItem(item) {
@@ -1346,91 +1469,6 @@ function renderMenuItem(item) {
     ${qty>0?'<div class="mi-badge">✓ '+qty+'</div>':''}
   </div>`;
 }
-
-window.changeQty = function(itemId, delta) {
-  const menu = MENUS[currentResto];
-  if (!menu) return;
-  const item = menu.items.find(i => i.id === itemId);
-  if (!item) return;
-
-  menuCart[itemId] = Math.max(0, (menuCart[itemId]||0) + delta);
-  if (menuCart[itemId] === 0) delete menuCart[itemId];
-
-  // Re-render just this item
-  const el = document.getElementById('mi-'+itemId);
-  if (el) el.outerHTML = renderMenuItem(item);
-
-  updateCartBar();
-};
-
-window.filterMenuCat = function(cat, el) {
-  currentMenuCat = cat;
-  document.querySelectorAll('.mcat').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  // Scroll to section
-  const section = document.getElementById('mcat-'+cat.replace(/\s/g,'_'));
-  if (section) section.scrollIntoView({behavior:'smooth', block:'start'});
-};
-
-function updateCartBar() {
-  const items = Object.entries(menuCart);
-  const totalQty = items.reduce((s,[,q])=>s+q, 0);
-  const menu = MENUS[currentResto];
-
-  if (!totalQty || !menu) {
-    document.getElementById('cartBar').classList.add('hide');
-    return;
-  }
-
-  const totalPrice = items.reduce((s,[id,q]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return s + (item ? item.price * q : 0);
-  }, 0);
-
-  document.getElementById('cbCount').textContent = totalQty;
-  document.getElementById('cbText').textContent = totalQty > 1 ? 'articles' : 'article';
-  document.getElementById('cbTotal').textContent = totalPrice.toLocaleString('fr-FR') + ' FCFA';
-  document.getElementById('cartBar').classList.remove('hide');
-}
-
-window.goToCheckout = function() {
-  const menu = MENUS[currentResto];
-  if (!menu) return;
-
-  // Build items string from cart
-  const itemsList = Object.entries(menuCart).map(([id,qty]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return item ? qty+'x '+item.name : '';
-  }).filter(Boolean).join(', ');
-
-  const totalPrice = Object.entries(menuCart).reduce((s,[id,q]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return s + (item ? item.price * q : 0);
-  }, 0);
-
-  // Pre-fill order form
-  document.getElementById('f_resto').value = currentResto;
-  // Set the value even if option not found
-  const sel = document.getElementById('f_resto');
-  let found = false;
-  for (let o of sel.options) { if (o.value === currentResto || o.text === currentResto) { sel.value = o.value; found=true; break; } }
-  if (!found) {
-    const opt = new Option(currentResto, currentResto);
-    sel.add(opt);
-    sel.value = currentResto;
-  }
-
-  document.getElementById('f_items').value = itemsList;
-  document.getElementById('f_amount').value = totalPrice;
-
-  // Hide cart bar
-  document.getElementById('cartBar').classList.add('hide');
-
-  // Go to order form step 1
-  goToOrder('repas', currentResto);
-  // Skip to step 2 since items are filled
-  setTimeout(() => nextStep(2), 100);
-};
 
 </script>
 </body>
