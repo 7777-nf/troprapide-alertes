@@ -4,574 +4,1087 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>TropRapide · Restaurant</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--yellow:#F5C800;--black:#0A0A0A;--dark:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#F0F0F0;--muted:#777;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6}
+:root{
+  --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#0F0F0F;
+  --card:#161616;--card2:#1E1E1E;--border:#242424;--text:#F5F5F0;--muted:#666;
+  --green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;--purple:#A855F7;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+html,body{height:100%;background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;overscroll-behavior:none}
 
-/* LOGIN */
-.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
-.login-logo{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--yellow);margin-bottom:6px}
-.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:32px}
-.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:26px;width:100%;max-width:360px}
-.login-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:18px;text-align:center}
+/* ── LOGIN ── */
+.login-screen{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;background:var(--dark);
+  padding-top:calc(var(--safe-top) + 24px);
+}
+.login-logo{
+  font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:900;
+  color:var(--yellow);margin-bottom:6px;
+  display:flex;align-items:center;gap:10px;
+}
+.login-logo-dot{width:10px;height:10px;background:var(--yellow);border-radius:50%;animation:pdot 1.5s infinite}
+@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:28px}
+.login-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:26px;width:100%;max-width:380px;
+}
+.login-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:18px;text-align:center;color:var(--yellow)}
 .field{margin-bottom:13px}
-.field label{font-size:.73rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
-.field input,.field select{width:100%;background:var(--dark);border:1px solid var(--border);border-radius:10px;color:var(--text);padding:11px 13px;font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
+.field label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.field input,.field select{
+  width:100%;background:var(--dark);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);padding:11px 13px;
+  font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;
+}
 .field input:focus,.field select:focus{border-color:var(--yellow)}
-.btn-login{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:11px;font-size:.95rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
+.btn-login{
+  width:100%;padding:14px;background:var(--yellow);color:var(--black);
+  border:none;border-radius:12px;font-size:.95rem;font-weight:800;
+  font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px;
+  transition:background .15s,transform .1s;
+}
+.btn-login:active{transform:scale(.98);background:var(--yellow-dark)}
+.login-hint{font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center;line-height:1.6}
 
-/* APP */
-.app{display:none;flex-direction:column;min-height:100vh}
-.app-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.hname{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;color:var(--yellow)}
-.hrole{font-size:.7rem;color:var(--muted)}
-.otoggle{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:7px 13px;cursor:pointer}
-.tdot{width:8px;height:8px;border-radius:50%;transition:background .3s}
-.tdot.on{background:var(--green);animation:pulse 1.5s infinite}
-.tdot.off{background:#444}
+/* ── APP ── */
+.app{display:none;flex-direction:column;height:100dvh;overflow:hidden;padding-top:var(--safe-top)}
+
+/* ── TOP HEADER ── */
+.top-bar{
+  background:var(--dark);border-bottom:1px solid var(--border);
+  padding:11px 16px;display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:sticky;top:0;z-index:100;
+}
+.top-bar-logo{
+  display:flex;align-items:center;gap:8px;
+}
+.logo-icon{
+  width:38px;height:38px;background:var(--yellow);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.logo-icon img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.logo-icon-fallback{font-size:1.1rem;font-weight:900;color:#111}
+.logo-pro-badge{
+  position:absolute;bottom:0;right:0;
+  background:var(--red);color:#fff;font-size:.45rem;font-weight:800;
+  padding:1px 4px;border-radius:3px 0 0 0;letter-spacing:.3px;
+}
+.top-bar-actions{display:flex;align-items:center;gap:10px}
+.notif-btn{
+  position:relative;width:36px;height:36px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.notif-badge{
+  position:absolute;top:-3px;right:-3px;
+  background:var(--red);color:#fff;font-size:.6rem;font-weight:800;
+  width:17px;height:17px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--dark);
+}
+.settings-btn{
+  width:36px;height:36px;background:var(--card);border:1px solid var(--border);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+
+/* ── SCROLLABLE CONTENT ── */
+.app-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(72px + var(--safe-bottom))}
+.app-scroll::-webkit-scrollbar{display:none}
+
+/* ── COVER SECTION ── */
+.cover-section{position:relative}
+.cover-img{
+  width:100%;height:220px;background:var(--card2);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cover-img img{width:100%;height:100%;object-fit:cover}
+.cover-img-placeholder{font-size:4rem}
+.cover-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,rgba(0,0,0,.7) 100%);
+}
+/* Rating badge - top left */
+.rating-badge{
+  position:absolute;top:14px;left:14px;
+  background:rgba(255,255,255,.95);color:#111;
+  border-radius:10px;padding:7px 12px;
+  display:flex;align-items:center;gap:7px;
+  backdrop-filter:blur(8px);
+}
+.rating-star{color:#F59E0B;font-size:1rem}
+.rating-val{font-weight:800;font-size:.95rem;color:#111}
+.rating-count{font-size:.73rem;color:#666;font-weight:500}
+
+/* Edit button - top right */
+.edit-btn{
+  position:absolute;top:14px;right:14px;
+  background:#2196F3;color:#fff;
+  border-radius:10px;padding:8px 14px;
+  font-size:.78rem;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  border:none;
+  box-shadow:0 2px 12px rgba(33,150,243,.4);
+  font-family:'DM Sans',sans-serif;
+}
+
+/* Logo + name bottom of cover */
+.cover-bottom{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:0 16px 12px;
+  display:flex;align-items:flex-end;gap:12px;
+}
+.resto-logo{
+  width:70px;height:70px;border-radius:14px;
+  background:#fff;border:2px solid rgba(255,255,255,.3);
+  overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:-8px;
+}
+.resto-logo img{width:100%;height:100%;object-fit:cover}
+.resto-name-wrap{flex:1;padding-bottom:0}
+.resto-name{
+  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
+  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);line-height:1.2;
+}
+
+/* ── STATUS BANNER (Fermé / promo) ── */
+.status-banner{
+  margin:12px 14px 0;border-radius:12px;padding:12px 15px;
+  display:flex;align-items:center;gap:10px;
+  font-weight:700;font-size:.88rem;
+}
+.status-banner.closed{background:var(--red);color:#fff}
+.status-banner.open{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)}
+.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.status-banner.closed .status-dot{background:#fff}
+.status-banner.open .status-dot{background:var(--green);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
 
-/* STATS ROW */
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:14px}
-.sbox{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px;text-align:center}
-.snum{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800}
-.snum.y{color:var(--yellow)}.snum.o{color:var(--orange)}.snum.g{color:var(--green)}
-.slbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+/* ── CATEGORIES PILLS ── */
+.section-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 16px 0;
+}
+.section-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
 
-/* PAGES */
-.page{display:none;padding:0 0 90px}
+.categories-wrap{
+  display:flex;gap:9px;padding:10px 14px 4px;
+  overflow-x:auto;scrollbar-width:none;
+}
+.categories-wrap::-webkit-scrollbar{display:none}
+.cat-pill{
+  display:flex;align-items:center;gap:6px;flex-shrink:0;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:100px;padding:8px 14px;
+  font-size:.82rem;font-weight:600;color:var(--text);
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.cat-pill.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
+.cat-pill-ico{font-size:1rem}
+
+/* ── TOGGLE ROW ── */
+.toggle-row{
+  display:flex;align-items:center;justify-content:flex-end;
+  padding:10px 16px 0;gap:10px;
+}
+.toggle-label{font-size:.82rem;font-weight:600}
+.toggle-label.open{color:var(--green)}
+.toggle-label.closed{color:var(--red)}
+
+/* iOS-style toggle */
+.ios-toggle{
+  width:52px;height:28px;background:#333;border-radius:14px;
+  position:relative;cursor:pointer;transition:background .3s;
+  flex-shrink:0;border:none;outline:none;
+}
+.ios-toggle.on{background:var(--green)}
+.ios-toggle-thumb{
+  position:absolute;top:3px;left:3px;
+  width:22px;height:22px;background:#fff;border-radius:50%;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.ios-toggle.on .ios-toggle-thumb{transform:translateX(24px)}
+.toggle-sub{font-size:.7rem;color:var(--muted)}
+
+/* ── STATS TITLE ── */
+.stats-title{
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;
+  text-transform:uppercase;letter-spacing:.5px;
+  padding:16px 16px 10px;color:var(--text);
+}
+
+/* ── STAT CARDS GRID ── */
+.stats-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  padding:0 14px;
+}
+.stat-card{
+  border-radius:16px;padding:16px;position:relative;overflow:hidden;
+  cursor:pointer;transition:transform .15s;
+}
+.stat-card:active{transform:scale(.97)}
+
+/* Card colors matching screenshot */
+.stat-card.pending{background:#FFFDE7;border:1.5px solid #F59E0B}
+.stat-card.reserved{background:#E3F2FD;border:1.5px solid #2196F3}
+.stat-card.preparing{background:#FFF3E0;border:1.5px solid #F97316}
+.stat-card.delivered{background:#E8F5E9;border:1.5px solid #22C55E}
+.stat-card.refused{background:#FFEBEE;border:1.5px solid #EF4444}
+.stat-card.revenue{background:#F3E5F5;border:1.5px solid #A855F7}
+
+.stat-card-label{
+  font-size:.68rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.5px;line-height:1.4;margin-bottom:10px;
+}
+.stat-card.pending .stat-card-label{color:#92400E}
+.stat-card.reserved .stat-card-label{color:#1565C0}
+.stat-card.preparing .stat-card-label{color:#9A3412}
+.stat-card.delivered .stat-card-label{color:#14532D}
+.stat-card.refused .stat-card-label{color:#991B1B}
+.stat-card.revenue .stat-card-label{color:#6B21A8}
+
+.stat-card-num{
+  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:900;
+  line-height:1;margin-bottom:12px;
+}
+.stat-card.pending .stat-card-num{color:#D97706}
+.stat-card.reserved .stat-card-num{color:#1976D2}
+.stat-card.preparing .stat-card-num{color:#EA580C}
+.stat-card.delivered .stat-card-num{color:#16A34A}
+.stat-card.refused .stat-card-num{color:#DC2626}
+.stat-card.revenue .stat-card-num{font-size:1.3rem;color:#9333EA}
+
+.stat-card-arrow{
+  position:absolute;bottom:12px;right:12px;
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+}
+.stat-card.pending .stat-card-arrow{background:#F59E0B;color:#fff}
+.stat-card.reserved .stat-card-arrow{background:#2196F3;color:#fff}
+.stat-card.preparing .stat-card-arrow{background:#F97316;color:#fff}
+.stat-card.delivered .stat-card-arrow{background:#22C55E;color:#fff}
+.stat-card.refused .stat-card-arrow{background:#EF4444;color:#fff}
+.stat-card.revenue .stat-card-arrow{background:#A855F7;color:#fff}
+
+/* ── PAGES ── */
+.page{display:none;padding-bottom:8px}
 .page.active{display:block}
 
-/* COMMANDES */
-.tabs{display:flex;gap:7px;padding:0 14px 12px;overflow-x:auto}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:7px 14px;border-radius:100px;border:1px solid var(--border);font-size:.78rem;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--muted);transition:all .2s;flex-shrink:0}
-.tab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
-.orders-wrap{padding:0 14px;display:flex;flex-direction:column;gap:11px}
-.oc{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow:hidden}
-.oc.new-a{border-color:var(--yellow);animation:pop .4s cubic-bezier(.34,1.56,.64,1),gb 2s ease 3}
+/* ── COMMANDES LIST ── */
+.page-orders{padding:0 14px}
+.filter-tabs{display:flex;gap:7px;padding:12px 0 8px;overflow-x:auto;scrollbar-width:none}
+.filter-tabs::-webkit-scrollbar{display:none}
+.ftab{
+  padding:7px 14px;border-radius:100px;border:1px solid var(--border);
+  font-size:.78rem;font-weight:600;white-space:nowrap;
+  cursor:pointer;color:var(--muted);transition:all .2s;flex-shrink:0;
+}
+.ftab.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
+
+.order-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:15px;overflow:hidden;margin-bottom:10px;
+}
+.order-card.new-order{border-color:var(--yellow);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+.order-card.urgent{border-left:4px solid var(--red)}
 @keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes gb{0%,100%{border-color:var(--yellow)}50%{border-color:rgba(245,200,0,.2)}}
-.oc.urg{border-left:4px solid var(--red)}
-.oh{padding:13px 15px 8px;display:flex;align-items:center;justify-content:space-between}
-.oid{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow)}
-.ob{padding:0 15px 14px}
-.oitems-title{font-weight:600;font-size:.92rem;margin-bottom:3px}
-.oitems{font-size:.8rem;color:var(--muted);margin-bottom:9px}
-.ochips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
-.chip{background:var(--dark);border-radius:6px;padding:4px 9px;font-size:.73rem}
+
+.oc-head{padding:12px 14px 8px;display:flex;align-items:center;justify-content:space-between}
+.oc-id{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow)}
+.oc-time{font-size:.7rem;color:var(--muted)}
+.oc-body{padding:0 14px 13px}
+.oc-items{font-size:.88rem;font-weight:600;margin-bottom:4px}
+.oc-meta{font-size:.78rem;color:var(--muted);margin-bottom:10px}
+.oc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{background:var(--card2);border-radius:7px;padding:4px 9px;font-size:.72rem}
 .chip.urg{background:rgba(239,68,68,.12);color:var(--red)}
-.oactions{display:flex;gap:7px;flex-wrap:wrap}
-.btn{padding:10px 15px;border-radius:10px;font-size:.82rem;font-weight:700;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;justify-content:center}
+.oc-actions{display:flex;gap:7px}
+.btn{
+  padding:10px 14px;border-radius:10px;font-size:.82rem;font-weight:700;
+  border:none;cursor:pointer;display:flex;align-items:center;
+  gap:5px;transition:all .15s;justify-content:center;
+  font-family:'DM Sans',sans-serif;
+}
 .btn:active{transform:scale(.97)}
-.btn-acc{background:var(--yellow);color:var(--black);flex:1}
+.btn-acc{background:var(--yellow);color:#111;flex:1}
 .btn-rdy{background:var(--green);color:#fff;flex:1}
 .btn-ref{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.sb{padding:4px 10px;border-radius:100px;font-size:.69rem;font-weight:700}
-.sb.nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
-.sb.acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
-.sb.prete{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
-.sb.en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
-.sb.livree{background:rgba(255,255,255,.05);color:var(--muted)}
+.status-pill{padding:3px 9px;border-radius:100px;font-size:.68rem;font-weight:700}
+.sp-nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
+.sp-acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
+.sp-prete{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.sp-en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
+.sp-livree{background:rgba(255,255,255,.07);color:var(--muted)}
+.empty{text-align:center;padding:46px 18px;color:var(--muted);font-size:.9rem}
 
-/* ── HISTORIQUE PAGE ── */
-.histo-wrap{padding:16px 14px 90px}
-
-.histo-header{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
-.histo-header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--yellow)}
-.histo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
-.hcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
-.hcard-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800}
-.hcard-val.y{color:var(--yellow)}.hcard-val.g{color:var(--green)}.hcard-val.o{color:var(--orange)}.hcard-val.b{color:var(--blue)}
-.hcard-lbl{font-size:.7rem;color:var(--muted);margin-top:3px}
-
-.period-tabs{display:flex;gap:7px;margin-bottom:14px}
+/* ── HISTORIQUE ── */
+.page-histo{padding:14px}
+.histo-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.hkpi{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;text-align:center}
+.hkpi-val{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800}
+.hkpi-val.y{color:var(--yellow)}.hkpi-val.g{color:var(--green)}.hkpi-val.b{color:var(--blue)}.hkpi-val.o{color:var(--orange)}
+.hkpi-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
+.period-row{display:flex;gap:7px;margin-bottom:14px}
 .ptab{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border);font-size:.78rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);transition:all .2s}
-.ptab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
+.ptab.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
+.hlist-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px}
+.hitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.hitem-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.hitem-id{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--yellow)}
+.hitem-name{font-size:.85rem;font-weight:600;margin-bottom:3px}
+.hitem-meta{display:flex;align-items:center;justify-content:space-between}
+.hitem-info{font-size:.72rem;color:var(--muted)}
+.hitem-amount{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--yellow)}
 
-.histo-section-title{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--dark);border-top:1px solid var(--border);
+  display:flex;padding:9px 0;
+  padding-bottom:calc(9px + var(--safe-bottom));
+  z-index:100;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  cursor:pointer;transition:all .2s;position:relative;
+}
+.nav-ico{font-size:1.2rem;line-height:1}
+.nav-lbl{font-size:.62rem;color:var(--muted);font-weight:500}
+.nav-item.active .nav-lbl{color:var(--yellow)}
+.nav-item.active .nav-ico{transform:scale(1.1)}
+.nav-badge{
+  position:absolute;top:0;right:calc(50% - 18px);
+  background:var(--red);color:#fff;font-size:.55rem;font-weight:800;
+  width:14px;height:14px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--dark);
+}
+/* Active indicator bar */
+.nav-item.active::before{
+  content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  width:20px;height:2.5px;background:var(--yellow);border-radius:0 0 3px 3px;
+}
 
-.histo-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 15px;margin-bottom:8px}
-.hi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.hi-id{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--yellow)}
-.hi-status{padding:3px 8px;border-radius:100px;font-size:.67rem;font-weight:700}
-.hi-status.livree{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
-.hi-status.en-route{background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)}
-.hi-items{font-size:.83rem;font-weight:500;margin-bottom:4px}
-.hi-meta{display:flex;align-items:center;justify-content:space-between}
-.hi-zone{font-size:.73rem;color:var(--muted)}
-.hi-amount{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--yellow)}
-.hi-date{font-size:.7rem;color:var(--muted);margin-top:3px}
-
-.empty-histo{text-align:center;padding:40px 20px;color:var(--muted)}
-
-/* ALERT */
-.alert-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.87);backdrop-filter:blur(6px);z-index:200;align-items:flex-end;justify-content:center}
+/* ── ALERT SHEET ── */
+.alert-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(6px);
+  z-index:200;align-items:flex-end;justify-content:center;
+}
 .alert-overlay.show{display:flex}
-.sheet{background:var(--card);border:2px solid var(--yellow);border-radius:22px 22px 0 0;padding:24px 22px 34px;width:100%;max-width:480px;animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
-@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sh{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
-.semoji{font-size:2.8rem;text-align:center;margin-bottom:7px}
-.stitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;color:var(--yellow);text-align:center;margin-bottom:3px}
-.ssub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:16px}
-.sdetail{background:var(--dark);border-radius:11px;padding:13px;margin-bottom:16px}
+.sheet{
+  background:var(--card);border:2px solid var(--yellow);
+  border-radius:24px 24px 0 0;padding:22px 20px 32px;
+  width:100%;max-width:480px;
+  animation:slideup .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.sheet-emoji{font-size:2.6rem;text-align:center;margin-bottom:6px}
+.sheet-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:var(--yellow);text-align:center;margin-bottom:3px}
+.sheet-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:14px}
+.sheet-detail{background:var(--dark);border-radius:11px;padding:13px;margin-bottom:14px}
 .srow{display:flex;justify-content:space-between;padding:5px 0;font-size:.82rem}
 .srow:not(:last-child){border-bottom:1px solid var(--border)}
 .srow .sl{color:var(--muted)}.srow .sv{font-weight:600;text-align:right;max-width:62%}
-.sbtns{display:flex;gap:9px}
-.sbtns .btn{flex:1;padding:13px}
+.sheet-btns{display:flex;gap:9px}
+.sheet-btns .btn{flex:1;padding:13px}
 
-/* TOAST */
+/* ── TOAST ── */
 .toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:7px;width:calc(100% - 28px);max-width:380px}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 15px;display:flex;align-items:center;gap:9px;animation:tdrop .3s ease;box-shadow:0 4px 18px rgba(0,0,0,.4)}
-.toast.s{border-left:3px solid var(--green)}.toast.w{border-left:3px solid var(--yellow)}.toast.e{border-left:3px solid var(--red)}
+.toast{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:11px;padding:11px 14px;
+  display:flex;align-items:center;gap:9px;
+  animation:tdrop .3s ease;box-shadow:0 4px 18px rgba(0,0,0,.5);
+}
+.toast.s{border-left:3px solid var(--green)}
+.toast.w{border-left:3px solid var(--yellow)}
+.toast.e{border-left:3px solid var(--red)}
 @keyframes tdrop{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
-.t-ico{font-size:1.1rem}.t-txt{font-size:.81rem;font-weight:600}
-.empty{text-align:center;padding:46px 18px;color:var(--muted)}
-
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid var(--border);display:flex;padding:9px 0 18px;z-index:100}
-.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:all .2s}
-.ni-ico{font-size:1.2rem}.ni-lbl{font-size:.65rem;color:var(--muted)}
-.ni.active .ni-lbl{color:var(--yellow)}
-.ni.active .ni-ico{transform:scale(1.1)}
+.toast-ico{font-size:1.1rem}.toast-txt{font-size:.81rem;font-weight:600}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div class="login-screen" id="cfgScreen">
-  <div class="login-logo">🍽 TROPRAPIDE</div>
-  <div class="login-sub">Espace Restaurant</div>
+<!-- ════ LOGIN ════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-logo">
+    <div class="login-logo-dot"></div>
+    TropRapide
+  </div>
+  <div class="login-sub">Espace Restaurant — Pro</div>
   <div class="login-card">
     <div class="login-title">🔥 Connexion Firebase</div>
-    <div class="field"><label>Database URL Firebase</label>
-      <input type="text" id="c_dburl" placeholder="https://troprapide-xxx.firebaseio.com"></div>
-    <div class="field"><label>API Key</label>
-      <input type="text" id="c_apikey" placeholder="AIzaSy..."></div>
-    <div class="field"><label>Project ID</label>
-      <input type="text" id="c_projectid" placeholder="troprapide-xxxxx"></div>
-    <div class="field"><label>Votre restaurant</label>
+    <div class="field">
+      <label>Database URL Firebase</label>
+      <input type="text" id="c_dburl" placeholder="https://troprapide-xxx.firebaseio.com">
+    </div>
+    <div class="field">
+      <label>API Key</label>
+      <input type="text" id="c_apikey" placeholder="AIzaSy...">
+    </div>
+    <div class="field">
+      <label>Project ID</label>
+      <input type="text" id="c_projectid" placeholder="troprapide-xxxxx">
+    </div>
+    <div class="field">
+      <label>Votre restaurant</label>
       <select id="c_resto">
-        <option>Mémé Choco</option><option>Le Palais du Poulet</option><option>Saveurs du Soleil</option>
-        <option>Pizza House Abidjan</option><option>Street Burger Corner</option>
-        <option>Délices Asiatiques</option><option>Juice & Smoothies Bar</option>
+        <option>Mémé Choco</option>
+        <option>Le Palais du Poulet</option>
+        <option>Saveurs du Soleil</option>
+        <option>Pizza House Abidjan</option>
+        <option>Street Burger Corner</option>
+        <option>Délices Asiatiques</option>
+        <option>Juice & Smoothies Bar</option>
       </select>
     </div>
     <button class="btn-login" onclick="connectFirebase()">🔥 SE CONNECTER →</button>
-    <div style="font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center">Mêmes infos Firebase que l'admin</div>
+    <div class="login-hint">Mêmes identifiants Firebase que l'admin</div>
   </div>
 </div>
 
-<!-- APP -->
+<!-- ════ APP ════ -->
 <div class="app" id="appScreen">
-  <div class="app-header">
-    <div><div class="hname" id="hRestoName">Restaurant</div><div class="hrole">🍽 TropRapide · Espace Restaurant</div></div>
-    <div class="otoggle" onclick="toggleOnline()">
-      <div class="tdot on" id="onlineDot"></div>
-      <span id="onlineLabel" style="font-size:.79rem;font-weight:600">Ouvert</span>
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-logo">
+      <div class="logo-icon">
+        <div class="logo-icon-fallback" id="logoFallback">🍽</div>
+        <div class="logo-pro-badge">PRO</div>
+      </div>
+      <div style="margin-left:2px">
+        <div style="font-family:'Syne',sans-serif;font-size:.85rem;font-weight:800;color:var(--yellow)" id="hRestoName">Restaurant</div>
+        <div style="font-size:.62rem;color:var(--muted)">TropRapide · Espace Pro</div>
+      </div>
+    </div>
+    <div class="top-bar-actions">
+      <div class="notif-btn" onclick="showPage('commandes')">
+        <span style="font-size:1.1rem">🔔</span>
+        <div class="notif-badge" id="notifBadge" style="display:none">0</div>
+      </div>
+      <div class="settings-btn" onclick="logout()">
+        <span style="font-size:1.1rem">⚙️</span>
+      </div>
     </div>
   </div>
 
-  <div class="stats-row">
-    <div class="sbox"><div class="snum y" id="s-new">0</div><div class="slbl">Nouvelles</div></div>
-    <div class="sbox"><div class="snum o" id="s-prep">0</div><div class="slbl">En prépa</div></div>
-    <div class="sbox"><div class="snum g" id="s-done">0</div><div class="slbl">Livrées</div></div>
-  </div>
+  <!-- SCROLLABLE -->
+  <div class="app-scroll" id="appScroll">
 
-  <!-- PAGE COMMANDES -->
-  <div class="page active" id="page-commandes">
-    <div class="tabs">
-      <div class="tab active" onclick="filter('all',this)">Toutes</div>
-      <div class="tab" onclick="filter('nouvelle',this)">🔴 Nouvelles</div>
-      <div class="tab" onclick="filter('acceptee',this)">En prépa</div>
-      <div class="tab" onclick="filter('prete',this)">Prêtes</div>
-      <div class="tab" onclick="filter('livree',this)">Livrées</div>
-    </div>
-    <div class="orders-wrap" id="orderWrap"></div>
-  </div>
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
 
-  <!-- PAGE HISTORIQUE -->
-  <div class="page" id="page-historique">
-    <div class="histo-wrap">
+      <!-- COVER -->
+      <div class="cover-section">
+        <div class="cover-img" id="coverImg">
+          <div class="cover-img-placeholder" id="coverEmoji">🍽</div>
+          <div class="cover-overlay"></div>
+        </div>
 
-      <!-- STATS CHIFFRE -->
-      <div class="histo-grid">
-        <div class="hcard">
-          <div class="hcard-val y" id="h-today">0</div>
-          <div class="hcard-lbl">Commandes aujourd'hui</div>
+        <!-- Rating -->
+        <div class="rating-badge">
+          <span class="rating-star">⭐</span>
+          <span class="rating-val" id="restoRating">4.9</span>
+          <div>
+            <div style="font-size:.72rem;color:#555;font-weight:600" id="restoAvisCount">(127)</div>
+            <div style="font-size:.65rem;color:#999">avis</div>
+          </div>
         </div>
-        <div class="hcard">
-          <div class="hcard-val g" id="h-today-livree">0</div>
-          <div class="hcard-lbl">Livrées aujourd'hui</div>
-        </div>
-        <div class="hcard">
-          <div class="hcard-val b" id="h-week">0</div>
-          <div class="hcard-lbl">Cette semaine</div>
-        </div>
-        <div class="hcard">
-          <div class="hcard-val o" id="h-total-rev">0</div>
-          <div class="hcard-lbl">FCFA total reçu</div>
+
+        <!-- Edit button -->
+        <button class="edit-btn" onclick="toast('Modification disponible prochainement','w')">
+          ✏️ MODIFIER LES INFORMATIONS DU RESTAURANT
+        </button>
+
+        <!-- Logo + name -->
+        <div class="cover-bottom">
+          <div class="resto-logo">
+            <div style="font-size:1.8rem" id="restoLogoFallback">🍽</div>
+          </div>
+          <div class="resto-name-wrap">
+            <div class="resto-name" id="restoNameCover">Restaurant</div>
+          </div>
         </div>
       </div>
 
-      <!-- FILTRE PÉRIODE -->
-      <div class="period-tabs">
-        <div class="ptab active" onclick="setRestoperiod('today',this)">Aujourd'hui</div>
-        <div class="ptab" onclick="setRestoperiod('week',this)">Cette semaine</div>
-        <div class="ptab" onclick="setRestoperiod('all',this)">Tout</div>
+      <!-- STATUS BANNER -->
+      <div class="status-banner closed" id="statusBanner">
+        <div class="status-dot"></div>
+        <div>
+          <div id="statusLabel">Fermé</div>
+          <div style="font-size:.72rem;opacity:.85" id="statusSub">• MENU DÉJEUNER POULET BRAISÉ</div>
+        </div>
       </div>
 
-      <div class="histo-section-title">📋 Historique des commandes</div>
-      <div id="histoList"></div>
-    </div>
-  </div>
+      <!-- CATEGORIES + TOGGLE ROW -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 14px 0">
+        <div class="categories-wrap" style="flex:1;padding:0;overflow-x:auto">
+          <div class="cat-pill active"><span class="cat-pill-ico">🍔</span> Fast Food</div>
+          <div class="cat-pill"><span class="cat-pill-ico">🥗</span> Salades</div>
+          <div class="cat-pill"><span class="cat-pill-ico">🍗</span> Grillés</div>
+          <div class="cat-pill"><span class="cat-pill-ico">🍹</span> Boissons</div>
+        </div>
+      </div>
 
-  <!-- BOTTOM NAV -->
+      <!-- OUVERT TOGGLE -->
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label closed" id="toggleLabel">FERMÉ</div>
+          <div class="toggle-sub" id="toggleSub">Fermer le restaurant</div>
+        </div>
+        <button class="ios-toggle" id="onlineToggle" onclick="toggleOnline()">
+          <div class="ios-toggle-thumb"></div>
+        </button>
+      </div>
+
+      <!-- STATS TITLE -->
+      <div class="stats-title">📊 Statistiques des commandes</div>
+
+      <!-- STAT CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card pending" onclick="showPage('commandes');filterOrders('nouvelle')">
+          <div class="stat-card-label">EN ATTENTES DE<br>CONFIRMATION</div>
+          <div class="stat-card-num" id="sc-pending">0</div>
+          <div class="stat-card-arrow">→</div>
+        </div>
+        <div class="stat-card reserved" onclick="showPage('commandes');filterOrders('acceptee')">
+          <div class="stat-card-label">COMMANDES<br>RÉSERVÉES</div>
+          <div class="stat-card-num" id="sc-reserved">0</div>
+          <div class="stat-card-arrow">📅</div>
+        </div>
+        <div class="stat-card preparing" onclick="showPage('commandes');filterOrders('prete')">
+          <div class="stat-card-label">COMMANDES<br>EN PRÉPARATION</div>
+          <div class="stat-card-num" id="sc-preparing">0</div>
+          <div class="stat-card-arrow">🍳</div>
+        </div>
+        <div class="stat-card delivered" onclick="showPage('historique')">
+          <div class="stat-card-label">COMMANDES<br>LIVRÉES</div>
+          <div class="stat-card-num" id="sc-delivered">0</div>
+          <div class="stat-card-arrow">✓</div>
+        </div>
+        <div class="stat-card refused" onclick="showPage('commandes');filterOrders('refuse')">
+          <div class="stat-card-label">COMMANDES<br>REFUSÉES</div>
+          <div class="stat-card-num" id="sc-refused">0</div>
+          <div class="stat-card-arrow">✕</div>
+        </div>
+        <div class="stat-card revenue" onclick="showPage('historique')">
+          <div class="stat-card-label">REVENU<br>AUJOURD'HUI</div>
+          <div class="stat-card-num" id="sc-revenue">0 F</div>
+          <div class="stat-card-arrow">💰</div>
+        </div>
+      </div>
+
+      <div style="height:16px"></div>
+    </div><!-- /page-home -->
+
+    <!-- COMMANDES PAGE -->
+    <div class="page" id="page-commandes">
+      <div class="page-orders">
+        <div style="padding:14px 0 0;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800">Commandes</div>
+        <div class="filter-tabs">
+          <div class="ftab active" onclick="filterOrders('all',this)">Toutes</div>
+          <div class="ftab" onclick="filterOrders('nouvelle',this)">🔴 Nouvelles</div>
+          <div class="ftab" onclick="filterOrders('acceptee',this)">En prépa</div>
+          <div class="ftab" onclick="filterOrders('prete',this)">Prêtes</div>
+          <div class="ftab" onclick="filterOrders('livree',this)">Livrées</div>
+        </div>
+        <div id="ordersWrap"></div>
+      </div>
+    </div>
+
+    <!-- MENUS PAGE -->
+    <div class="page" id="page-menus">
+      <div style="padding:20px;text-align:center;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:10px">🍽</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Vos Menus</div>
+        <div style="font-size:.82rem;margin-top:6px">Gérez vos menus et leurs disponibilités</div>
+      </div>
+    </div>
+
+    <!-- PLATS PAGE -->
+    <div class="page" id="page-plats">
+      <div style="padding:20px;text-align:center;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:10px">🥘</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Vos Plats</div>
+        <div style="font-size:.82rem;margin-top:6px">Modifiez prix, disponibilité et photos</div>
+      </div>
+    </div>
+
+    <!-- HISTORIQUE PAGE -->
+    <div class="page" id="page-historique">
+      <div class="page-histo">
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:12px">Historique</div>
+        <div class="histo-kpis">
+          <div class="hkpi"><div class="hkpi-val y" id="h-today">0</div><div class="hkpi-lbl">Aujourd'hui</div></div>
+          <div class="hkpi"><div class="hkpi-val g" id="h-livrees">0</div><div class="hkpi-lbl">Livrées auj.</div></div>
+          <div class="hkpi"><div class="hkpi-val b" id="h-week">0</div><div class="hkpi-lbl">Cette semaine</div></div>
+          <div class="hkpi"><div class="hkpi-val o" id="h-revenu">0</div><div class="hkpi-lbl">FCFA total</div></div>
+        </div>
+        <div class="period-row">
+          <div class="ptab active" onclick="setPeriod('today',this)">Aujourd'hui</div>
+          <div class="ptab" onclick="setPeriod('week',this)">Cette semaine</div>
+          <div class="ptab" onclick="setPeriod('all',this)">Tout</div>
+        </div>
+        <div class="hlist-title">📋 Historique des commandes</div>
+        <div id="histoList"></div>
+      </div>
+    </div>
+
+    <!-- RÉSERVATIONS PAGE -->
+    <div class="page" id="page-reservations">
+      <div style="padding:20px;text-align:center;color:var(--muted)">
+        <div style="font-size:2.5rem;margin-bottom:10px">📅</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Réservations</div>
+        <div style="font-size:.82rem;margin-top:6px">Gérez les réservations de table</div>
+      </div>
+    </div>
+
+  </div><!-- /app-scroll -->
+
+  <!-- BOTTOM NAV (5 onglets matching screenshot) -->
   <div class="bottom-nav">
-    <div class="ni active" id="nav-commandes" onclick="showPage('commandes')">
-      <div class="ni-ico">📋</div><div class="ni-lbl">Commandes</div>
+    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+      <div class="nav-ico">🏠</div>
+      <div class="nav-lbl">Accueil</div>
+      <div class="nav-badge" id="home-badge" style="display:none">0</div>
     </div>
-    <div class="ni" id="nav-historique" onclick="showPage('historique')">
-      <div class="ni-ico">📊</div><div class="ni-lbl">Historique</div>
+    <div class="nav-item" id="nav-commandes" onclick="showPage('commandes')">
+      <div class="nav-ico">🛒</div>
+      <div class="nav-lbl">Commandes</div>
+      <div class="nav-badge" id="orders-badge" style="display:none">0</div>
     </div>
-    <div class="ni" onclick="logout()">
-      <div class="ni-ico">🚪</div><div class="ni-lbl">Quitter</div>
+    <div class="nav-item" id="nav-menus" onclick="showPage('menus')">
+      <div class="nav-ico">🍽</div>
+      <div class="nav-lbl">Menus</div>
+    </div>
+    <div class="nav-item" id="nav-plats" onclick="showPage('plats')">
+      <div class="nav-ico">🥘</div>
+      <div class="nav-lbl">Plats</div>
+    </div>
+    <div class="nav-item" id="nav-reservations" onclick="showPage('reservations')">
+      <div class="nav-ico">📅</div>
+      <div class="nav-lbl">Réservations</div>
     </div>
   </div>
-</div>
 
-<!-- ALERT -->
+</div><!-- /app -->
+
+<!-- ALERT SHEET -->
 <div class="alert-overlay" id="alertOverlay">
   <div class="sheet">
-    <div class="sh"></div>
-    <div class="semoji">🔔</div>
-    <div class="stitle">Nouvelle commande !</div>
-    <div class="ssub" id="shSub"></div>
-    <div class="sdetail" id="shDetail"></div>
-    <div class="sbtns">
+    <div class="sheet-handle"></div>
+    <div class="sheet-emoji">🔔</div>
+    <div class="sheet-title">Nouvelle commande !</div>
+    <div class="sheet-sub" id="shSub"></div>
+    <div class="sheet-detail" id="shDetail"></div>
+    <div class="sheet-btns">
       <button class="btn btn-acc" onclick="acceptFromAlert()">✓ Accepter</button>
       <button class="btn btn-ref" onclick="closeAlert()">✕ Fermer</button>
     </div>
   </div>
 </div>
 
-<div class="toast-wrap" id="tw"></div>
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-const CFG_KEY='troprapide_resto_cfg';
-let db=null, myResto='', isOnline=true;
-let orders={}, alertPending=null, currentFilter='all', currentPeriod='today';
-let prevNewCount=0;
-const PAYLBL={cash:'💵 Cash',momo:'📱 MoMo',wave:'🌊 Wave',prepaye:'✅ Prépayé'};
+const CFG_KEY = 'troprapide_resto_cfg';
+let db = null, myResto = '', isOnline = false;
+let orders = {}, alertPending = null, currentFilter = 'all', currentPeriod = 'today';
+let prevNewCount = 0;
 
-window.connectFirebase=function(){
-  const dburl=document.getElementById('c_dburl').value.trim();
-  const apiKey=document.getElementById('c_apikey').value.trim();
-  const projectId=document.getElementById('c_projectid').value.trim();
-  const resto=document.getElementById('c_resto').value;
-  if(!dburl||!apiKey||!projectId){alert('Remplissez tous les champs !');return;}
-  const cfg={dburl,apiKey,projectId,resto};
-  localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
+const PAYLBL = { cash:'💵 Cash', momo:'📱 MoMo', wave:'🌊 Wave', prepaye:'✅ Prépayé' };
+
+// ── FIREBASE CONNECT ──
+window.connectFirebase = function() {
+  const dburl = document.getElementById('c_dburl').value.trim();
+  const apiKey = document.getElementById('c_apikey').value.trim();
+  const projectId = document.getElementById('c_projectid').value.trim();
+  const resto = document.getElementById('c_resto').value;
+  if (!dburl || !apiKey || !projectId) { alert('Remplissez tous les champs !'); return; }
+  const cfg = { dburl, apiKey, projectId, resto };
+  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
   initApp(cfg);
 };
 
-function initApp(cfg){
-  myResto=cfg.resto;
-  const app=initializeApp({apiKey:cfg.apiKey,databaseURL:cfg.dburl,projectId:cfg.projectId},'resto-'+Date.now());
-  db=getDatabase(app);
-  document.getElementById('cfgScreen').style.display='none';
-  document.getElementById('appScreen').style.display='flex';
-  document.getElementById('hRestoName').textContent=myResto;
-  startListening();
+function initApp(cfg) {
+  myResto = cfg.resto;
+  try {
+    const app = initializeApp({ apiKey: cfg.apiKey, databaseURL: cfg.dburl, projectId: cfg.projectId }, 'resto-' + Date.now());
+    db = getDatabase(app);
+  } catch(e) { console.error(e); }
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'flex';
+
+  // Update UI with resto name
+  document.getElementById('hRestoName').textContent = myResto;
+  document.getElementById('restoNameCover').textContent = myResto;
+  document.getElementById('restoLogoFallback').textContent = getRestoEmoji(myResto);
+  document.getElementById('coverEmoji').textContent = getRestoEmoji(myResto);
+  document.getElementById('logoFallback').textContent = getRestoEmoji(myResto);
+
+  if (db) startListening();
   requestNotifPermission();
   registerPush();
 }
 
-function startListening(){
-  onValue(ref(db,'orders'),snap=>{
-    orders=snap.val()||{};
-    const myOrders=Object.entries(orders).filter(([k,v])=>v.restaurant===myResto);
-    const newOnes=myOrders.filter(([k,v])=>v.status==='nouvelle');
-    if(newOnes.length>prevNewCount){
-      const latest=newOnes[newOnes.length-1];
-      showAlert({...latest[1],_key:latest[0]});
+function getRestoEmoji(name) {
+  const n = name.toLowerCase();
+  if (n.includes('pizza')) return '🍕';
+  if (n.includes('burger') || n.includes('fast')) return '🍔';
+  if (n.includes('poulet') || n.includes('brais')) return '🍗';
+  if (n.includes('juice') || n.includes('smoothie')) return '🥤';
+  if (n.includes('asiat') || n.includes('sushi')) return '🍱';
+  return '🍽';
+}
+
+function startListening() {
+  onValue(ref(db, 'orders'), snap => {
+    orders = snap.val() || {};
+    const myOrders = Object.entries(orders).filter(([k,v]) => v.restaurant === myResto);
+    const newOnes = myOrders.filter(([k,v]) => v.status === 'nouvelle');
+
+    if (newOnes.length > prevNewCount) {
+      const latest = newOnes[newOnes.length - 1];
+      showAlert({ ...latest[1], _key: latest[0] });
       playBeep();
       sendNotif(latest[1]);
     }
-    prevNewCount=newOnes.length;
+    prevNewCount = newOnes.length;
+
+    updateStats();
     renderOrders();
     updateHistoStats();
+
+    // Badge
+    const nc = newOnes.length;
+    const badge = document.getElementById('notifBadge');
+    const obadge = document.getElementById('orders-badge');
+    const hbadge = document.getElementById('home-badge');
+    badge.textContent = nc;
+    badge.style.display = nc > 0 ? 'flex' : 'none';
+    obadge.textContent = nc;
+    obadge.style.display = nc > 0 ? 'flex' : 'none';
+    hbadge.textContent = nc;
+    hbadge.style.display = nc > 0 ? 'flex' : 'none';
   });
 }
 
+// ── STATS ──
+function updateStats() {
+  const my = Object.entries(orders)
+    .filter(([k,v]) => v.restaurant === myResto)
+    .map(([k,v]) => ({...v, _key: k}));
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayOrders = my.filter(o => o.createdAt >= today.getTime());
+
+  document.getElementById('sc-pending').textContent    = my.filter(o => o.status === 'nouvelle').length;
+  document.getElementById('sc-reserved').textContent   = my.filter(o => o.status === 'acceptee').length;
+  document.getElementById('sc-preparing').textContent  = my.filter(o => o.status === 'prete').length;
+  document.getElementById('sc-delivered').textContent  = my.filter(o => o.status === 'livree').length;
+  document.getElementById('sc-refused').textContent    = my.filter(o => o.status === 'refuse').length;
+  const rev = todayOrders.filter(o => o.status === 'livree').reduce((s,o) => s + Number(o.amount||0), 0);
+  document.getElementById('sc-revenue').textContent    = rev.toLocaleString('fr-CI') + ' F';
+}
+
 // ── PAGES ──
-window.showPage=function(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.getElementById('nav-'+page).classList.add('active');
-  if(page==='historique'){updateHistoStats();renderHistoList();}
+window.showPage = function(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.getElementById('nav-' + page).classList.add('active');
+  document.getElementById('appScroll').scrollTop = 0;
+  if (page === 'commandes') renderOrders();
+  if (page === 'historique') { updateHistoStats(); renderHistoList(); }
 };
 
 // ── COMMANDES ──
-function renderOrders(){
-  const myList=Object.entries(orders)
-    .filter(([k,v])=>v.restaurant===myResto)
-    .map(([k,v])=>({...v,_key:k}))
-    .sort((a,b)=>b.createdAt-a.createdAt);
+window.filterOrders = function(s, el) {
+  currentFilter = s;
+  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (!document.getElementById('page-commandes').classList.contains('active')) showPage('commandes');
+  renderOrders();
+};
 
-  const filtered=currentFilter==='all'?myList:myList.filter(o=>o.status===currentFilter);
-  const wrap=document.getElementById('orderWrap');
+function renderOrders() {
+  const my = Object.entries(orders)
+    .filter(([k,v]) => v.restaurant === myResto)
+    .map(([k,v]) => ({...v, _key: k}))
+    .sort((a,b) => b.createdAt - a.createdAt);
 
-  document.getElementById('s-new').textContent=myList.filter(o=>o.status==='nouvelle').length;
-  document.getElementById('s-prep').textContent=myList.filter(o=>o.status==='acceptee'||o.status==='prete').length;
-  document.getElementById('s-done').textContent=myList.filter(o=>o.status==='livree').length;
+  const list = currentFilter === 'all' ? my : my.filter(o => o.status === currentFilter);
+  const wrap = document.getElementById('ordersWrap');
 
-  if(!filtered.length){
-    wrap.innerHTML=`<div class="empty">🍽<br><br>Aucune commande ici.</div>`;
+  if (!list.length) {
+    wrap.innerHTML = `<div class="empty">🍽<br><br>Aucune commande ici.</div>`;
     return;
   }
-  const SL={nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête','en-route':'🔵 En route',livree:'✅ Livrée'};
-  wrap.innerHTML=filtered.map(o=>{
-    const elapsed=Math.floor((Date.now()-o.createdAt)/60000);
-    return `<div class="oc ${o.isNew?'new-a':''} ${o.priority==='urgente'?'urg':''}">
-      <div class="oh">
-        <div><div class="oid">#${o._key.slice(-6).toUpperCase()}</div>
-        <div style="font-size:.7rem;color:var(--muted)">il y a ${elapsed} min</div></div>
-        <span class="sb ${o.status}">${SL[o.status]||o.status}</span>
+
+  const SL = {
+    nouvelle: '🔴 Nouvelle', acceptee: '🟠 En prépa',
+    prete: '🟢 Prête', 'en-route': '🔵 En route', livree: '✅ Livrée', refuse: '❌ Refusée'
+  };
+  const SC = { nouvelle:'nouvelle', acceptee:'acceptee', prete:'prete', 'en-route':'en-route', livree:'livree' };
+
+  wrap.innerHTML = list.map(o => {
+    const elapsed = Math.floor((Date.now() - o.createdAt) / 60000);
+    return `<div class="order-card ${o.isNew?'new-order':''} ${o.priority==='urgente'?'urgent':''}">
+      <div class="oc-head">
+        <div>
+          <div class="oc-id">#${o._key.slice(-6).toUpperCase()}</div>
+          <div class="oc-time">il y a ${elapsed < 1 ? 'quelques sec' : elapsed + ' min'}</div>
+        </div>
+        <span class="status-pill sp-${SC[o.status]||''}">${SL[o.status]||o.status}</span>
       </div>
-      <div class="ob">
-        <div class="oitems-title">Commande</div>
-        <div class="oitems">${o.items}</div>
-        <div class="ochips">
-          <span class="chip">👤 ${o.client}</span>
-          <span class="chip">📍 ${o.zone}</span>
-          <span class="chip">💰 ${Number(o.amount).toLocaleString()} FCFA</span>
+      <div class="oc-body">
+        <div class="oc-items">${o.items||'—'}</div>
+        <div class="oc-chips">
+          <span class="chip">👤 ${o.client||'?'}</span>
+          <span class="chip">📍 ${o.zone||'?'}</span>
+          <span class="chip">💰 ${Number(o.amount||0).toLocaleString('fr-CI')} FCFA</span>
           <span class="chip">${PAYLBL[o.paiement]||''}</span>
           ${o.priority==='urgente'?'<span class="chip urg">🔴 URGENT</span>':''}
           ${o.notes?`<span class="chip">📝 ${o.notes}</span>`:''}
         </div>
-        <div class="oactions">
-          ${o.status==='nouvelle'?`<button class="btn btn-acc" onclick="updateS('${o._key}','acceptee')">✓ Accepter & Préparer</button><button class="btn btn-ref" onclick="updateS('${o._key}','refuse')">✕</button>`:''}
-          ${o.status==='acceptee'?`<button class="btn btn-rdy" onclick="updateS('${o._key}','prete')">🍽 Commande Prête !</button>`:''}
-          ${o.status==='prete'?`<span style="color:var(--green);font-size:.8rem;font-weight:600">✅ En attente du livreur</span>`:''}
-          ${o.status==='livree'?`<span style="color:var(--muted);font-size:.8rem">Livraison confirmée ✅</span>`:''}
+        <div class="oc-actions">
+          ${o.status==='nouvelle'
+            ? `<button class="btn btn-acc" onclick="updateStatus('${o._key}','acceptee')">✓ Accepter & Préparer</button>
+               <button class="btn btn-ref" onclick="updateStatus('${o._key}','refuse')">✕</button>`
+            : ''}
+          ${o.status==='acceptee'
+            ? `<button class="btn btn-rdy" onclick="updateStatus('${o._key}','prete')">🍽 Commande Prête !</button>`
+            : ''}
+          ${o.status==='prete'
+            ? `<span style="color:var(--green);font-size:.8rem;font-weight:600">✅ En attente du livreur</span>`
+            : ''}
+          ${o.status==='livree'
+            ? `<span style="color:var(--muted);font-size:.8rem">Livraison confirmée ✅</span>`
+            : ''}
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-window.updateS=async function(key,status){
-  if(!db)return;
-  await update(ref(db,'orders/'+key),{status});
-  toast({acceptee:'✓ Commande acceptée',prete:'🍽 Prête !',refuse:'Commande refusée'}[status]||'Mis à jour',status==='refuse'?'e':'s');
-};
-
-window.filter=function(s,el){
-  currentFilter=s;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  renderOrders();
+window.updateStatus = async function(key, status) {
+  if (!db) return;
+  await update(ref(db, 'orders/' + key), { status });
+  const msgs = { acceptee:'✓ Commande acceptée', prete:'🍽 Prête !', refuse:'Commande refusée' };
+  toast(msgs[status]||'Mis à jour', status==='refuse'?'e':'s');
 };
 
 // ── HISTORIQUE ──
-function updateHistoStats(){
-  const myOrders=Object.entries(orders)
-    .filter(([k,v])=>v.restaurant===myResto)
-    .map(([k,v])=>({...v,_key:k}));
+function updateHistoStats() {
+  const my = Object.entries(orders)
+    .filter(([k,v]) => v.restaurant === myResto)
+    .map(([k,v]) => ({...v, _key: k}));
 
-  const today=new Date();today.setHours(0,0,0,0);
-  const week=new Date();week.setDate(week.getDate()-7);week.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const week  = new Date(); week.setDate(week.getDate()-7); week.setHours(0,0,0,0);
 
-  const todayOrders=myOrders.filter(o=>o.createdAt>=today.getTime());
-  const weekOrders=myOrders.filter(o=>o.createdAt>=week.getTime());
-  const livrées=myOrders.filter(o=>o.status==='livree');
-  const todayLivrees=todayOrders.filter(o=>o.status==='livree');
-  const totalRev=livrées.reduce((s,o)=>s+Number(o.amount||0),0);
+  const todayO  = my.filter(o => o.createdAt >= today.getTime());
+  const weekO   = my.filter(o => o.createdAt >= week.getTime());
+  const livrees = my.filter(o => o.status === 'livree');
+  const todayL  = todayO.filter(o => o.status === 'livree');
+  const totalRev = livrees.reduce((s,o) => s + Number(o.amount||0), 0);
 
-  document.getElementById('h-today').textContent=todayOrders.length;
-  document.getElementById('h-today-livree').textContent=todayLivrees.length;
-  document.getElementById('h-week').textContent=weekOrders.length;
-  document.getElementById('h-total-rev').textContent=totalRev.toLocaleString();
+  document.getElementById('h-today').textContent   = todayO.length;
+  document.getElementById('h-livrees').textContent = todayL.length;
+  document.getElementById('h-week').textContent    = weekO.length;
+  document.getElementById('h-revenu').textContent  = totalRev.toLocaleString('fr-CI');
 }
 
-window.setRestoperiod=function(p,el){
-  currentPeriod=p;
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+window.setPeriod = function(p, el) {
+  currentPeriod = p;
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   renderHistoList();
 };
 
-function renderHistoList(){
-  const myOrders=Object.entries(orders)
-    .filter(([k,v])=>v.restaurant===myResto)
-    .map(([k,v])=>({...v,_key:k}))
-    .sort((a,b)=>b.createdAt-a.createdAt);
+function renderHistoList() {
+  const my = Object.entries(orders)
+    .filter(([k,v]) => v.restaurant === myResto)
+    .map(([k,v]) => ({...v, _key: k}))
+    .sort((a,b) => b.createdAt - a.createdAt);
 
-  let list=myOrders;
-  const today=new Date();today.setHours(0,0,0,0);
-  const week=new Date();week.setDate(week.getDate()-7);week.setHours(0,0,0,0);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const week  = new Date(); week.setDate(week.getDate()-7); week.setHours(0,0,0,0);
 
-  if(currentPeriod==='today') list=myOrders.filter(o=>o.createdAt>=today.getTime());
-  else if(currentPeriod==='week') list=myOrders.filter(o=>o.createdAt>=week.getTime());
+  let list = my;
+  if (currentPeriod === 'today') list = my.filter(o => o.createdAt >= today.getTime());
+  if (currentPeriod === 'week')  list = my.filter(o => o.createdAt >= week.getTime());
 
-  const el=document.getElementById('histoList');
-  if(!list.length){
-    el.innerHTML=`<div class="empty-histo"><div style="font-size:2.5rem">📋</div><br>Aucune commande ${currentPeriod==='today'?'aujourd\'hui':currentPeriod==='week'?'cette semaine':'enregistrée'}.</div>`;
+  const el = document.getElementById('histoList');
+  if (!list.length) {
+    el.innerHTML = `<div class="empty">📋<br><br>Aucune commande sur cette période.</div>`;
     return;
   }
-
-  const SL={nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête','en-route':'🔵 En route',livree:'✅ Livrée'};
-  const SC={nouvelle:'nouvelle',acceptee:'acceptee',prete:'prete','en-route':'en-route',livree:'livree'};
-  el.innerHTML=list.map(o=>{
-    const d=new Date(o.createdAt);
-    const dateStr=d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'});
-    const timeStr=d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    return `<div class="histo-item">
-      <div class="hi-top">
-        <div class="hi-id">#${o._key.slice(-6).toUpperCase()}</div>
-        <span class="hi-status ${SC[o.status]||''}">${SL[o.status]||o.status}</span>
+  const SL = { nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête','en-route':'🔵 En route',livree:'✅ Livrée' };
+  el.innerHTML = list.map(o => {
+    const d = new Date(o.createdAt);
+    const ds = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+    const ts = d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    return `<div class="hitem">
+      <div class="hitem-top">
+        <div class="hitem-id">#${o._key.slice(-6).toUpperCase()}</div>
+        <span class="status-pill sp-${o.status||''}" style="font-size:.65rem">${SL[o.status]||o.status}</span>
       </div>
-      <div class="hi-items">${o.items}</div>
-      <div class="hi-meta">
-        <div>
-          <div class="hi-zone">👤 ${o.client} · 📍 ${o.zone}</div>
-          <div class="hi-date">📅 ${dateStr} à ${timeStr}</div>
-        </div>
-        <div class="hi-amount">${Number(o.amount).toLocaleString()} FCFA</div>
+      <div class="hitem-name">${o.items||'—'}</div>
+      <div class="hitem-meta">
+        <div><div class="hitem-info">👤 ${o.client||'?'} · 📍 ${o.zone||'?'}</div><div class="hitem-info" style="margin-top:2px">📅 ${ds} à ${ts}</div></div>
+        <div class="hitem-amount">${Number(o.amount||0).toLocaleString('fr-CI')} F</div>
       </div>
     </div>`;
   }).join('');
 }
 
+// ── TOGGLE ONLINE ──
+window.toggleOnline = function() {
+  isOnline = !isOnline;
+  const toggle  = document.getElementById('onlineToggle');
+  const label   = document.getElementById('toggleLabel');
+  const sub     = document.getElementById('toggleSub');
+  const banner  = document.getElementById('statusBanner');
+  const bLabel  = document.getElementById('statusLabel');
+
+  toggle.classList.toggle('on', isOnline);
+  if (isOnline) {
+    label.textContent = 'OUVERT';
+    label.className = 'toggle-label open';
+    sub.textContent = 'Fermer le restaurant';
+    banner.className = 'status-banner open';
+    banner.querySelector('.status-dot').style.background = 'var(--green)';
+    bLabel.textContent = 'Ouvert — Prêt à recevoir des commandes';
+    document.getElementById('statusSub').textContent = '';
+    toast('🟢 Restaurant ouvert !', 's');
+  } else {
+    label.textContent = 'FERMÉ';
+    label.className = 'toggle-label closed';
+    sub.textContent = 'Ouvrir le restaurant';
+    banner.className = 'status-banner closed';
+    bLabel.textContent = 'Fermé';
+    document.getElementById('statusSub').textContent = '• Cliquez sur le toggle pour ouvrir';
+    toast('🔴 Restaurant fermé', 'e');
+  }
+};
+
 // ── ALERT ──
-function showAlert(o){
-  alertPending=o;
-  document.getElementById('shSub').textContent=`${o.restaurant} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
-  document.getElementById('shDetail').innerHTML=`
-    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items}</span></div>
-    <div class="srow"><span class="sl">Client</span><span class="sv">${o.client}</span></div>
-    <div class="srow"><span class="sl">Zone</span><span class="sv">📍 ${o.zone}</span></div>
-    <div class="srow"><span class="sl">Montant</span><span class="sv">${Number(o.amount).toLocaleString()} FCFA</span></div>
-    <div class="srow"><span class="sl">Paiement</span><span class="sv">${PAYLBL[o.paiement]||''}</span></div>
+function showAlert(o) {
+  alertPending = o;
+  document.getElementById('shSub').textContent = `${o.restaurant} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  document.getElementById('shDetail').innerHTML = `
+    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items||'—'}</span></div>
+    <div class="srow"><span class="sl">Client</span><span class="sv">${o.client||'?'}</span></div>
+    <div class="srow"><span class="sl">Zone</span><span class="sv">📍 ${o.zone||'?'}</span></div>
+    <div class="srow"><span class="sl">Montant</span><span class="sv">${Number(o.amount||0).toLocaleString('fr-CI')} FCFA</span></div>
+    <div class="srow"><span class="sl">Paiement</span><span class="sv">${PAYLBL[o.paiement]||'—'}</span></div>
     ${o.notes?`<div class="srow"><span class="sl">Notes</span><span class="sv">${o.notes}</span></div>`:''}
     <div class="srow"><span class="sl">Priorité</span><span class="sv">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
   `;
   document.getElementById('alertOverlay').classList.add('show');
 }
-window.closeAlert=function(){document.getElementById('alertOverlay').classList.remove('show');};
-window.acceptFromAlert=function(){if(alertPending)updateS(alertPending._key,'acceptee');closeAlert();};
+window.closeAlert  = () => document.getElementById('alertOverlay').classList.remove('show');
+window.acceptFromAlert = () => { if (alertPending) updateStatus(alertPending._key,'acceptee'); closeAlert(); };
 
-window.toggleOnline=function(){
-  isOnline=!isOnline;
-  document.getElementById('onlineDot').className='tdot '+(isOnline?'on':'off');
-  document.getElementById('onlineLabel').textContent=isOnline?'Ouvert':'Fermé';
-  toast(isOnline?'🟢 En ligne':'🔴 Hors ligne',isOnline?'s':'e');
-};
-
-function playBeep(){
-  try{
-    const ctx=new(window.AudioContext||window.webkitAudioContext)();
-    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t])=>{
-      const o=ctx.createOscillator(),g=ctx.createGain();
-      o.connect(g);g.connect(ctx.destination);
-      o.frequency.value=f;o.type='sine';
+// ── SOUND ──
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t]) => {
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value=f; o.type='sine';
       g.gain.setValueAtTime(0,ctx.currentTime+t);
-      g.gain.linearRampToValueAtTime(.32,ctx.currentTime+t+.05);
+      g.gain.linearRampToValueAtTime(.3,ctx.currentTime+t+.05);
       g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
-      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.15);
     });
-  }catch(e){}
-}
-function requestNotifPermission(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
-function sendNotif(o){showLocalNotification('🔔 TropRapide - Nouvelle commande', `${o.items||''} · Zone: ${o.zone}`, window.location.href);}
-
-function toast(msg,type='s'){
-  const w=document.getElementById('tw'),el=document.createElement('div');
-  el.className=`toast ${type}`;
-  el.innerHTML=`<span class="t-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="t-txt">${msg}</span>`;
-  w.prepend(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
-  setTimeout(()=>el.remove(),3200);
+  } catch(e) {}
 }
 
 // ── PUSH NOTIFICATIONS ──
-const VAPID_PUBLIC_KEY = 'BJfInU0rBhiJFuXv5tfZK67vDT4HUcdhtaZ5hkJH7bWJsfedQ8lqJPYyI2niFal6Aiy6ZYDu0Ofsya9bzk_kM0Q'; // sera remplacé
+const VAPID_PUBLIC_KEY = 'BJfInU0rBhiJFuXv5tfZK67vDT4HUcdhtaZ5hkJH7bWJsfedQ8lqJPYyI2niFal6Aiy6ZYDu0Ofsya9bzk_kM0Q';
+
+function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+}
 
 async function registerPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.log('Push non supporté');
-    return;
-  }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
   try {
-    // Register service worker
     const reg = await navigator.serviceWorker.register('./sw.js');
-    console.log('SW enregistré:', reg.scope);
-
-    // Request permission
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      toast('Activez les notifications pour recevoir les alertes', 'w');
-      return;
-    }
-
-    // Subscribe to push
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') return;
     const sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
     });
-
-    // Save subscription to Firebase
     if (db) {
-      const key = myName ? myName.replace(/[^a-zA-Z0-9]/g,'_') : 'user_' + Date.now();
-      await db.ref('push_subscriptions/' + key).set({
-        subscription: JSON.stringify(sub),
-        name: myName || 'Utilisateur',
-        type: 'livreur',
-        updatedAt: Date.now()
+      const key = myResto.replace(/[^a-zA-Z0-9]/g,'_') + '_resto';
+      await update(ref(db, 'push_subscriptions/' + key), {
+        subscription: JSON.stringify(sub), name: myResto, type: 'restaurant', updatedAt: Date.now()
       });
-      toast('🔔 Notifications activées !', 's');
     }
-  } catch(err) {
-    console.error('Erreur push:', err);
+    toast('🔔 Notifications activées !', 's');
+  } catch(err) { console.error('Push error:', err); }
+}
+
+function sendNotif(o) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const n = new Notification('🔔 TropRapide · Nouvelle commande', {
+      body: `${o.items||''} · Zone: ${o.zone}`,
+      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg',
+      requireInteraction: true, tag: 'troprapide-' + Date.now()
+    });
+    n.onclick = () => { window.focus(); n.close(); };
+    setTimeout(() => n.close(), 8000);
   }
 }
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
+  const base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
+  const raw = window.atob(base64);
+  const out = new Uint8Array(raw.length);
+  for (let i=0; i<raw.length; ++i) out[i] = raw.charCodeAt(i);
+  return out;
 }
 
-// Notification locale quand page OUVERTE (son + notification)
-function showLocalNotification(title, body, url) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    const notif = new Notification(title, {
-      body,
-      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg',
-      vibrate: [200, 100, 200],
-      requireInteraction: true,
-      tag: 'troprapide-' + Date.now()
-    });
-    notif.onclick = () => { window.focus(); notif.close(); };
-    setTimeout(() => notif.close(), 8000);
-  }
-}
+// ── TOAST ──
+window.toast = function(msg, type='s') {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="toast-txt">${msg}</span>`;
+  wrap.prepend(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; }, 2800);
+  setTimeout(() => el.remove(), 3200);
+};
 
-window.logout=function(){localStorage.removeItem(CFG_KEY);location.reload();};
+window.logout = function() { localStorage.removeItem(CFG_KEY); location.reload(); };
 
-const saved=localStorage.getItem(CFG_KEY);
-if(saved){try{initApp(JSON.parse(saved));}catch(e){}}
+// ── AUTO-LOGIN ──
+const saved = localStorage.getItem(CFG_KEY);
+if (saved) { try { initApp(JSON.parse(saved)); } catch(e) {} }
 </script>
 </body>
 </html>
