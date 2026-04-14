@@ -219,6 +219,47 @@ function addLog(msg){
 }
 
 /* ============================================================
+   BEEP SONORE — notification nouvelle commande
+   ============================================================ */
+let _knownOrderIds = new Set();
+let _initialLoadDone = false;
+
+function playBeep(){
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35, 0.70].forEach(offset => {
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.5, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.25);
+    });
+    if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 300]);
+  } catch(e){ console.log('Audio non supporté', e); }
+}
+
+function checkNewOrders(myOrders){
+  const newOnes = myOrders.filter(([id]) => !_knownOrderIds.has(id));
+  if(_initialLoadDone && newOnes.length > 0){
+    playBeep();
+    document.body.style.background = '#1a1400';
+    setTimeout(()=> document.body.style.background = 'var(--bg)', 600);
+    const alertBanner = document.createElement('div');
+    alertBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--yellow);color:#000;font-weight:900;text-align:center;padding:14px;z-index:9999;font-size:1rem;border-radius:0 0 12px 12px;';
+    alertBanner.textContent = `🔔 ${newOnes.length} nouvelle(s) commande(s) !`;
+    document.body.appendChild(alertBanner);
+    setTimeout(()=> alertBanner.remove(), 4000);
+  }
+  newOnes.forEach(([id]) => _knownOrderIds.add(id));
+  _initialLoadDone = true;
+}
+
+/* ============================================================
    STATE
    ============================================================ */
 let myDriverId = null;
@@ -342,6 +383,9 @@ function renderApp(){
   const myOrders = Object.entries(db.orders||{})
     .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
     .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
+
+  // 🔔 Détecter nouvelles commandes → bip
+  checkNewOrders(myOrders);
 
   // Stats
   const delivered = Object.values(db.orders||{}).filter(o=>o.assignedTo===myDriverId && o.status==='livree').length;

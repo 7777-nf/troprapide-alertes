@@ -226,7 +226,9 @@ function getDistance(lat1,lng1,lat2,lng2){
 function findBestDriver(order, drivers){
   let best=null, bestScore=Infinity;
   Object.entries(drivers).forEach(([id,d])=>{
-    if(d.status !== 'available') return;
+    // ✅ CORRIGÉ : on accepte aussi les livreurs 'busy' (max 3 commandes actives)
+    if(d.status === 'offline') return;          // seuls les hors-ligne sont exclus
+    if((d.activeOrders||0) >= 3) return;        // max 3 commandes simultanées
     const dist = getDistance(order.lat, order.lng, d.lat, d.lng);
     const load = d.activeOrders || 0;
     const perf = d.speed || 1;
