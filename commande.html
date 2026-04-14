@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Commander · TropRapide</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -264,10 +264,29 @@ nav{
 .spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .hero{padding:40px 16px 28px;}
+  .hero h1{font-size:clamp(1.6rem,6vw,2.4rem);}
+  .form-container{padding:24px 16px 60px;}
+  .steps{padding:20px 16px;}
+  .btn-submit{padding:15px;font-size:.95rem;min-height:48px;}
+  .type-card{padding:12px 8px;}
+  .tc-ico{font-size:1.4rem;}
+  .pay-card{padding:10px;}
+  .nav-back{display:none;}
+}
 @media(max-width:480px){
-  .type-grid{grid-template-columns:repeat(3,1fr)}
-  .grid2{grid-template-columns:1fr}
-  .resto-grid{grid-template-columns:1fr}
+  .type-grid{grid-template-columns:repeat(3,1fr);}
+  .grid2{grid-template-columns:1fr;}
+  .resto-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:14px;}
+  .hstat-num{font-size:1.1rem;}
+  .steps{gap:0;}
+  .step-sep{width:20px;}
+  .section-title{font-size:.75rem;}
+  .pay-grid{grid-template-columns:repeat(2,1fr);}
+  .fg input,.fg select,.fg textarea{font-size:16px;}/* évite zoom iOS */
 }
 </style>
 </head>

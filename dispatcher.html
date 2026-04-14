@@ -41,7 +41,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 
 /* FILTER TABS */
 .tabs{display:flex;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border);background:#080808;overflow-x:auto;}
-.tab{padding:7px 16px;border-radius:20px;font-size:.8rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .2s;}
+.tab{padding:11px 16px;border-radius:20px;font-size:.8rem;font-weight:700;cursor:pointer;border:1.5px solid var(--border);color:var(--muted);white-space:nowrap;transition:all .2s;min-height:44px;display:flex;align-items:center;}
 .tab.active{background:var(--yellow);color:#000;border-color:var(--yellow);}
 
 /* ORDERS */
@@ -72,7 +72,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .info-val{font-weight:600;font-size:.88rem;}
 
 .order-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.act-btn{padding:8px 14px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:opacity .2s;}
+.act-btn{padding:12px 14px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;transition:opacity .2s;min-height:44px;}
 .act-btn:active{opacity:.7;}
 .btn-accept{background:var(--green);color:#fff;}
 .btn-ready{background:var(--yellow);color:#000;}
@@ -98,6 +98,28 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 @keyframes tup{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
 
 ::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:var(--border);}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .topbar{padding:10px 14px;flex-wrap:wrap;gap:8px;}
+  .brand{font-size:.95rem;}
+  .notif-btn,.btn-reset{padding:10px 12px;min-height:44px;font-size:.78rem;}
+  .stats{padding:12px 14px;gap:8px;}
+  .stat{padding:10px 8px;}
+  .stat-val{font-size:1.4rem;}
+  .tabs{padding:10px 14px;gap:6px;}
+  .orders-wrap{padding:12px 14px;}
+  .order-card{padding:14px;}
+  .order-body{grid-template-columns:1fr;}
+  .order-actions{flex-wrap:wrap;}
+  .act-btn{flex:1;min-width:calc(50% - 4px);}
+}
+@media(max-width:480px){
+  .topbar{padding:9px 12px;}
+  .stat-lbl{font-size:.62rem;}
+  .info-val{font-size:.82rem;}
+  .tab{padding:10px 12px;font-size:.75rem;}
+}
 </style>
 </head>
 <body>

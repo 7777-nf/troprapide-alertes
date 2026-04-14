@@ -140,12 +140,23 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   .charts-row{grid-template-columns:1fr}
   .row2{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(3,1fr)}
+  .heatmap-card{padding:14px;overflow-x:auto;}
+  .heatmap-grid{grid-template-columns:30px repeat(12,1fr);gap:2px;}
 }
 @media(max-width:500px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .kpi2-grid{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(2,1fr)}
-  .main{padding:14px}
+  .main{padding:12px;}
+  /* ✅ FIX heatmap overflow mobile */
+  .heatmap-card{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .heatmap-grid{min-width:340px;grid-template-columns:28px repeat(8,1fr);gap:2px;font-size:.65rem;}
+  .nav-btn{padding:8px 12px;min-height:44px;font-size:.78rem;}
+  .period-btn{padding:8px 12px;min-height:44px;}
+  .export-btn{padding:10px 14px;min-height:44px;}
+  .chart-wrap{height:180px;}
+  .kpi{padding:12px 10px;}
+  .kpi-val{font-size:1.4rem;}
 }
 </style>
 </head>
