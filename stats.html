@@ -386,18 +386,30 @@ function render() {
 
 // ── CHART COMMANDES PAR JOUR ──
 function renderChartCommandes(orders) {
-  const days = currentPeriod === 'today' ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
+  const isToday = currentPeriod === 'today';
+  const days = isToday ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
   const labels = [], data = [], dataLivrees = [];
-  for (let i = days-1; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0);
-    const next = new Date(d); next.setDate(next.getDate()+1);
-    const label = days === 1
-      ? d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
-      : d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
-    labels.push(days === 1 ? '' : label);
-    const dayOrders = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
-    data.push(dayOrders.length);
-    dataLivrees.push(dayOrders.filter(o=>o.status==='livree').length);
+
+  if (isToday) {
+    // ✅ FIX : afficher les heures de la journée (0h → 23h)
+    for (let h = 0; h < 24; h++) {
+      labels.push(h + 'h');
+      const hourOrders = orders.filter(o => {
+        const d = new Date(o.createdAt);
+        return d.getHours() === h && d.toDateString() === new Date().toDateString();
+      });
+      data.push(hourOrders.length);
+      dataLivrees.push(hourOrders.filter(o => o.status === 'livree').length);
+    }
+  } else {
+    for (let i = days-1; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0);
+      const next = new Date(d); next.setDate(next.getDate()+1);
+      labels.push(d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}));
+      const dayOrders = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
+      data.push(dayOrders.length);
+      dataLivrees.push(dayOrders.filter(o=>o.status==='livree').length);
+    }
   }
   document.getElementById('chartPeriodLabel').textContent = `(${days === 1 ? "aujourd'hui" : days+' jours'})`;
 
@@ -505,7 +517,8 @@ function renderChartHeures(orders) {
 // ── TOP RESTOS ──
 function renderTopRestos(orders) {
   const restos = {};
-  orders.forEach(o => {
+  // ✅ FIX : exclure 'TropRapide' (tag des commandes non-repas)
+  orders.filter(o => o.type === 'repas' || !o.type).forEach(o => {
     if (!restos[o.restaurant]) restos[o.restaurant] = {count:0,revenu:0};
     restos[o.restaurant].count++;
     if(o.status==='livree') restos[o.restaurant].revenu += Number(o.amount||0);

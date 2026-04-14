@@ -414,9 +414,9 @@ function renderCourses() {
         <div class="route">
           <div class="rdots"><div class="ds"></div><div class="dl"></div><div class="de"></div></div>
           <div class="ri">
-            <div class="rfrom">${o.restaurant}</div>
-            <div class="rfrom-s">📦 Récupérer la commande</div>
-            <div class="rto">Zone ${o.zone}</div>
+            <div class="rfrom">${o.type !== 'repas' && o.retrait ? o.retrait : o.restaurant}</div>
+            <div class="rfrom-s">${o.type === 'repas' ? '🍽 Récupérer au restaurant' : o.type === 'colis' ? '📦 Récupérer le colis' : o.type === 'courses' ? '🛒 Faire les courses' : o.type === 'medicaments' ? '💊 Récupérer médicaments' : '📦 Récupérer'}</div>
+            <div class="rto">Zone ${o.zone}${o.adresse ? ' — '+o.adresse : ''}</div>
             <div class="rto-s">👤 ${o.client} · ${o.phone}</div>
           </div>
         </div>
@@ -597,7 +597,11 @@ function playBeep(){
   }catch(e){}
 }
 function requestNotifPermission(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();}
-function sendNotif(o){showLocalNotification('🛵 TropRapide - Nouvelle course !', `${o.restaurant} → Zone: ${o.zone}`, window.location.href);}
+function sendNotif(o){
+  const from = o.type !== 'repas' && o.retrait ? o.retrait : o.restaurant;
+  const typeLabel = {repas:'🍽 Repas',colis:'📦 Colis',courses:'🛒 Courses',medicaments:'💊 Médic.',documents:'📄 Docs',entreprise:'🏢 Pro'}[o.type] || '🛵';
+  showLocalNotification('🛵 TropRapide - Nouvelle course !', `${typeLabel} | ${from} → Zone: ${o.zone} | ${Number(o.amount).toLocaleString()} FCFA`, window.location.href);
+}
 
 function toast(msg,type='s'){
   const w=document.getElementById('tw'),el=document.createElement('div');
