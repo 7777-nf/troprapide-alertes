@@ -3,811 +3,439 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TropRapide · Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>Admin Panel — Meme Choco Delivery</title>
 <style>
-:root{--yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#111;--card:#1A1A1A;--border:#2A2A2A;--text:#E8E8E8;--muted:#888;--green:#22C55E;--red:#EF4444;--blue:#3B82F6;--orange:#F97316;--purple:#A855F7}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
+:root{
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
+  --text:#fff;--muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;}
 
-/* CONFIG SCREEN */
-.config-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;background:var(--dark)}
-.config-logo{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--yellow);margin-bottom:4px}
-.config-sub{color:var(--muted);font-size:.88rem;margin-bottom:32px;text-align:center}
-.config-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:480px}
-.config-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;color:var(--yellow)}
-.config-desc{font-size:.82rem;color:var(--muted);margin-bottom:20px;line-height:1.6}
-.config-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px;padding:14px;background:var(--dark);border-radius:12px;border:1px solid var(--border)}
-.config-num{width:26px;height:26px;border-radius:50%;background:var(--yellow);color:var(--black);font-weight:800;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
-.config-step-text{font-size:.83rem;line-height:1.6;color:var(--text)}
-.config-step-text a{color:var(--yellow);text-decoration:none}
-.field{margin-bottom:12px}
-.field label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
-.field input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 14px;font-size:.85rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
-.field input:focus{border-color:var(--yellow)}
-.btn-connect{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:10px;font-size:.95rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:6px;transition:all .15s}
-.btn-connect:hover{background:var(--yellow-dark)}
-.firebase-hint{font-size:.75rem;color:var(--muted);margin-top:10px;text-align:center;line-height:1.6}
+/* TOP BAR */
+.topbar{display:flex;justify-content:space-between;align-items:center;
+  padding:12px 20px;background:#0a0a0a;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.topbar h1{font-size:1.1rem;font-weight:900;color:var(--yellow);}
+.topbar-right{display:flex;gap:10px;align-items:center;}
+.clock{color:var(--muted);font-size:.9rem;}
 
-/* MAIN APP */
-header{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--dark);position:sticky;top:0;z-index:100}
-.logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--yellow)}
-.logo-dot{width:9px;height:9px;background:var(--yellow);border-radius:50%;animation:pdot 1.5s infinite}
-@keyframes pdot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
-.live-badge{display:flex;align-items:center;gap:6px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green);padding:5px 12px;border-radius:100px;font-size:.75rem;font-weight:500}
-.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pdot 1s infinite}
-.hbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;transition:all .2s}
-.hbtn:hover{border-color:var(--yellow);color:var(--yellow)}
-.hbtn.active{background:rgba(245,200,0,.1);border-color:var(--yellow);color:var(--yellow)}
-.hactions{display:flex;gap:8px;align-items:center}
-
-.container{display:grid;grid-template-columns:1fr 300px;height:calc(100vh - 61px)}
-.main{padding:22px 26px;overflow-y:auto}
-.sidebar{background:var(--dark);border-left:1px solid var(--border);padding:20px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:20px}
-
-/* TYPE BTNS */
-.type-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
-.type-btn{padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.79rem;font-weight:600;border:1px solid var(--border);color:var(--muted);transition:all .2s;white-space:nowrap}
-.type-btn.active{border-color:var(--yellow);color:var(--black);background:var(--yellow)}
-.type-btn[data-t="colis"].active{background:var(--orange);border-color:var(--orange);color:#fff}
-.type-btn[data-t="courses"].active{background:var(--green);border-color:var(--green);color:#fff}
-.type-btn[data-t="medicaments"].active{background:var(--red);border-color:var(--red);color:#fff}
-.type-btn[data-t="documents"].active{background:var(--blue);border-color:var(--blue);color:#fff}
-.type-btn[data-t="entreprise"].active{background:var(--purple);border-color:var(--purple);color:#fff}
-
-/* FORM */
-.order-form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:20px}
-.form-title{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;color:var(--yellow);margin-bottom:12px}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.fg input,.fg select{background:var(--dark);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 11px;font-size:.83rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none}
-.fg input:focus,.fg select:focus{border-color:var(--yellow)}
-.fg select option{background:var(--dark)}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
-.full{grid-column:1/-1}
-.btn-create{width:100%;padding:11px;background:var(--yellow);color:var(--black);border:none;border-radius:9px;font-size:.88rem;font-weight:800;cursor:pointer;font-family:'Syne',sans-serif;transition:all .15s;margin-top:4px}
-.btn-create:hover{background:var(--yellow-dark)}
+/* BUTTONS */
+.btn{padding:8px 14px;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;transition:opacity .2s;}
+.btn:active{opacity:.7;}
+.btn-yellow{background:var(--yellow);color:#000;}
+.btn-red{background:var(--red);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
 
 /* STATS */
-.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.stat-card.y::before{background:var(--yellow)}.stat-card.g::before{background:var(--green)}.stat-card.b::before{background:var(--blue)}.stat-card.o::before{background:var(--orange)}
-.stat-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:5px}
-.stat-val{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800}
-.stat-val.y{color:var(--yellow)}.stat-val.g{color:var(--green)}.stat-val.b{color:var(--blue)}.stat-val.o{color:var(--orange)}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:16px 20px;}
+@media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr);}}
+.stat-card{background:var(--card2);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:1.8rem;font-weight:900;margin-bottom:4px;}
+.stat-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
 
-/* TYPE STATS */
-.type-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
-.ts{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:9px;text-align:center;cursor:pointer;transition:all .2s}
-.ts:hover{border-color:#444}.ts.af{border-color:var(--yellow)}
-.ts-ico{font-size:1.1rem;margin-bottom:1px}.ts-n{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
-.ts-l{font-size:.65rem;color:var(--muted)}
+/* LAYOUT */
+.main{display:grid;grid-template-columns:1fr 320px;gap:0;height:calc(100vh - 135px);}
+@media(max-width:900px){.main{grid-template-columns:1fr;}}
 
-/* ORDERS */
-.tabs{display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap}
-.tab{padding:6px 12px;border-radius:7px;cursor:pointer;font-size:.77rem;font-weight:500;border:1px solid var(--border);color:var(--muted);transition:all .2s}
-.tab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:700}
-.order-list{display:flex;flex-direction:column;gap:9px}
-.oc{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px 16px;transition:transform .15s}
-.oc:hover{transform:translateX(2px);border-color:#444}
-.oc.new-a{border-color:var(--yellow);animation:sin .4s ease-out,gb 2s ease 3}
-@keyframes sin{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes gb{0%,100%{border-color:var(--yellow)}50%{border-color:rgba(245,200,0,.2)}}
-.oc.urg{border-left:3px solid var(--red)}
-.ot{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px}
-.oid{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--yellow)}
-.otime{font-size:.7rem;color:var(--muted)}
-.orest{font-weight:600;font-size:.9rem;margin-bottom:2px}
-.oitems{font-size:.78rem;color:var(--muted);margin-bottom:7px}
-.ofooter{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:5px}
-.oprice{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem}
-.sb{padding:3px 9px;border-radius:100px;font-size:.68rem;font-weight:600}
-.sb.nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
-.sb.acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
-.sb.en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
-.sb.livree{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.2)}
-.tbadge{padding:2px 7px;border-radius:5px;font-size:.65rem;font-weight:700}
-.tbadge.repas{background:rgba(245,200,0,.12);color:var(--yellow)}
-.tbadge.colis{background:rgba(249,115,22,.12);color:var(--orange)}
-.tbadge.courses{background:rgba(34,197,94,.12);color:var(--green)}
-.tbadge.medicaments{background:rgba(239,68,68,.12);color:var(--red)}
-.tbadge.documents{background:rgba(59,130,246,.12);color:var(--blue)}
-.tbadge.entreprise{background:rgba(168,85,247,.12);color:var(--purple)}
-.abts{display:flex;gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);flex-wrap:wrap}
-.btn{padding:6px 13px;border-radius:7px;font-size:.76rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:flex;align-items:center;gap:4px}
-.bp{background:var(--yellow);color:var(--black)}.bp:hover{background:var(--yellow-dark)}
-.bwa{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.2)}
-.bd{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+/* PANELS */
+.panel{border-right:1px solid var(--border);display:flex;flex-direction:column;}
+.panel-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#080808;}
+.panel-header h2{font-size:.95rem;font-weight:800;}
+.panel-body{flex:1;overflow-y:auto;padding:12px;}
 
-/* SIDEBAR */
-.stitle{font-family:'Syne',sans-serif;font-size:.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.9px;margin-bottom:10px}
-.share-box{background:rgba(245,200,0,.06);border:1px solid rgba(245,200,0,.2);border-radius:11px;padding:13px}
-.share-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--yellow);margin-bottom:9px}
-.slink{display:flex;align-items:center;justify-content:space-between;background:var(--dark);border:1px solid var(--border);border-radius:7px;padding:7px 11px;margin-bottom:5px;font-size:.73rem}
-.slink .sn{color:var(--muted)}.slink .sc{color:var(--yellow);cursor:pointer;font-weight:600}
-.lcard{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:9px 11px;margin-bottom:7px}
-.lav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0;position:relative}
-.lav.d{background:rgba(34,197,94,.12);border:2px solid var(--green)}
-.lav.o{background:rgba(59,130,246,.12);border:2px solid var(--blue)}
-.lav.x{background:rgba(255,255,255,.04);border:2px solid #333;opacity:.5}
-.sr{position:absolute;bottom:0;right:0;width:9px;height:9px;border-radius:50%;border:2px solid var(--dark)}
-.sr.d{background:var(--green)}.sr.o{background:var(--blue)}.sr.x{background:#555}
-.lname{font-weight:600;font-size:.83rem}.lzone{font-size:.7rem;color:var(--muted)}
-.lstatus{margin-left:auto;font-size:.68rem}
-.lstatus.d{color:var(--green)}.lstatus.o{color:var(--blue)}
-.rcard{display:flex;align-items:center;gap:9px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:8px 11px;margin-bottom:6px}
-.ri{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.ri.on{background:var(--green);animation:pdot 2s infinite}.ri.off{background:#444}
-.rpend{background:var(--yellow);color:var(--black);font-size:.66rem;font-weight:800;width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+/* RIGHT SIDE: Drivers + Log */
+.right-col{display:flex;flex-direction:column;}
+.right-panel{flex:1;border-bottom:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.right-panel .panel-body{flex:1;overflow-y:auto;padding:10px;}
 
-/* MODAL */
-.overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.82);backdrop-filter:blur(4px);align-items:center;justify-content:center}
-.overlay.on{display:flex}
-.modal{background:var(--card);border:2px solid var(--yellow);border-radius:18px;padding:26px;max-width:400px;width:90%;animation:mpop .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes mpop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
-.memoji{font-size:2.6rem;text-align:center;margin-bottom:8px}
-.mtitle{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;text-align:center;color:var(--yellow);margin-bottom:3px}
-.msub{text-align:center;color:var(--muted);font-size:.82rem;margin-bottom:16px}
-.mdetails{background:var(--dark);border-radius:10px;padding:12px;margin-bottom:16px}
-.mrow{display:flex;justify-content:space-between;padding:5px 0;font-size:.82rem}
-.mrow:not(:last-child){border-bottom:1px solid var(--border)}
-.mrow .ml{color:var(--muted)}.mrow .mv{font-weight:600;text-align:right;max-width:60%}
-.mbtns{display:flex;gap:9px}
-.mbtns .btn{flex:1;justify-content:center;padding:10px;font-size:.83rem}
+/* ORDER ROW */
+.order-row{display:grid;grid-template-columns:80px 1fr 90px 100px 80px;gap:8px;
+  align-items:center;padding:10px 12px;background:var(--card2);border-radius:10px;
+  margin-bottom:8px;border:1px solid var(--border);}
+.order-id{font-weight:900;color:var(--yellow);font-size:.85rem;}
+.order-info{min-width:0;}
+.order-name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.order-sub{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.order-zone{font-size:.8rem;color:var(--muted);}
+.badge{display:inline-block;padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;white-space:nowrap;}
+.badge-nouvelle{background:#1a0a00;color:var(--orange);}
+.badge-acceptee{background:#0a1a00;color:var(--green);}
+.badge-prete{background:#1a1500;color:var(--yellow);}
+.badge-en-route{background:#001a1a;color:var(--blue);}
+.badge-livree{background:#0a1a0a;color:var(--green);}
+.dispatch-btn{background:var(--yellow);color:#000;border:none;padding:5px 10px;
+  border-radius:6px;font-weight:700;cursor:pointer;font-size:.75rem;white-space:nowrap;}
+.dispatch-btn:disabled{opacity:.3;cursor:default;}
 
-/* TOAST */
-.tc{position:fixed;top:76px;right:18px;z-index:999;display:flex;flex-direction:column;gap:7px}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:11px 15px;max-width:280px;animation:tin .3s ease-out;display:flex;gap:9px}
-.toast.s{border-left:3px solid var(--green)}.toast.w{border-left:3px solid var(--yellow)}.toast.e{border-left:3px solid var(--red)}.toast.i{border-left:3px solid var(--blue)}
-@keyframes tin{from{transform:translateX(36px);opacity:0}to{transform:translateX(0);opacity:1}}
-.tt{font-weight:700;font-size:.81rem;margin-bottom:1px}.tb{font-size:.73rem;color:var(--muted)}
+/* DRIVER ROW */
+.driver-row{display:flex;gap:10px;align-items:center;padding:10px;
+  background:var(--card2);border-radius:10px;margin-bottom:8px;border:1px solid var(--border);}
+.driver-avatar{font-size:1.6rem;width:38px;text-align:center;}
+.driver-info{flex:1;min-width:0;}
+.driver-name{font-weight:700;}
+.driver-meta{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.driver-badge{padding:3px 8px;border-radius:12px;font-size:.72rem;font-weight:700;}
+.d-available{background:#022;color:var(--green);}
+.d-busy{background:#220;color:var(--orange);}
 
-/* CONNECTION STATUS */
-.conn-badge{display:flex;align-items:center;gap:5px;font-size:.73rem;padding:4px 10px;border-radius:100px;border:1px solid}
-.conn-badge.connected{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:var(--green)}
-.conn-badge.disconnected{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--red)}
-.conn-dot{width:6px;height:6px;border-radius:50%;animation:pdot 1s infinite}
-.conn-dot.connected{background:var(--green)}.conn-dot.disconnected{background:var(--red)}
+/* LOG */
+.log-item{padding:6px 10px;font-size:.8rem;border-bottom:1px solid var(--border);color:var(--muted);}
+.log-item .log-time{color:var(--yellow);margin-right:8px;font-size:.72rem;}
 
-.empty{text-align:center;padding:32px 16px;color:var(--muted)}
-/* MAP */
-.map-page{display:none;padding:20px;height:calc(100vh - 61px);overflow-y:auto}
-.map-page.active{display:block}
-#mapContainer{width:100%;height:500px;border-radius:16px;border:1px solid var(--border);overflow:hidden;background:var(--card);position:relative}
-.map-livreur-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:16px}
-.mlcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px}
-.mlcard.online{border-color:var(--green)}
-.mlcard.offline{opacity:.5}
-.ml-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-.ml-dot.on{background:var(--green);animation:pdot 1.5s infinite}
-.ml-dot.off{background:#444}
-.ml-info{flex:1}
-.ml-name{font-weight:700;font-size:.85rem}
-.ml-pos{font-size:.72rem;color:var(--muted)}
-.ml-time{font-size:.68rem;color:var(--muted)}
-.map-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--muted);gap:10px}
-.map-placeholder-ico{font-size:3rem}
-.map-placeholder-txt{font-size:.85rem;text-align:center;line-height:1.6}
+/* DISPATCH ALERT */
+.dispatch-alert{background:#1a1200;border:1px solid var(--yellow);border-radius:10px;padding:12px;margin-bottom:10px;font-size:.85rem;}
 
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-@media(max-width:860px){.container{grid-template-columns:1fr}.sidebar{display:none}.stats-bar{grid-template-columns:repeat(2,1fr)}.type-stats{grid-template-columns:repeat(3,1fr)}}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
 </style>
 </head>
 <body>
 
-<!-- ══ CONFIGURATION FIREBASE ══ -->
-<div class="config-screen" id="configScreen">
-  <div class="config-logo">🛵 TROPRAPIDE</div>
-  <div class="config-sub">Configuration Firebase — à faire une seule fois</div>
-  <div class="config-card">
-    <div class="config-title">🔥 Connecter Firebase</div>
-    <div class="config-desc">Firebase permet la synchronisation en temps réel entre votre admin, les restaurants et les livreurs. C'est gratuit.</div>
-
-    <div class="config-step">
-      <div class="config-num">1</div>
-      <div class="config-step-text">Allez sur <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> → Créez un projet → Nommez-le <strong>troprapide</strong></div>
-    </div>
-    <div class="config-step">
-      <div class="config-num">2</div>
-      <div class="config-step-text">Dans votre projet → <strong>Realtime Database</strong> → <strong>Créer une base de données</strong> → Mode test → Copier l'URL</div>
-    </div>
-    <div class="config-step">
-      <div class="config-num">3</div>
-      <div class="config-step-text">Dans <strong>Paramètres du projet</strong> → <strong>Vos applications</strong> → Icône Web → Enregistrer → Copier les infos ci-dessous</div>
-    </div>
-
-    <div class="field"><label>Database URL (ex: https://troprapide-xxx.firebaseio.com)</label>
-      <input type="text" id="cfg_dburl" placeholder="https://troprapide-xxxxx-default-rtdb.firebaseio.com"></div>
-    <div class="field"><label>API Key</label>
-      <input type="text" id="cfg_apikey" placeholder="AIzaSy..."></div>
-    <div class="field"><label>Project ID</label>
-      <input type="text" id="cfg_projectid" placeholder="troprapide-xxxxx"></div>
-
-    <button class="btn-connect" onclick="connectFirebase()">🔥 CONNECTER FIREBASE</button>
-    <div class="firebase-hint">Ces informations sont sauvegardées localement sur votre navigateur.<br>Vous n'aurez à les saisir qu'une seule fois.</div>
+<!-- TOP BAR -->
+<div class="topbar">
+  <h1>🚀 ADMIN — Meme Choco Delivery</h1>
+  <div class="topbar-right">
+    <span class="clock" id="clock"></span>
+    <button class="btn btn-ghost" onclick="seedDemo()">🌱 Seed Démo</button>
+    <button class="btn btn-yellow" onclick="forceDispatchAll()">⚡ Dispatch Tout</button>
+    <button class="btn btn-red" onclick="resetDB()">🗑️ Reset</button>
   </div>
 </div>
 
-<!-- ══ MAIN APP ══ -->
-<div id="mainApp" style="display:none">
-<header>
-  <div class="logo"><div class="logo-dot"></div>TROPRAPIDE</div>
-  <div class="live-badge"><div class="live-dot"></div>ADMIN LIVE</div>
-  <div class="hactions">
-    <div class="conn-badge connected" id="connBadge"><div class="conn-dot connected" id="connDot"></div><span id="connText">Firebase</span></div>
-    <button class="hbtn active" id="soundBtn" onclick="toggleSound()">🔔 Son</button>
-    <button class="hbtn" onclick="clearAll()" style="color:var(--red)">🗑 Vider</button>
-    <button class="hbtn" onclick="showMap()" id="mapBtn">🗺 Carte GPS</button>
-    <button class="hbtn" onclick="resetConfig()">⚙️</button>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val" id="s-total" style="color:var(--yellow)">0</div>
+    <div class="stat-label">Commandes total</div>
   </div>
-</header>
+  <div class="stat-card">
+    <div class="stat-val" id="s-pending" style="color:var(--orange)">0</div>
+    <div class="stat-label">En attente</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="s-enroute" style="color:var(--blue)">0</div>
+    <div class="stat-label">En route</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="s-done" style="color:var(--green)">0</div>
+    <div class="stat-label">Livrées</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="s-drivers" style="color:var(--green)">0</div>
+    <div class="stat-label">Livreurs dispo</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="s-revenue" style="color:var(--yellow)">0</div>
+    <div class="stat-label">Revenus (FCFA)</div>
+  </div>
+</div>
 
-<div class="container">
+<!-- MAIN -->
 <div class="main">
 
-  <!-- FORM -->
-  <div class="order-form">
-    <div class="form-title">⚡ Nouvelle commande</div>
-    <div class="type-row">
-      <div class="type-btn active" onclick="setType('repas',this)" data-t="repas">🍽 Repas</div>
-      <div class="type-btn" onclick="setType('colis',this)" data-t="colis">📦 Colis</div>
-      <div class="type-btn" onclick="setType('courses',this)" data-t="courses">🛒 Courses</div>
-      <div class="type-btn" onclick="setType('medicaments',this)" data-t="medicaments">💊 Médic.</div>
-      <div class="type-btn" onclick="setType('documents',this)" data-t="documents">📄 Docs</div>
-      <div class="type-btn" onclick="setType('entreprise',this)" data-t="entreprise">🏢 Entrep.</div>
+  <!-- LEFT: ORDERS -->
+  <div class="panel">
+    <div class="panel-header">
+      <h2>📦 Commandes en temps réel</h2>
+      <span id="order-count" style="color:var(--muted);font-size:.8rem;"></span>
     </div>
-    <div class="grid2">
-      <div class="fg"><label>Client</label><input type="text" id="f_client" placeholder="Nom du client"></div>
-      <div class="fg"><label>Téléphone</label><input type="text" id="f_phone" placeholder="+225 07 ..."></div>
-      <div class="fg" id="fr_resto"><label>Restaurant</label>
-        <select id="f_resto">
-          <option>Mémé Choco</option><option>Le Palais du Poulet</option><option>Saveurs du Soleil</option>
-          <option>Pizza House Abidjan</option><option>Street Burger Corner</option>
-          <option>Délices Asiatiques</option><option>Juice & Smoothies Bar</option>
-        </select>
+    <div class="panel-body" id="orders-list">
+      <p style="color:var(--muted);text-align:center;margin-top:40px;">Aucune commande — Clique sur "Seed Démo" pour tester</p>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="right-col">
+
+    <!-- DRIVERS -->
+    <div class="right-panel">
+      <div class="panel-header">
+        <h2>🏍️ Livreurs</h2>
+        <span id="driver-count" style="color:var(--muted);font-size:.8rem;"></span>
       </div>
-      <div class="fg" id="fr_retrait" style="display:none"><label>Adresse retrait</label><input type="text" id="f_retrait" placeholder="Quartier de départ"></div>
-      <div class="fg"><label>Zone livraison</label>
-        <select id="f_zone"><option>Cocody</option><option>Plateau</option><option>Yopougon</option><option>Marcory</option><option>Treichville</option><option>Adjamé</option><option>Abobo</option><option>Koumassi</option></select>
+      <div class="panel-body" id="drivers-list"></div>
+    </div>
+
+    <!-- DISPATCH LOG -->
+    <div class="right-panel" style="max-height:250px;">
+      <div class="panel-header">
+        <h2>📋 Dispatch Log</h2>
+        <button class="btn btn-ghost" style="padding:4px 8px;font-size:.75rem;" onclick="clearLog()">Effacer</button>
       </div>
-      <div class="fg full"><label id="items_lbl">Articles commandés</label><input type="text" id="f_items" placeholder="Détail commande"></div>
-      <div class="fg" id="fr_notes" style="display:none"><label>Notes spéciales</label><input type="text" id="f_notes" placeholder="Fragile, urgent..."></div>
-      <div class="fg"><label>Montant (FCFA)</label><input type="number" id="f_amount" placeholder="0"></div>
-      <div class="fg"><label>Paiement</label>
-        <select id="f_paiement"><option value="cash">💵 Cash livraison</option><option value="momo">📱 Mobile Money</option><option value="wave">🌊 Wave</option><option value="prepaye">✅ Prépayé</option></select>
-      </div>
-      <div class="fg"><label>Priorité</label>
-        <select id="f_priority"><option value="normale">Normale</option><option value="urgente">🔴 Urgente</option></select>
+      <div class="panel-body" id="log-list" style="padding:0;">
+        <p style="color:var(--muted);text-align:center;padding:20px;font-size:.8rem;">Log vide</p>
       </div>
     </div>
-    <button class="btn-create" id="createBtn" onclick="createOrder()">⚡ DÉCLENCHER L'ALERTE</button>
-  </div>
 
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat-card y"><div class="stat-lbl">En attente</div><div class="stat-val y" id="sw">0</div></div>
-    <div class="stat-card o"><div class="stat-lbl">En route</div><div class="stat-val o" id="sr2">0</div></div>
-    <div class="stat-card g"><div class="stat-lbl">Livrées</div><div class="stat-val g" id="sd">0</div></div>
-    <div class="stat-card b"><div class="stat-lbl">Revenu FCFA</div><div class="stat-val b" id="srev">0</div></div>
-  </div>
-
-  <div class="type-stats">
-    <div class="ts af" onclick="filterType('all',this)"><div class="ts-ico">📋</div><div class="ts-n" id="ts-all">0</div><div class="ts-l">Toutes</div></div>
-    <div class="ts" onclick="filterType('repas',this)"><div class="ts-ico">🍽</div><div class="ts-n" id="ts-repas">0</div><div class="ts-l">Repas</div></div>
-    <div class="ts" onclick="filterType('colis',this)"><div class="ts-ico">📦</div><div class="ts-n" id="ts-colis">0</div><div class="ts-l">Colis</div></div>
-    <div class="ts" onclick="filterType('courses',this)"><div class="ts-ico">🛒</div><div class="ts-n" id="ts-courses">0</div><div class="ts-l">Courses</div></div>
-    <div class="ts" onclick="filterType('medicaments',this)"><div class="ts-ico">💊</div><div class="ts-n" id="ts-medicaments">0</div><div class="ts-l">Médic.</div></div>
-    <div class="ts" onclick="filterType('documents',this)"><div class="ts-ico">📄</div><div class="ts-n" id="ts-documents">0</div><div class="ts-l">Docs</div></div>
-    <div class="ts" onclick="filterType('entreprise',this)"><div class="ts-ico">🏢</div><div class="ts-n" id="ts-entreprise">0</div><div class="ts-l">Entrep.</div></div>
-  </div>
-
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-    <div style="font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700">Commandes <span style="background:var(--yellow);color:var(--black);font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:100px" id="activeCount">0</span></div>
-  </div>
-  <div class="tabs">
-    <div class="tab active" onclick="filterStatus('all',this)">Toutes</div>
-    <div class="tab" onclick="filterStatus('nouvelle',this)">Nouvelles</div>
-    <div class="tab" onclick="filterStatus('en-route',this)">En route</div>
-    <div class="tab" onclick="filterStatus('livree',this)">Livrées</div>
-  </div>
-  <div class="order-list" id="orderList"><div class="empty">📋 Aucune commande.</div></div>
-</div>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-  <div>
-    <div class="share-box">
-      <div class="share-title">🔗 Liens équipe</div>
-      <div class="slink"><span class="sn">🍽 Restaurant</span><span class="sc" onclick="copyLink('restaurant')">Copier</span></div>
-      <div class="slink"><span class="sn">🛵 Livreur</span><span class="sc" onclick="copyLink('livreur')">Copier</span></div>
-      <div style="font-size:.68rem;color:var(--muted);margin-top:6px">Envoyez par WhatsApp</div>
-    </div>
-  </div>
-  <div>
-    <div class="stitle">🛵 Livreurs</div>
-    <div class="lcard"><div class="lav d">🧑🏾<span class="sr d"></span></div><div><div class="lname">Mamadou T.</div><div class="lzone">Cocody · Plateau</div></div><div class="lstatus d">Disponible</div></div>
-    <div class="lcard"><div class="lav d">👨🏿<span class="sr d"></span></div><div><div class="lname">Kouassi B.</div><div class="lzone">Yopougon</div></div><div class="lstatus d">Disponible</div></div>
-    <div class="lcard"><div class="lav o">👨🏾<span class="sr o"></span></div><div><div class="lname">Ibrahim D.</div><div class="lzone">Marcory</div></div><div class="lstatus o">En livraison</div></div>
-    <div class="lcard"><div class="lav x">👱🏾<span class="sr x"></span></div><div><div class="lname">Narcisse K.</div><div class="lzone">Port-Bouët</div></div><div class="lstatus" style="color:var(--muted);font-size:.68rem">Hors ligne</div></div>
-  </div>
-  <div>
-    <div class="stitle">🍽 Restaurants</div>
-    <div class="rcard"><div class="ri on"></div><div style="flex:1;font-size:.8rem">Le Palais du Poulet</div><div class="rpend" id="rp-0">0</div></div>
-    <div class="rcard"><div class="ri on"></div><div style="flex:1;font-size:.8rem">Saveurs du Soleil</div><div class="rpend" id="rp-1">0</div></div>
-    <div class="rcard"><div class="ri on"></div><div style="flex:1;font-size:.8rem">Pizza House Abidjan</div><div class="rpend" id="rp-2">0</div></div>
-    <div class="rcard"><div class="ri on"></div><div style="flex:1;font-size:.8rem">Street Burger Corner</div><div class="rpend" id="rp-3">0</div></div>
-    <div class="rcard"><div class="ri off"></div><div style="flex:1;font-size:.8rem">Délices Asiatiques</div><div class="rpend" id="rp-4">0</div></div>
-    <div class="rcard"><div class="ri on"></div><div style="flex:1;font-size:.8rem">Juice & Smoothies Bar</div><div class="rpend" id="rp-5">0</div></div>
-  </div>
-  <div>
-    <div class="stitle">📜 Journal</div>
-    <div id="logList" style="font-size:.74rem;color:var(--muted);line-height:1.9"><div style="color:#444;font-style:italic;text-align:center;padding:6px 0">Aucun événement</div></div>
   </div>
 </div>
 
-<!-- MAP PAGE -->
-<div class="map-page" id="mapPage">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-    <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700">🗺 Positions des livreurs</div>
-    <button class="hbtn active" onclick="hideMap()">← Retour</button>
-  </div>
-  <div id="mapContainer">
-    <div class="map-placeholder">
-      <div class="map-placeholder-ico">🗺</div>
-      <div class="map-placeholder-txt">Chargement de la carte...<br><span style="font-size:.75rem">Les livreurs doivent activer le GPS sur leur téléphone</span></div>
-    </div>
-  </div>
-  <div style="font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 0 10px">Livreurs en ligne</div>
-  <div class="map-livreur-list" id="mapLivreurList">
-    <div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne pour le moment</div>
-  </div>
-</div>
-
-</div>
-</div>
-
-<!-- MODAL -->
-<div class="overlay" id="overlay">
-  <div class="modal">
-    <div class="memoji" id="mEmoji">🛵</div>
-    <div class="mtitle">Nouvelle commande !</div>
-    <div class="msub" id="mSub"></div>
-    <div class="mdetails" id="mDetails"></div>
-    <div class="mbtns">
-      <button class="btn bp" onclick="acceptOrder()">✓ Accepter</button>
-      <button class="btn bwa" onclick="notifyWA_modal()">💬 WhatsApp</button>
-      <button class="btn bd" onclick="closeModal()">✕</button>
-    </div>
-  </div>
-</div>
-
-<div class="tc" id="tc"></div>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
+/* ============================================================
+   BASE DE DONNÉES PARTAGÉE (localStorage — migrable Firebase)
+   ============================================================ */
+const DB_KEY = 'meme_choco_delivery';
 
-// ── CONFIG ──
-const CFG_KEY = 'troprapide_firebase_cfg';
-let db = null, ordersRef = null;
-let soundEnabled = true, pendingModal = null;
-let currentStatus = 'all', currentType = 'all';
-let orders = {}, logs = [];
-const PAYLBL = {cash:'💵 Cash',momo:'📱 Mobile Money',wave:'🌊 Wave',prepaye:'✅ Prépayé'};
-const TYPES = {
-  repas:{e:'🍽',l:'Repas restaurant',il:'Articles commandés'},
-  colis:{e:'📦',l:'Envoi de colis',il:'Description du colis'},
-  courses:{e:'🛒',l:'Courses / Achats',il:'Liste des articles'},
-  medicaments:{e:'💊',l:'Médicaments',il:'Médicaments / ordonnance'},
-  documents:{e:'📄',l:'Documents urgents',il:'Type de documents'},
-  entreprise:{e:'🏢',l:'Livraison entreprise',il:'Description / référence'},
-};
-let currentOrderType = 'repas';
-
-// ── FIREBASE CONNECT ──
-window._connectFirebase = window.connectFirebase = function() {
-  const dburl = document.getElementById('cfg_dburl').value.trim();
-  const apiKey = document.getElementById('cfg_apikey').value.trim();
-  const projectId = document.getElementById('cfg_projectid').value.trim();
-  if (!dburl || !apiKey || !projectId) { alert('Remplissez tous les champs !'); return; }
-  const cfg = { dburl, apiKey, projectId };
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  initFirebase(cfg);
+const ZONES = {
+  'Cocody':     { lat:5.370, lng:-3.980 },
+  'Koumassi':   { lat:5.290, lng:-4.010 },
+  'Treichville':{ lat:5.300, lng:-4.005 },
+  'Plateau':    { lat:5.320, lng:-4.020 },
+  'Yopougon':   { lat:5.350, lng:-4.070 },
+  'Adjamé':     { lat:5.360, lng:-4.025 }
 };
 
-function initFirebase(cfg) {
-  try {
-    const app = firebase.initializeApp({
-      apiKey: cfg.apiKey,
-      databaseURL: cfg.dburl,
-      projectId: cfg.projectId,
-    });
-    db = app.database();
-    ordersRef = db.ref('orders');
-    document.getElementById('configScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    setConnected(true);
-    startListening();
-    addLog('🔥 Firebase connecté');
-  } catch(e) {
-    alert('Erreur Firebase : ' + e.message);
-    setConnected(false);
-  }
+const SEED_DATA = {
+  orders: {},
+  drivers: {
+    'd1':{ name:'Ali Koné',    avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
+    'd2':{ name:'Brice Yao',   avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
+    'd3':{ name:'Cédric Ama',  avatar:'🏍️', lat:5.352, lng:-4.020, status:'available', speed:1.5, activeOrders:0 }
+  },
+  log: [],
+  revenue: 0
+};
+
+function getDB(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || structuredClone(SEED_DATA); }
+  catch(e){ return structuredClone(SEED_DATA); }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+function addLog(msg){
+  const db = getDB();
+  db.log.unshift({ time: Date.now(), msg });
+  if(db.log.length > 80) db.log = db.log.slice(0, 80);
+  saveDB(db);
 }
 
-function setConnected(ok) {
-  const b = document.getElementById('connBadge');
-  const d = document.getElementById('connDot');
-  const t = document.getElementById('connText');
-  b.className = 'conn-badge ' + (ok ? 'connected' : 'disconnected');
-  d.className = 'conn-dot ' + (ok ? 'connected' : 'disconnected');
-  t.textContent = ok ? '🔥 Firebase' : '❌ Déconnecté';
+/* ============================================================
+   MOTEUR DE DISPATCH INTELLIGENT
+   score = distance + (charge * 2) - performance
+   Plus le score est bas = meilleur livreur
+   ============================================================ */
+function getDistance(lat1,lng1,lat2,lng2){
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-// ── AUTO INIT ──
-const saved = localStorage.getItem(CFG_KEY);
-if (saved) { try { initFirebase(JSON.parse(saved)); } catch(e) {} }
-
-// ── LISTEN ──
-let prevOrderKeys = new Set();
-let firstLoad = true;
-
-function startListening() {
-  ordersRef.on('value', snap => {
-    orders = snap.val() || {};
-    const currentKeys = new Set(Object.keys(orders));
-
-    if (firstLoad) {
-      // Premier chargement — pas d'alerte
-      prevOrderKeys = currentKeys;
-      firstLoad = false;
-      renderOrders();
-      addLog('🔄 Données synchronisées');
-      return;
-    }
-
-    // Détecter les nouvelles commandes
-    let hasNew = false;
-    currentKeys.forEach(key => {
-      if (!prevOrderKeys.has(key)) {
-        const o = orders[key];
-        hasNew = true;
-        const cfg = TYPES[o.type] || TYPES.repas;
-        showAlertModal({...o, _key: key});
-        playAlert();
-        showToast(`${cfg.e} Nouvelle commande !`, `${o.items||''} · ${o.zone}`, 'w');
-        setTimeout(() => showToast('🛵 Livreurs alertés', `Zone: ${o.zone} · ${o.amount} FCFA`, 'i'), 700);
-        addLog(`🆕 ${cfg.e} #${key.slice(-6).toUpperCase()} [${cfg.l}] · ${o.zone} · ${o.source==='site-web'?'🌐 Site web':'📱 Admin'}`);
-        pendingModal = {...o, _key: key};
-      }
-    });
-
-    prevOrderKeys = currentKeys;
-    renderOrders();
-    if (!hasNew) addLog('🔄 Mise à jour');
-  }, err => { setConnected(false); addLog('❌ Erreur sync: ' + err.message); });
-}
-
-// ── CREATE ORDER ──
-window._createOrder = window.createOrder = async function() {
-  if (!db) { alert('Firebase non connecté !'); return; }
-  const client   = document.getElementById('f_client').value || 'Client';
-  const phone    = document.getElementById('f_phone').value  || '+225...';
-  const zone     = document.getElementById('f_zone').value;
-  const items    = document.getElementById('f_items').value  || 'Commande';
-  const amount   = document.getElementById('f_amount').value || '0';
-  const priority = document.getElementById('f_priority').value;
-  const paiement = document.getElementById('f_paiement').value;
-  const notes    = document.getElementById('f_notes').value  || '';
-  const restaurant = currentOrderType === 'repas'
-    ? document.getElementById('f_resto').value
-    : (document.getElementById('f_retrait').value || 'À définir');
-
-  const order = {
-    client, phone, restaurant, zone, items, amount,
-    priority, paiement, notes, type: currentOrderType,
-    status: 'nouvelle', createdAt: Date.now(), isNew: true
-  };
-
-  try {
-    const newRef = await ordersRef.push(order);
-    const cfg = TYPES[currentOrderType];
-    playAlert();
-    toast(`${cfg.e} Commande créée !`, `${items} · ${zone}`, 'w');
-    setTimeout(() => toast('🛵 Livreurs alertés', `Zone: ${zone} · ${amount} FCFA`, 'i'), 600);
-    addLog(`🆕 ${cfg.e} [${cfg.l}] · ${zone}`);
-    // Clear new flag after 6s
-    setTimeout(() => update(ref(db, 'orders/' + newRef.key), {isNew: false}), 6000);
-  } catch(e) {
-    toast('Erreur', e.message, 'e');
-  }
-};
-
-// ── UPDATE STATUS ──
-window._updateStatus = window.updateStatus = async function(key, newStatus) {
-  if (!db) return;
-  try {
-    await db.ref('orders/' + key).update({status: newStatus});
-    addLog(`↻ Commande → ${newStatus}`);
-    toast(newStatus === 'livree' ? '✅ Livrée !' : '↻ Statut mis à jour', '', 's');
-  } catch(e) { toast('Erreur', e.message, 'e'); }
-};
-
-window._cancelOrder = window.cancelOrder = async function(key) {
-  if (!db) return;
-  if (!confirm('Annuler cette commande ?')) return;
-  try {
-    await db.ref('orders/' + key).remove();
-    toast('Commande annulée', '', 'e');
-    addLog('✕ Commande annulée');
-  } catch(e) { toast('Erreur', e.message, 'e'); }
-};
-
-window._clearAll = window.clearAll = async function() {
-  if (!db) return;
-  if (!confirm('Vider toutes les commandes ?')) return;
-  try {
-    await ordersRef.remove();
-    toast('Toutes les commandes supprimées', '', 'e');
-  } catch(e) { toast('Erreur', e.message, 'e'); }
-};
-
-// ── RENDER ──
-function renderOrders() {
-  const all = Object.entries(orders).map(([k,v]) => ({...v, _key:k}))
-    .sort((a,b) => b.createdAt - a.createdAt);
-
-  let list = all;
-  if (currentStatus !== 'all') list = list.filter(o => o.status === currentStatus);
-  if (currentType !== 'all') list = list.filter(o => o.type === currentType);
-
-  const el = document.getElementById('orderList');
-  if (!list.length) { el.innerHTML = '<div class="empty">📋 Aucune commande ici.</div>'; updateStats(all); return; }
-
-  const SL = {nouvelle:'🔴 Nouvelle',acceptee:'🟠 Acceptée','en-route':'🔵 En route',prete:'🍽 Prête',livree:'✅ Livrée'};
-  el.innerHTML = list.map(o => {
-    const cfg = TYPES[o.type] || TYPES.repas;
-    const elapsed = Math.floor((Date.now() - o.createdAt) / 60000);
-    return `<div class="oc ${o.isNew?'new-a':''} ${o.priority==='urgente'?'urg':''}">
-      <div class="ot">
-        <div>
-          <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
-            <div class="oid">#${o._key.slice(-6).toUpperCase()}</div>
-            <span class="tbadge ${o.type}">${cfg.e} ${cfg.l}</span>
-          </div>
-          <div class="otime">⏱ ${elapsed} min · 📍 ${o.zone}</div>
-        </div>
-        <span class="sb ${o.status}">${SL[o.status]||o.status}</span>
-      </div>
-      <div class="orest">${o.type==='repas'?'🍽':'📌'} ${o.restaurant}</div>
-      <div class="oitems">${o.items}${o.notes?' · '+o.notes:''}</div>
-      <div class="ofooter">
-        <span class="oprice">${Number(o.amount).toLocaleString()} FCFA</span>
-        <span style="font-size:.7rem;background:rgba(255,255,255,.06);padding:2px 7px;border-radius:5px;color:var(--muted)">${PAYLBL[o.paiement]||''}</span>
-        <span style="font-size:.7rem;color:var(--muted)">👤 ${o.client} · ${o.phone}</span>
-      </div>
-      <div class="abts">
-        ${o.status==='nouvelle'?`<button class="btn bp" onclick="updateStatus('${o._key}','acceptee')">✓ Accepter</button>`:''}
-        ${o.status==='acceptee'?`<button class="btn bp" onclick="updateStatus('${o._key}','en-route')">🛵 En route</button>`:''}
-        ${o.status==='en-route'?`<button class="btn bp" onclick="updateStatus('${o._key}','livree')">✅ Livrée</button>`:''}
-        <button class="btn bwa" onclick="notifyWAOrder('${o._key}')">💬 WhatsApp</button>
-        ${o.status!=='livree'?`<button class="btn bd" onclick="cancelOrder('${o._key}')">✕</button>`:''}
-      </div>
-    </div>`;
-  }).join('');
-  updateStats(all);
-}
-
-function updateStats(all) {
-  document.getElementById('sw').textContent = all.filter(o=>o.status==='nouvelle'||o.status==='acceptee').length;
-  document.getElementById('sr2').textContent = all.filter(o=>o.status==='en-route').length;
-  document.getElementById('sd').textContent = all.filter(o=>o.status==='livree').length;
-  document.getElementById('srev').textContent = all.filter(o=>o.status==='livree').reduce((s,o)=>s+Number(o.amount||0),0).toLocaleString('fr-FR');
-  document.getElementById('activeCount').textContent = all.filter(o=>o.status!=='livree').length;
-  ['all','repas','colis','courses','medicaments','documents','entreprise'].forEach(t => {
-    const el = document.getElementById('ts-'+t);
-    if (el) el.textContent = t==='all' ? all.length : all.filter(o=>o.type===t).length;
+function findBestDriver(order, drivers){
+  let best=null, bestScore=Infinity;
+  Object.entries(drivers).forEach(([id,d])=>{
+    if(d.status !== 'available') return;
+    const dist = getDistance(order.lat, order.lng, d.lat, d.lng);
+    const load = d.activeOrders || 0;
+    const perf = d.speed || 1;
+    const score = dist + (load * 2) - perf;
+    if(score < bestScore){ bestScore=score; best={id,...d,_dist:dist.toFixed(1),_score:score.toFixed(2)}; }
   });
-  ['Le Palais du Poulet','Saveurs du Soleil','Pizza House Abidjan','Street Burger Corner','Délices Asiatiques','Juice & Smoothies Bar'].forEach((r,i) => {
-    const el = document.getElementById('rp-'+i);
-    if (el) el.textContent = all.filter(o=>o.restaurant===r&&o.status!=='livree').length;
-  });
+  return best;
 }
 
-// ── FILTERS ──
-window._filterStatus = window.filterStatus = function(s, el) {
-  currentStatus = s;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  renderOrders();
-};
-window._filterType = window.filterType = function(t, el) {
-  currentType = t;
-  document.querySelectorAll('.ts').forEach(c=>c.classList.remove('af'));
-  el.classList.add('af');
-  renderOrders();
-};
+function dispatchOrder(orderId){
+  const db = getDB();
+  const order = db.orders[orderId];
+  if(!order || order.assignedTo || order.status === 'livree') return false;
+  if(order.status !== 'prete'){ addLog(`⚠️ #${orderId} pas encore prête`); render(); return false; }
 
-// ── TYPE SWITCH ──
-window._setType = window.setType = function(type, el) {
-  currentOrderType = type;
-  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
-  const cfg = TYPES[type];
-  const isRepas = type === 'repas';
-  document.getElementById('fr_resto').style.display = isRepas ? '' : 'none';
-  document.getElementById('fr_retrait').style.display = isRepas ? 'none' : '';
-  document.getElementById('fr_notes').style.display = (type==='colis'||type==='medicaments') ? '' : 'none';
-  document.getElementById('items_lbl').textContent = cfg.il;
-  document.getElementById('createBtn').textContent = `⚡ ${cfg.l.toUpperCase()}`;
-};
+  const best = findBestDriver(order, db.drivers);
+  if(!best){ addLog(`❌ Aucun livreur dispo pour #${orderId}`); render(); return false; }
 
-// ── WHATSAPP ──
-window._notifyWAOrder = window.notifyWAOrder = function(key) {
-  const o = orders[key];
-  if (!o) return;
-  const cfg = TYPES[o.type]||TYPES.repas;
-  const msg = encodeURIComponent(`🛵 TROPRAPIDE\n${cfg.e} ${cfg.l}\n📦 ${o.items}\n💰 ${o.amount} FCFA\n📍 ${o.zone}\n👤 ${o.client} — ${o.phone}${o.notes?'\n📝 '+o.notes:''}`);
-  window.open(`https://wa.me/2250140503030?text=${msg}`, '_blank');
-};
-
-window._notifyWA_modal = window.notifyWA_modal = function() {
-  if (!pendingModal) return;
-  notifyWAOrder(pendingModal._key);
-  closeModal();
-};
-
-// ── MODAL ──
-window._acceptOrder = window.acceptOrder = function() {
-  if (!pendingModal) return;
-  updateStatus(pendingModal._key, 'acceptee');
-  closeModal();
-};
-window._closeModal = window.closeModal = function() { document.getElementById('overlay').classList.remove('on'); };
-
-// ── SOUND ──
-window._toggleSound = window.toggleSound = function() {
-  soundEnabled = !soundEnabled;
-  const b = document.getElementById('soundBtn');
-  b.textContent = soundEnabled ? '🔔 Son' : '🔕 Son';
-  b.classList.toggle('active', soundEnabled);
-};
-function playAlert() {
-  if (!soundEnabled) return;
-  try {
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t]) => {
-      const o=ctx.createOscillator(), g=ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value=f; o.type='sine';
-      g.gain.setValueAtTime(0,ctx.currentTime+t);
-      g.gain.linearRampToValueAtTime(.3,ctx.currentTime+t+.05);
-      g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
-      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.15);
-    });
-  } catch(e) {}
+  db.orders[orderId] = { ...order, assignedTo: best.id, assignedName: best.name, status:'en-route', dispatchedAt: Date.now() };
+  db.drivers[best.id] = { ...db.drivers[best.id], status:'busy', activeOrders:(best.activeOrders||0)+1, currentOrder:orderId };
+  db.log.unshift({ time: Date.now(), msg:`✅ #${orderId} → ${best.name} | ${best._dist} km | score ${best._score}` });
+  if(db.log.length > 80) db.log = db.log.slice(0,80);
+  saveDB(db);
+  render();
+  return true;
 }
 
-// ── LOG ──
-function addLog(msg) {
-  const t = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  logs.unshift({t,msg});
-  if (logs.length > 25) logs.pop();
-  document.getElementById('logList').innerHTML = logs.map(l =>
-    `<div style="padding:3px 0;border-bottom:1px solid var(--border);display:flex;gap:5px"><span style="color:#555;white-space:nowrap">${l.t}</span><span>${l.msg}</span></div>`
-  ).join('');
+function forceDispatchAll(){
+  const db = getDB();
+  const ready = Object.keys(db.orders).filter(id => db.orders[id].status==='prete' && !db.orders[id].assignedTo);
+  if(ready.length === 0){ alert('Aucune commande prête à dispatcher'); return; }
+  ready.forEach(id => dispatchOrder(id));
 }
 
-// ── TOAST ──
-function toast(title, body='', type='s') {
-  const icons = {s:'✅',w:'⚠️',e:'❌',i:'ℹ️'};
-  const c = document.getElementById('tc');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<div style="font-size:1.1rem">${icons[type]}</div><div><div class="tt">${title}</div>${body?`<div class="tb">${body}</div>`:''}</div>`;
-  c.prepend(el);
-  setTimeout(() => el.style.opacity='0', 3000);
-  setTimeout(() => el.remove(), 3400);
-}
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const db = getDB();
+  const orders = db.orders || {};
+  const drivers = db.drivers || {};
+  const log = db.log || [];
 
-// ── COPY LINK ──
-window._copyLink = window.copyLink = function(type) {
-  const base = window.location.href.replace('admin.html','');
-  const url = base + type + '.html';
-  navigator.clipboard.writeText(url)
-    .then(() => toast('Lien copié !','Envoyez par WhatsApp','s'))
-    .catch(() => toast('Lien: '+url,'','i'));
-};
+  /* ---- STATS ---- */
+  const all = Object.values(orders);
+  document.getElementById('s-total').textContent   = all.length;
+  document.getElementById('s-pending').textContent = all.filter(o=>['nouvelle','acceptee','prete'].includes(o.status)).length;
+  document.getElementById('s-enroute').textContent = all.filter(o=>o.status==='en-route').length;
+  document.getElementById('s-done').textContent    = all.filter(o=>o.status==='livree').length;
+  document.getElementById('s-drivers').textContent = Object.values(drivers).filter(d=>d.status==='available').length;
+  const rev = all.filter(o=>o.status==='livree').reduce((s,o)=>s+(o.total||0),0);
+  document.getElementById('s-revenue').textContent = rev.toLocaleString('fr');
 
+  /* ---- ORDERS ---- */
+  const orderList = document.getElementById('orders-list');
+  const ordersSorted = Object.entries(orders).sort((a,b)=> (b[1].createdAt||0)-(a[1].createdAt||0));
+  document.getElementById('order-count').textContent = ordersSorted.length + ' commandes';
 
-// ── GPS MAP ──
-let livreurPositions = {};
-let gpsListener = null;
-
-window._showMap = window.showMap = function() {
-  document.getElementById('mapPage').classList.add('active');
-  document.querySelector('.container').style.display = 'none';
-  document.getElementById('mapBtn').style.background = 'rgba(245,200,0,.15)';
-  // Listen to livreur positions
-  if (db) {
-    gpsListener = db.ref('livreurs').on('value', snap => {
-      livreurPositions = snap.val() || {};
-      renderMapContent();
-    });
+  if(ordersSorted.length === 0){
+    orderList.innerHTML = '<p style="color:var(--muted);text-align:center;margin-top:40px;">Aucune commande — Clique sur "Seed Démo"</p>';
   } else {
-    renderMapContent();
-  }
-};
+    orderList.innerHTML = ordersSorted.map(([id,o])=>{
+      const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+      const canDispatch = o.status==='prete' && !o.assignedTo;
+      const statusBadge = {
+        'nouvelle':`<span class="badge badge-nouvelle">🔴 Nouvelle</span>`,
+        'acceptee':`<span class="badge badge-acceptee">🟠 Cuisine</span>`,
+        'prete':   `<span class="badge badge-prete">🟡 Prête</span>`,
+        'en-route':`<span class="badge badge-en-route">🔵 En route</span>`,
+        'livree':  `<span class="badge badge-livree">✅ Livrée</span>`
+      }[o.status] || `<span class="badge">${o.status}</span>`;
 
-window._hideMap = window.hideMap = function() {
-  document.getElementById('mapPage').classList.remove('active');
-  document.querySelector('.container').style.display = 'grid';
-  document.getElementById('mapBtn').style.background = '';
-};
-
-function renderMapContent() {
-  const positions = Object.values(livreurPositions).filter(l => l.lat && l.lng);
-
-  if (!positions.length) {
-    document.getElementById('mapContainer').innerHTML = `
-      <div class="map-placeholder">
-        <div class="map-placeholder-ico">🛵</div>
-        <div class="map-placeholder-txt">
-          Aucun livreur n'a encore activé le GPS<br>
-          <span style="font-size:.75rem;color:#555">Les livreurs doivent cliquer "📍 Activer GPS" sur leur page</span>
+      return `
+      <div class="order-row" style="${o.status==='prete'&&!o.assignedTo?'border-color:var(--yellow);':''}">
+        <div class="order-id">#${id.slice(-4)}</div>
+        <div class="order-info">
+          <div class="order-name">${o.client || 'Client'}</div>
+          <div class="order-sub">${o.items || ''}</div>
+          ${o.assignedName ? `<div class="order-sub" style="color:var(--blue)">🏍️ ${o.assignedName}</div>` : ''}
+        </div>
+        <div class="order-zone">📍 ${o.zone || ''}<br><span style="color:var(--muted);font-size:.7rem;">${elapsed}min</span></div>
+        <div>${statusBadge}</div>
+        <div>
+          <button class="dispatch-btn" ${canDispatch?'':'disabled'} onclick="dispatchOrder('${id}')">
+            ${canDispatch ? '⚡ Dispatch' : (o.assignedTo ? '✓ OK' : '—')}
+          </button>
         </div>
       </div>`;
-    document.getElementById('mapLivreurList').innerHTML = '<div style="color:var(--muted);font-size:.82rem">Aucun livreur en ligne</div>';
-    return;
+    }).join('');
   }
 
-  // Show map centered on first livreur (OpenStreetMap, no API key)
-  const c = positions[0];
-  const lat = c.lat.toFixed(6);
-  const lng = c.lng.toFixed(6);
-  const zoom = 14;
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${(c.lng-0.03)},${(c.lat-0.03)},${(c.lng+0.03)},${(c.lat+0.03)}&layer=mapnik&marker=${lat},${lng}`;
-
-  document.getElementById('mapContainer').innerHTML = `
-    <iframe 
-      src="${mapUrl}"
-      style="width:100%;height:100%;border:none;border-radius:16px"
-      loading="lazy"
-      title="Carte GPS TropRapide">
-    </iframe>`;
-
-  // Livreur cards with Google Maps links
-  document.getElementById('mapLivreurList').innerHTML = positions.map(l => {
-    const elapsed = Math.floor((Date.now() - (l.updatedAt||Date.now())) / 60000);
-    const isRecent = elapsed < 5;
-    return `
-    <div style="background:var(--card);border:1px solid ${isRecent?'rgba(34,197,94,.3)':'var(--border)'};border-radius:12px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:10px;height:10px;border-radius:50%;background:${isRecent?'var(--green)':'#555'};flex-shrink:0"></div>
-        <div>
-          <div style="font-weight:700;font-size:.85rem">🛵 ${l.name||'Livreur'}</div>
-          <div style="font-size:.72rem;color:var(--muted)">📍 ${l.lat.toFixed(4)}, ${l.lng.toFixed(4)}</div>
-          <div style="font-size:.68rem;color:var(--muted)">Mis à jour il y a ${elapsed} min · ±${l.acc||'?'}m</div>
+  /* ---- DRIVERS ---- */
+  const driverList = document.getElementById('drivers-list');
+  const driversSorted = Object.entries(drivers).sort((a,b)=> a[1].name.localeCompare(b[1].name));
+  document.getElementById('driver-count').textContent = driversSorted.length + ' livreurs';
+  driverList.innerHTML = driversSorted.map(([id,d])=>`
+    <div class="driver-row">
+      <div class="driver-avatar">${d.avatar||'🏍️'}</div>
+      <div class="driver-info">
+        <div class="driver-name">${d.name}</div>
+        <div class="driver-meta">
+          Vitesse: ${d.speed||1} • Commandes: ${d.activeOrders||0}
+          ${d.currentOrder ? ` • #${String(d.currentOrder).slice(-4)}` : ''}
         </div>
       </div>
-      <a href="https://www.google.com/maps?q=${l.lat},${l.lng}" target="_blank"
-         style="background:var(--yellow);color:var(--black);padding:7px 12px;border-radius:8px;font-size:.75rem;font-weight:800;text-decoration:none;white-space:nowrap;flex-shrink:0">
-        🗺 Voir
-      </a>
-    </div>`;
-  }).join('');
+      <span class="driver-badge ${d.status==='available'?'d-available':'d-busy'}">
+        ${d.status==='available'? '🟢 Dispo' : '🟠 Busy'}
+      </span>
+    </div>
+  `).join('');
+
+  /* ---- LOG ---- */
+  const logEl = document.getElementById('log-list');
+  if(log.length === 0){
+    logEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;font-size:.8rem;">Log vide</p>';
+  } else {
+    logEl.innerHTML = log.map(l=>`
+      <div class="log-item">
+        <span class="log-time">${new Date(l.time).toLocaleTimeString('fr')}</span>${l.msg}
+      </div>`).join('');
+  }
 }
 
-window._resetConfig = window.resetConfig = function() {
-  if (confirm('Réinitialiser la configuration Firebase ?')) {
-    localStorage.removeItem(CFG_KEY);
-    location.reload();
-  }
-};
+/* ============================================================
+   ACTIONS
+   ============================================================ */
+function seedDemo(){
+  const db = getDB();
+  const clients = ['Koffi Mensah','Aicha Bamba','Chris Yao','Marie-Claire','Djibril Koné','Sandrine K.'];
+  const zones = Object.keys(ZONES);
+  const menus = ['Poulet braisé + Attiéké','Riz + Poisson braisé','Foutou + Sauce graine','Kedjenou + Riz','Poisson braisé + Alloco'];
+  const prices = [3500,2500,2000,3000,4000];
 
-addLog('🟢 Admin TropRapide démarré');
+  for(let i=0; i<6; i++){
+    const id = 'cmd' + Date.now() + i;
+    const zone = zones[Math.floor(Math.random()*zones.length)];
+    const z = ZONES[zone];
+    const menuIdx = Math.floor(Math.random()*menus.length);
+    const statusOpts = ['nouvelle','nouvelle','acceptee','prete','prete','en-route'];
+    const status = statusOpts[i % statusOpts.length];
+    db.orders[id] = {
+      client: clients[i % clients.length],
+      items: menus[menuIdx],
+      total: prices[menuIdx] + 500,
+      zone, lat: z.lat+(Math.random()*.01-.005), lng: z.lng+(Math.random()*.01-.005),
+      status,
+      restaurant: 'Meme Choco',
+      restaurantLat: 5.340, restaurantLng: -4.010,
+      createdAt: Date.now() - Math.floor(Math.random()*600000),
+      assignedTo: null, assignedName: null
+    };
+    if(status === 'en-route'){
+      const driverIds = Object.keys(db.drivers);
+      const dId = driverIds[i % driverIds.length];
+      db.orders[id].assignedTo = dId;
+      db.orders[id].assignedName = db.drivers[dId].name;
+      db.orders[id].dispatchedAt = Date.now();
+      db.drivers[dId].status = 'busy';
+      db.drivers[dId].activeOrders = (db.drivers[dId].activeOrders||0)+1;
+      db.drivers[dId].currentOrder = id;
+    }
+  }
+  db.log.unshift({ time: Date.now(), msg: '🌱 Données de démo injectées' });
+  saveDB(db);
+  render();
+}
+
+function resetDB(){
+  if(!confirm('Supprimer toutes les données ?')) return;
+  localStorage.removeItem(DB_KEY);
+  render();
+  addLog('🗑️ Base de données réinitialisée');
+}
+
+function clearLog(){
+  const db = getDB();
+  db.log = [];
+  saveDB(db);
+  render();
+}
+
+/* ============================================================
+   AUTO-DISPATCH: écoute les commandes "prête" non assignées
+   ============================================================ */
+let _lastPrete = new Set();
+function autoDispatchWatcher(){
+  const db = getDB();
+  const pretes = Object.keys(db.orders).filter(id => db.orders[id].status==='prete' && !db.orders[id].assignedTo);
+  pretes.forEach(id => {
+    if(!_lastPrete.has(id)){
+      _lastPrete.add(id);
+      setTimeout(()=>{ dispatchOrder(id); _lastPrete.delete(id); }, 500);
+    }
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Clock
+setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr'); }, 1000);
+
+// Listen cross-tab updates
+window.addEventListener('storage', e=>{ if(e.key===DB_KEY) render(); });
+
+// Poll every 3s for same-tab updates
+setInterval(()=>{ autoDispatchWatcher(); render(); }, 3000);
+
+render();
 </script>
 </body>
 </html>

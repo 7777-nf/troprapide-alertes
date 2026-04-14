@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>App Livreur — Meme Choco</title>
+<style>
+:root{
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
+  --text:#fff;--muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;min-height:100vh;}
+
+/* LOGIN SCREEN */
+#login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--card2);border-radius:20px;padding:32px;max-width:380px;width:100%;border:1px solid var(--border);}
+.login-logo{font-size:3rem;text-align:center;margin-bottom:12px;}
+.login-title{font-size:1.3rem;font-weight:900;text-align:center;margin-bottom:4px;}
+.login-sub{color:var(--muted);text-align:center;font-size:.85rem;margin-bottom:24px;}
+.driver-option{display:flex;align-items:center;gap:12px;padding:14px;background:#1a1a1a;
+  border-radius:12px;margin-bottom:10px;cursor:pointer;border:2px solid transparent;transition:border-color .2s;}
+.driver-option:hover{border-color:var(--yellow);}
+.driver-option.selected{border-color:var(--yellow);background:#1a1400;}
+.driver-avatar{font-size:1.8rem;}
+.driver-detail{flex:1;}
+.driver-name{font-weight:800;}
+.driver-status{font-size:.75rem;margin-top:2px;}
+.ds-available{color:var(--green);}
+.ds-busy{color:var(--orange);}
+.login-btn{width:100%;padding:14px;background:var(--yellow);color:#000;border:none;
+  border-radius:12px;font-weight:900;font-size:1rem;cursor:pointer;margin-top:8px;transition:opacity .2s;}
+.login-btn:hover{opacity:.9;}
+.login-btn:disabled{opacity:.3;cursor:default;}
+
+/* MAIN APP */
+#app-screen{display:none;min-height:100vh;}
+
+/* TOP BAR */
+.topbar{display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.driver-info-bar{display:flex;align-items:center;gap:10px;}
+.driver-badge{padding:4px 12px;border-radius:20px;font-weight:700;font-size:.8rem;cursor:pointer;border:none;}
+.badge-available{background:#022;color:var(--green);}
+.badge-busy{background:#220;color:var(--orange);}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;
+  border-radius:8px;cursor:pointer;font-size:.8rem;}
+
+/* STATS BAR */
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;
+  border-bottom:1px solid var(--border);background:#080808;}
+.stat-mini{text-align:center;}
+.stat-mini .val{font-size:1.4rem;font-weight:900;}
+.stat-mini .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;}
+
+/* SECTION */
+.section{padding:16px;}
+.section-title{font-size:.9rem;font-weight:900;color:var(--yellow);margin-bottom:12px;
+  display:flex;justify-content:space-between;align-items:center;}
+
+/* ORDER CARDS */
+.order-card{background:var(--card2);border-radius:14px;padding:16px;margin-bottom:12px;
+  border:1px solid var(--border);}
+.order-card.active{border-color:var(--orange);background:#110a00;}
+.order-card.en-route{border-color:var(--blue);background:#00000a;}
+.order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.order-num{font-weight:900;font-size:1rem;color:var(--yellow);}
+.order-status-badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.os-prete{background:#1a1500;color:var(--yellow);}
+.os-en-route{background:#00001a;color:var(--blue);}
+
+.info-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.info-icon{font-size:1.1rem;width:22px;flex-shrink:0;margin-top:1px;}
+.info-content{flex:1;}
+.info-label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
+.info-value{font-weight:700;margin-top:1px;}
+
+/* MAP PREVIEW */
+.map-mini{background:#0a0a1a;border-radius:10px;padding:12px;margin:12px 0;
+  border:1px solid var(--border);position:relative;overflow:hidden;}
+.map-route{display:flex;align-items:center;gap:8px;font-size:.85rem;}
+.map-dot{width:10px;height:10px;border-radius:50%;}
+.map-line{flex:1;height:2px;border-top:2px dashed var(--border);position:relative;}
+.map-driver{position:absolute;top:-7px;font-size:1rem;transition:left 1s linear;}
+.map-dest{width:10px;height:10px;border-radius:50%;}
+
+/* DISTANCE BAR */
+.distance-bar{background:#1a1a1a;border-radius:6px;height:6px;overflow:hidden;margin:8px 0;}
+.distance-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width 1s;}
+
+/* ACTIONS */
+.order-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.action-btn{padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:.9rem;transition:opacity .2s;}
+.action-btn:active{opacity:.7;}
+.btn-pickup{background:var(--yellow);color:#000;}
+.btn-delivered{background:var(--green);color:#fff;}
+.btn-issue{background:var(--border);color:var(--muted);}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
+
+/* GPS PANEL */
+.gps-panel{background:var(--card2);border-radius:14px;padding:14px;border:1px solid var(--border);margin-bottom:16px;}
+.gps-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.gps-coords{font-family:monospace;font-size:.8rem;color:var(--muted);}
+.gps-accuracy{font-size:.75rem;}
+.gps-btn{background:#1a1500;border:1px solid var(--yellow);color:var(--yellow);
+  padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🏍️</div>
+    <div class="login-title">Espace Livreur</div>
+    <div class="login-sub">Choisissez votre profil pour commencer</div>
+
+    <div id="driver-options">
+      <p style="color:var(--muted);text-align:center;font-size:.85rem;">Chargement des livreurs...</p>
+    </div>
+
+    <button class="login-btn" id="login-btn" onclick="login()" disabled>
+      🚀 Commencer la journée
+    </button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="driver-info-bar">
+      <span id="driver-avatar-bar" style="font-size:1.5rem;">🏍️</span>
+      <div>
+        <div id="driver-name-bar" style="font-weight:900;"></div>
+        <div id="driver-gps-bar" style="font-size:.72rem;color:var(--muted);">GPS actif</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="driver-badge" id="status-badge" onclick="toggleStatus()"></button>
+      <button class="logout-btn" onclick="logout()">Quitter</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-mini">
+      <div class="val" id="stat-today" style="color:var(--yellow);">0</div>
+      <div class="lbl">Livrées</div>
+    </div>
+    <div class="stat-mini">
+      <div class="val" id="stat-active" style="color:var(--orange);">0</div>
+      <div class="lbl">En cours</div>
+    </div>
+    <div class="stat-mini">
+      <div class="val" id="stat-earnings" style="color:var(--green);">0</div>
+      <div class="lbl">FCFA today</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="section">
+
+    <!-- GPS POSITION -->
+    <div class="gps-panel">
+      <div class="gps-row">
+        <div>
+          <div style="font-weight:700;font-size:.85rem;">📡 Ma Position GPS</div>
+          <div class="gps-coords" id="gps-display">lat: -- lng: --</div>
+        </div>
+        <button class="gps-btn" onclick="updateGPS()">↻ Actualiser</button>
+      </div>
+      <div style="font-size:.75rem;color:var(--muted);">Position mise à jour automatiquement toutes les 10s</div>
+    </div>
+
+    <!-- MY ORDERS -->
+    <div class="section-title">
+      📦 Mes Commandes
+      <span id="orders-count" style="color:var(--muted);font-weight:400;font-size:.8rem;"></span>
+    </div>
+    <div id="my-orders"></div>
+
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   SHARED DB
+   ============================================================ */
+const DB_KEY = 'meme_choco_delivery';
+const SEED_DRIVERS = {
+  'd1':{ name:'Ali Koné',   avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
+  'd2':{ name:'Brice Yao',  avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
+  'd3':{ name:'Cédric Ama', avatar:'🏍️', lat:5.352, lng:-4.020, status:'available', speed:1.5, activeOrders:0 }
+};
+
+function getDB(){
+  try{
+    const d = JSON.parse(localStorage.getItem(DB_KEY));
+    if(!d){ return { orders:{}, drivers: structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
+    if(!d.drivers || Object.keys(d.drivers).length===0) d.drivers = structuredClone(SEED_DRIVERS);
+    return d;
+  }catch(e){ return { orders:{}, drivers: structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+function addLog(msg){
+  const db=getDB(); db.log=db.log||[];
+  db.log.unshift({time:Date.now(),msg}); if(db.log.length>80) db.log=db.log.slice(0,80);
+  saveDB(db);
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let myDriverId = null;
+let selectedDriverId = null;
+let deliveryProgress = {}; // orderId -> { progress: 0-100, interval }
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+function renderDriverOptions(){
+  const db = getDB();
+  const drivers = db.drivers || SEED_DRIVERS;
+  const el = document.getElementById('driver-options');
+  el.innerHTML = Object.entries(drivers).map(([id,d])=>`
+    <div class="driver-option" id="opt-${id}" onclick="selectDriver('${id}')">
+      <span class="driver-avatar">${d.avatar||'🏍️'}</span>
+      <div class="driver-detail">
+        <div class="driver-name">${d.name}</div>
+        <div class="driver-status ${d.status==='available'?'ds-available':'ds-busy'}">
+          ${d.status==='available'?'🟢 Disponible':'🟠 En mission'}
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectDriver(id){
+  selectedDriverId = id;
+  document.querySelectorAll('.driver-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('opt-'+id)?.classList.add('selected');
+  document.getElementById('login-btn').disabled = false;
+}
+
+function login(){
+  if(!selectedDriverId) return;
+  myDriverId = selectedDriverId;
+  localStorage.setItem('driver_session', myDriverId);
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+
+  const db = getDB();
+  const d = db.drivers[myDriverId];
+  document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
+  document.getElementById('driver-name-bar').textContent = d.name;
+
+  updateGPS();
+  startGPSInterval();
+  renderApp();
+}
+
+function logout(){
+  myDriverId = null;
+  selectedDriverId = null;
+  localStorage.removeItem('driver_session');
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  renderDriverOptions();
+}
+
+/* ============================================================
+   GPS SIMULATION
+   ============================================================ */
+function updateGPS(){
+  const db = getDB();
+  if(!db.drivers[myDriverId]) return;
+
+  // Simulate small GPS movement
+  const jitter = ()=>(Math.random()-.5)*0.001;
+  db.drivers[myDriverId].lat += jitter();
+  db.drivers[myDriverId].lng += jitter();
+  saveDB(db);
+
+  const lat = db.drivers[myDriverId].lat.toFixed(5);
+  const lng = db.drivers[myDriverId].lng.toFixed(5);
+  document.getElementById('gps-display').textContent = `lat: ${lat}  lng: ${lng}`;
+  document.getElementById('driver-gps-bar').textContent = `${lat}, ${lng}`;
+}
+
+let gpsInterval = null;
+function startGPSInterval(){
+  if(gpsInterval) clearInterval(gpsInterval);
+  gpsInterval = setInterval(updateGPS, 10000);
+}
+
+/* ============================================================
+   STATUS TOGGLE
+   ============================================================ */
+function toggleStatus(){
+  const db = getDB();
+  const d = db.drivers[myDriverId];
+  if(!d) return;
+  if(d.status === 'busy'){ alert('Vous avez des commandes en cours — livrez-les d\'abord'); return; }
+  d.status = d.status==='available' ? 'offline' : 'available';
+  saveDB(db);
+  addLog(`🏍️ ${d.name} est maintenant ${d.status==='available'?'disponible':'hors ligne'}`);
+  renderApp();
+}
+
+/* ============================================================
+   RENDER APP
+   ============================================================ */
+function renderApp(){
+  const db = getDB();
+  const driver = db.drivers[myDriverId];
+  if(!driver) return;
+
+  // Status badge
+  const badge = document.getElementById('status-badge');
+  if(driver.status==='available'){
+    badge.textContent = '🟢 Disponible';
+    badge.className = 'driver-badge badge-available';
+  } else if(driver.status==='busy'){
+    badge.textContent = '🟠 En mission';
+    badge.className = 'driver-badge badge-busy';
+  } else {
+    badge.textContent = '⚫ Hors ligne';
+    badge.className = 'driver-badge badge-busy';
+  }
+
+  // My orders (assigned to me)
+  const myOrders = Object.entries(db.orders||{})
+    .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
+    .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
+
+  // Stats
+  const delivered = Object.values(db.orders||{}).filter(o=>o.assignedTo===myDriverId && o.status==='livree').length;
+  const earnings = delivered * 500; // 500 FCFA per delivery
+  document.getElementById('stat-today').textContent = delivered;
+  document.getElementById('stat-active').textContent = myOrders.length;
+  document.getElementById('stat-earnings').textContent = earnings.toLocaleString('fr');
+  document.getElementById('orders-count').textContent = myOrders.length + ' active';
+
+  // Orders list
+  const container = document.getElementById('my-orders');
+  if(myOrders.length === 0){
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🎯</div>
+        <div style="font-weight:700;margin-bottom:4px;">Aucune commande assignée</div>
+        <div style="font-size:.85rem;">Mettez-vous disponible et attendez un dispatch</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = myOrders.map(([id,o])=>{
+    const progress = deliveryProgress[id]?.progress || 0;
+    return `
+    <div class="order-card ${o.status==='en-route'?'en-route':'active'}">
+      <div class="order-header">
+        <span class="order-num">#${id.slice(-6).toUpperCase()}</span>
+        <span class="order-status-badge ${o.status==='prete'?'os-prete':'os-en-route'}">
+          ${o.status==='prete'?'🟡 À récupérer':'🔵 En livraison'}
+        </span>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">👤</span>
+        <div class="info-content">
+          <div class="info-label">Client</div>
+          <div class="info-value">${o.client||'—'} ${o.phone?`• ${o.phone}`:''}</div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">🍗</span>
+        <div class="info-content">
+          <div class="info-label">Commande</div>
+          <div class="info-value" style="font-size:.85rem;">${o.items||'—'}</div>
+        </div>
+      </div>
+
+      <div class="info-row">
+        <span class="info-icon">📍</span>
+        <div class="info-content">
+          <div class="info-label">Adresse de livraison</div>
+          <div class="info-value">${o.zone||''} ${o.address?`— ${o.address}`:''}</div>
+        </div>
+      </div>
+
+      ${o.status==='en-route' ? `
+      <!-- ROUTE PROGRESS -->
+      <div class="map-mini">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;font-weight:700;">PROGRESSION</div>
+        <div class="map-route">
+          <span style="font-size:.9rem;">🏪</span>
+          <div class="map-line">
+            <span class="map-driver" style="left:${progress}%;">🏍️</span>
+          </div>
+          <span style="font-size:.9rem;">🏠</span>
+        </div>
+        <div class="distance-bar"><div class="distance-fill" style="width:${progress}%;"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;">
+          <span>Meme Choco</span>
+          <span style="color:var(--yellow);font-weight:700;">${Math.round(progress)}% — ~${Math.max(1,Math.round((100-progress)/15))} min</span>
+          <span>${o.zone}</span>
+        </div>
+      </div>` : ''}
+
+      <div class="order-actions">
+        ${o.status==='prete' ? `
+          <button class="action-btn btn-pickup" onclick="pickupOrder('${id}')" style="grid-column:1/-1;">
+            🏪 J'ai récupéré la commande → En route !
+          </button>` : ''}
+        ${o.status==='en-route' ? `
+          <button class="action-btn btn-delivered" onclick="deliverOrder('${id}')">
+            ✅ Livrée !
+          </button>
+          <button class="action-btn btn-issue" onclick="reportIssue('${id}')">
+            ⚠️ Problème
+          </button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============================================================
+   ORDER ACTIONS
+   ============================================================ */
+function pickupOrder(orderId){
+  const db = getDB();
+  db.orders[orderId].status = 'en-route';
+  db.orders[orderId].pickedAt = Date.now();
+  saveDB(db);
+  addLog(`🏍️ ${db.drivers[myDriverId].name} en route pour #${orderId.slice(-4)}`);
+  startDeliveryProgress(orderId);
+  renderApp();
+}
+
+function deliverOrder(orderId){
+  const db = getDB();
+  db.orders[orderId].status = 'livree';
+  db.orders[orderId].deliveredAt = Date.now();
+  db.drivers[myDriverId].activeOrders = Math.max(0,(db.drivers[myDriverId].activeOrders||1)-1);
+  db.drivers[myDriverId].currentOrder = null;
+  if(db.drivers[myDriverId].activeOrders === 0) db.drivers[myDriverId].status = 'available';
+  db.revenue = (db.revenue||0) + (db.orders[orderId].total||0);
+  saveDB(db);
+  addLog(`✅ Commande #${orderId.slice(-4)} livrée par ${db.drivers[myDriverId].name}`);
+  stopDeliveryProgress(orderId);
+  renderApp();
+}
+
+function reportIssue(orderId){
+  const reason = prompt('Décrivez le problème (ex: client absent, adresse introuvable):');
+  if(!reason) return;
+  addLog(`⚠️ Problème sur #${orderId.slice(-4)}: ${reason}`);
+  alert('Problème signalé. Le support va vous contacter.');
+}
+
+/* ============================================================
+   DELIVERY ANIMATION
+   ============================================================ */
+function startDeliveryProgress(orderId){
+  if(deliveryProgress[orderId]) return;
+  deliveryProgress[orderId] = { progress: 0 };
+  deliveryProgress[orderId].interval = setInterval(()=>{
+    deliveryProgress[orderId].progress = Math.min(99, deliveryProgress[orderId].progress + (Math.random()*2));
+    renderApp();
+  }, 3000);
+}
+
+function stopDeliveryProgress(orderId){
+  if(deliveryProgress[orderId]?.interval) clearInterval(deliveryProgress[orderId].interval);
+  delete deliveryProgress[orderId];
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderDriverOptions();
+
+// Restore session
+const savedSession = localStorage.getItem('driver_session');
+if(savedSession){
+  const db = getDB();
+  if(db.drivers[savedSession]){
+    selectedDriverId = savedSession;
+    document.querySelectorAll('.driver-option').forEach(el => el.classList.remove('selected'));
+    // Options not rendered yet in session restore, just login directly
+    myDriverId = savedSession;
+    const d = db.drivers[myDriverId];
+    document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
+    document.getElementById('driver-name-bar').textContent = d.name;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    updateGPS();
+    startGPSInterval();
+    renderApp();
+  }
+}
+
+// Cross-tab sync
+window.addEventListener('storage', e=>{ if(e.key===DB_KEY && myDriverId) renderApp(); });
+
+// Poll every 5s
+setInterval(()=>{ if(myDriverId) renderApp(); }, 5000);
+</script>
+</body>
+</html>

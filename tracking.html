@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tracking — Meme Choco</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+:root{
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
+  --text:#fff;--muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;height:100vh;overflow:hidden;}
+
+/* HEADER */
+.header{padding:12px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1000;}
+.header-brand{display:flex;align-items:center;gap:10px;}
+.header-logo{font-size:1.5rem;}
+.header-title{font-size:1rem;font-weight:900;color:var(--yellow);}
+.header-sub{font-size:.72rem;color:var(--muted);}
+.back-btn{background:none;border:1px solid var(--border);color:var(--muted);
+  padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.8rem;text-decoration:none;}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:340px 1fr;height:calc(100vh - 54px);}
+@media(max-width:700px){.layout{grid-template-columns:1fr;}}
+
+/* SIDEBAR */
+.sidebar{overflow-y:auto;border-right:1px solid var(--border);display:flex;flex-direction:column;}
+
+/* SEARCH BOX */
+.search-box{padding:16px;border-bottom:1px solid var(--border);}
+.search-label{font-size:.75rem;color:var(--muted);font-weight:700;margin-bottom:6px;text-transform:uppercase;}
+.search-row{display:flex;gap:8px;}
+.search-input{flex:1;padding:10px 12px;background:#1a1a1a;border:1px solid var(--border);
+  border-radius:8px;color:#fff;font-size:.9rem;}
+.search-input:focus{outline:none;border-color:var(--yellow);}
+.search-btn{background:var(--yellow);color:#000;border:none;padding:10px 14px;
+  border-radius:8px;font-weight:700;cursor:pointer;font-size:.85rem;white-space:nowrap;}
+
+/* ORDER INFO */
+.order-info{padding:16px;border-bottom:1px solid var(--border);}
+.oi-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.oi-id{font-size:1rem;font-weight:900;color:var(--yellow);font-family:monospace;}
+.oi-badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
+
+.info-block{margin-bottom:12px;}
+.info-block-label{font-size:.7rem;color:var(--muted);font-weight:700;text-transform:uppercase;margin-bottom:3px;}
+.info-block-val{font-weight:700;}
+.info-block-sub{font-size:.8rem;color:var(--muted);margin-top:1px;}
+
+/* ETA CARD */
+.eta-card{background:#0a0a1a;border:1px solid var(--blue);border-radius:12px;padding:14px;margin:14px 0;}
+.eta-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.eta-val{font-size:1.6rem;font-weight:900;color:var(--yellow);}
+.eta-label{font-size:.75rem;color:var(--muted);}
+.eta-bar{background:#1a1a2a;border-radius:6px;height:8px;overflow:hidden;}
+.eta-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--yellow));border-radius:6px;transition:width 1s;}
+
+/* TIMELINE */
+.timeline{padding:16px;}
+.timeline-title{font-size:.85rem;font-weight:900;margin-bottom:14px;color:var(--yellow);}
+.timeline-item{display:flex;gap:12px;margin-bottom:16px;position:relative;}
+.timeline-item::before{
+  content:'';position:absolute;left:10px;top:22px;width:2px;
+  height:calc(100% + 2px);background:var(--border);
+}
+.timeline-item:last-child::before{display:none;}
+.tl-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:.7rem;z-index:1;}
+.tl-done{background:var(--green);}
+.tl-active{background:var(--yellow);animation:pulse 1.5s infinite;}
+.tl-pending{background:var(--border);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,200,0,.4);}50%{box-shadow:0 0 0 6px rgba(245,200,0,0);}}
+.tl-content{flex:1;padding-top:2px;}
+.tl-name{font-weight:700;font-size:.9rem;}
+.tl-time{font-size:.72rem;color:var(--muted);margin-top:2px;}
+
+/* MAP */
+#map{flex:1;height:100%;z-index:0;}
+.leaflet-container{background:#111 !important;}
+
+/* MAP PANE */
+.map-pane{position:relative;}
+.map-legend{position:absolute;top:12px;right:12px;z-index:999;background:rgba(0,0,0,.85);
+  border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:.8rem;}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.legend-item:last-child{margin-bottom:0;}
+.legend-dot{width:12px;height:12px;border-radius:50%;}
+
+/* EMPTY STATE */
+.empty-state{padding:40px 20px;text-align:center;color:var(--muted);}
+.empty-icon{font-size:2.5rem;margin-bottom:12px;}
+
+/* ALL ORDERS LIST */
+.all-orders{padding:16px;border-top:1px solid var(--border);}
+.all-title{font-size:.8rem;font-weight:900;color:var(--muted);margin-bottom:10px;text-transform:uppercase;}
+.order-pill{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 10px;background:var(--card2);border-radius:8px;margin-bottom:6px;
+  cursor:pointer;border:1px solid var(--border);transition:border-color .2s;}
+.order-pill:hover{border-color:var(--yellow);}
+.pill-id{font-family:monospace;font-weight:700;font-size:.8rem;color:var(--yellow);}
+.pill-info{font-size:.75rem;color:var(--muted);}
+.pill-badge{font-size:.72rem;font-weight:700;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <span class="header-logo">📍</span>
+    <div>
+      <div class="header-title">Tracking GPS</div>
+      <div class="header-sub">Suivi en temps réel — Abidjan</div>
+    </div>
+  </div>
+  <a href="app.html" class="back-btn">← Retour</a>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <!-- SEARCH -->
+    <div class="search-box">
+      <div class="search-label">Numéro de commande</div>
+      <div class="search-row">
+        <input type="text" class="search-input" id="order-input" placeholder="Ex: CMD1712345678" oninput="this.value=this.value.toUpperCase()"/>
+        <button class="search-btn" onclick="trackOrder()">Suivre</button>
+      </div>
+    </div>
+
+    <!-- ORDER DETAILS -->
+    <div id="order-details">
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div style="font-weight:700;margin-bottom:6px;">Entrez votre numéro</div>
+        <div style="font-size:.8rem;">Ou cliquez sur une commande ci-dessous</div>
+      </div>
+    </div>
+
+    <!-- ALL ORDERS -->
+    <div class="all-orders">
+      <div class="all-title">📦 Commandes actives</div>
+      <div id="all-orders-list"></div>
+    </div>
+
+  </div>
+
+  <!-- MAP -->
+  <div class="map-pane" style="position:relative;">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#F5C800;"></div><span>Restaurant</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3B82F6;"></div><span>Livreur</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22C55E;"></div><span>Destination</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============================================================
+   SHARED DB
+   ============================================================ */
+const DB_KEY = 'meme_choco_delivery';
+function getDB(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || {orders:{},drivers:{},log:[],revenue:0}; }
+  catch(e){ return {orders:{},drivers:{},log:[],revenue:0}; }
+}
+
+/* ============================================================
+   MAP INIT (Abidjan centered)
+   ============================================================ */
+const map = L.map('map', { zoomControl: true, attributionControl: false }).setView([5.34, -4.01], 13);
+
+// Dark tile layer
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  maxZoom: 19
+}).addTo(map);
+
+// Custom icons
+function makeIcon(emoji, color){
+  return L.divIcon({
+    html: `<div style="background:${color};width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.5);">${emoji}</div>`,
+    iconSize: [32,32], iconAnchor: [16,16], popupAnchor: [0,-16], className:''
+  });
+}
+
+const icons = {
+  restaurant: makeIcon('🍗','#F5C800'),
+  driver:     makeIcon('🏍️','#3B82F6'),
+  client:     makeIcon('📍','#22C55E')
+};
+
+// Persistent map markers
+let markers = { restaurant: null, driver: null, client: null, routeLine: null };
+
+function clearMarkers(){
+  Object.values(markers).forEach(m=>{ if(m) map.removeLayer(m); });
+  markers = { restaurant: null, driver: null, client: null, routeLine: null };
+}
+
+/* ============================================================
+   TRACK ORDER
+   ============================================================ */
+let currentOrderId = null;
+
+// Read URL param
+const urlParams = new URLSearchParams(window.location.search);
+const urlOrder = urlParams.get('order');
+if(urlOrder){ document.getElementById('order-input').value = urlOrder.toUpperCase(); }
+
+function trackOrder(){
+  const input = document.getElementById('order-input').value.trim().toLowerCase();
+  if(!input){ alert('Entrez un numéro de commande'); return; }
+  const db = getDB();
+  // Try exact match first
+  let orderId = null;
+  if(db.orders[input]){ orderId = input; }
+  else {
+    // Try suffix match
+    orderId = Object.keys(db.orders).find(id=> id.toLowerCase().includes(input) || id.toUpperCase().includes(input.toUpperCase()));
+  }
+
+  if(!orderId){ showEmptyState(`Commande "${input.toUpperCase()}" introuvable`); return; }
+  currentOrderId = orderId;
+  renderOrderDetails(orderId);
+  updateMap(orderId);
+}
+
+function showEmptyState(msg){
+  document.getElementById('order-details').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">❓</div>
+      <div style="font-weight:700;margin-bottom:6px;">${msg}</div>
+      <div style="font-size:.8rem;">Vérifiez le numéro dans votre confirmation</div>
+    </div>`;
+  clearMarkers();
+}
+
+function renderOrderDetails(orderId){
+  const db = getDB();
+  const o = db.orders[orderId];
+  if(!o){ showEmptyState('Commande introuvable'); return; }
+
+  const driver = o.assignedTo ? db.drivers[o.assignedTo] : null;
+  const elapsed = Math.floor((Date.now() - (o.createdAt||Date.now())) / 60000);
+  const statusColors = {
+    'nouvelle':'var(--orange)','acceptee':'var(--green)','prete':'var(--yellow)',
+    'en-route':'var(--blue)','livree':'var(--green)'
+  };
+  const statusBg = {
+    'nouvelle':'#1a0a00','acceptee':'#0a1a00','prete':'#1a1500',
+    'en-route':'#00001a','livree':'#0a150a'
+  };
+  const statusLabel = {
+    'nouvelle':'🔴 Reçue','acceptee':'🍳 En cuisine','prete':'🟡 Prête',
+    'en-route':'🔵 En route','livree':'✅ Livrée'
+  };
+
+  // ETA estimation
+  let etaMin = 0, progress = 0;
+  if(o.status === 'en-route' && driver && o.dispatchedAt){
+    const sinceDispatch = (Date.now() - o.dispatchedAt) / 60000;
+    const dist = getDistanceSimple(driver.lat, driver.lng, o.lat, o.lng);
+    etaMin = Math.max(0, Math.round(dist * 8 - sinceDispatch)); // ~8 min per km
+    const totalTime = dist * 8;
+    progress = Math.min(99, (sinceDispatch / totalTime) * 100);
+  } else if(o.status === 'livree'){
+    progress = 100; etaMin = 0;
+  } else if(o.status === 'prete'){
+    etaMin = 10;
+  } else if(o.status === 'acceptee'){
+    etaMin = 20;
+  } else {
+    etaMin = 30;
+  }
+
+  // Timeline
+  const steps = [
+    { label:'Commande reçue',        status:'done',    time: o.createdAt },
+    { label:'Acceptée par la cuisine', status: ['acceptee','prete','en-route','livree'].includes(o.status)?'done':'pending', time: o.acceptedAt },
+    { label:'Prête pour livraison',   status: ['prete','en-route','livree'].includes(o.status)?'done':'pending', time: o.readyAt },
+    { label:'Livreur en route',       status: o.status==='en-route'?'active': o.status==='livree'?'done':'pending', time: o.dispatchedAt },
+    { label:'Livraison effectuée',    status: o.status==='livree'?'done':'pending', time: o.deliveredAt }
+  ];
+
+  document.getElementById('order-details').innerHTML = `
+    <div class="order-info">
+      <div class="oi-header">
+        <span class="oi-id">#${orderId.slice(-8).toUpperCase()}</span>
+        <span class="oi-badge" style="background:${statusBg[o.status]||'#111'};color:${statusColors[o.status]||'#fff'};">
+          ${statusLabel[o.status]||o.status}
+        </span>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block-label">Client</div>
+        <div class="info-block-val">${o.client||'—'}</div>
+        <div class="info-block-sub">📍 ${o.address||''} ${o.zone||''}</div>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block-label">Commande</div>
+        <div class="info-block-val" style="font-size:.85rem;">${o.items||'—'}</div>
+        <div class="info-block-sub">${o.total?(o.total.toLocaleString('fr')+' FCFA'):''}</div>
+      </div>
+
+      ${driver ? `
+      <div class="info-block">
+        <div class="info-block-label">Livreur</div>
+        <div class="info-block-val">${driver.avatar||'🏍️'} ${driver.name}</div>
+        <div class="info-block-sub">Vitesse: ${driver.speed||1} • GPS actif</div>
+      </div>` : ''}
+
+      ${o.status === 'en-route' ? `
+      <div class="eta-card">
+        <div class="eta-top">
+          <div>
+            <div class="eta-val">${etaMin} min</div>
+            <div class="eta-label">Temps estimé d'arrivée</div>
+          </div>
+          <div style="font-size:2rem;">🏍️</div>
+        </div>
+        <div class="eta-bar"><div class="eta-fill" style="width:${progress}%;"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:6px;">
+          <span>🏪 Meme Choco</span>
+          <span style="color:var(--yellow);">${Math.round(progress)}%</span>
+          <span>🏠 ${o.zone}</span>
+        </div>
+      </div>` : ''}
+
+      ${o.status === 'livree' ? `
+      <div style="background:#0a1a0a;border:1px solid var(--green);border-radius:12px;padding:12px;text-align:center;margin:12px 0;">
+        <div style="font-size:1.5rem;margin-bottom:4px;">✅</div>
+        <div style="font-weight:900;color:var(--green);">Commande livrée !</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:4px;">Merci d'avoir commandé chez Meme Choco</div>
+      </div>` : ''}
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-title">📋 Étapes</div>
+      ${steps.map(s=>`
+        <div class="timeline-item">
+          <div class="tl-dot ${s.status==='done'?'tl-done':s.status==='active'?'tl-active':'tl-pending'}">
+            ${s.status==='done'?'✓':s.status==='active'?'●':''}
+          </div>
+          <div class="tl-content">
+            <div class="tl-name" style="color:${s.status==='pending'?'var(--muted)':'#fff'};">${s.label}</div>
+            ${s.time ? `<div class="tl-time">${new Date(s.time).toLocaleTimeString('fr')}</div>` : ''}
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+/* ============================================================
+   MAP UPDATE
+   ============================================================ */
+function getDistanceSimple(lat1,lng1,lat2,lng2){
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function updateMap(orderId){
+  const db = getDB();
+  const o = db.orders[orderId];
+  if(!o) return;
+  clearMarkers();
+
+  const bounds = [];
+
+  // Restaurant marker
+  const restLat = o.restaurantLat || 5.340;
+  const restLng = o.restaurantLng || -4.010;
+  markers.restaurant = L.marker([restLat, restLng], {icon: icons.restaurant})
+    .addTo(map)
+    .bindPopup('<b>🍗 Meme Choco</b><br>Restaurant');
+  bounds.push([restLat, restLng]);
+
+  // Delivery destination
+  if(o.lat && o.lng){
+    markers.client = L.marker([o.lat, o.lng], {icon: icons.client})
+      .addTo(map)
+      .bindPopup(`<b>📍 ${o.client}</b><br>${o.zone}`);
+    bounds.push([o.lat, o.lng]);
+  }
+
+  // Driver position
+  const driver = o.assignedTo ? db.drivers[o.assignedTo] : null;
+  if(driver && ['en-route'].includes(o.status)){
+    markers.driver = L.marker([driver.lat, driver.lng], {icon: icons.driver})
+      .addTo(map)
+      .bindPopup(`<b>🏍️ ${driver.name}</b><br>En route`);
+    bounds.push([driver.lat, driver.lng]);
+
+    // Draw route line
+    markers.routeLine = L.polyline([
+      [restLat, restLng],
+      [driver.lat, driver.lng],
+      [o.lat, o.lng]
+    ], { color:'#3B82F6', weight:2, dashArray:'8,6', opacity:.7 }).addTo(map);
+  }
+
+  // Fit map to all markers
+  if(bounds.length > 1){
+    map.fitBounds(bounds, { padding: [50, 50] });
+  } else if(bounds.length === 1){
+    map.setView(bounds[0], 14);
+  }
+}
+
+/* ============================================================
+   ALL ORDERS LIST
+   ============================================================ */
+function renderAllOrders(){
+  const db = getDB();
+  const active = Object.entries(db.orders||{})
+    .filter(([,o])=> o.status !== 'livree' && o.status !== 'annulee')
+    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0))
+    .slice(0, 10);
+
+  const el = document.getElementById('all-orders-list');
+  if(active.length === 0){
+    el.innerHTML = '<p style="color:var(--muted);font-size:.8rem;">Aucune commande active</p>';
+    return;
+  }
+
+  const colors = { 'nouvelle':'var(--orange)','acceptee':'var(--green)','prete':'var(--yellow)','en-route':'var(--blue)' };
+  const labels = { 'nouvelle':'Reçue','acceptee':'Cuisine','prete':'Prête','en-route':'En route' };
+
+  el.innerHTML = active.map(([id,o])=>`
+    <div class="order-pill" onclick="selectOrder('${id}')">
+      <div>
+        <div class="pill-id">#${id.slice(-8)}</div>
+        <div class="pill-info">${o.client||'—'} • ${o.zone||'—'}</div>
+      </div>
+      <span class="pill-badge" style="color:${colors[o.status]||'#fff'};">${labels[o.status]||o.status}</span>
+    </div>`).join('');
+}
+
+function selectOrder(id){
+  document.getElementById('order-input').value = id.toUpperCase();
+  currentOrderId = id;
+  renderOrderDetails(id);
+  updateMap(id);
+}
+
+/* ============================================================
+   AUTO REFRESH
+   ============================================================ */
+setInterval(()=>{
+  renderAllOrders();
+  if(currentOrderId){
+    renderOrderDetails(currentOrderId);
+    updateMap(currentOrderId);
+  }
+}, 5000);
+
+window.addEventListener('storage', e=>{
+  if(e.key !== DB_KEY) return;
+  renderAllOrders();
+  if(currentOrderId){ renderOrderDetails(currentOrderId); updateMap(currentOrderId); }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderAllOrders();
+
+// Auto-track from URL param
+if(urlOrder){
+  setTimeout(()=>{ trackOrder(); }, 300);
+}
+</script>
+</body>
+</html>

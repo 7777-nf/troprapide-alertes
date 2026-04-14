@@ -2,1089 +2,349 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>TropRapide · Restaurant</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Restaurant — Meme Choco</title>
 <style>
 :root{
-  --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#0F0F0F;
-  --card:#161616;--card2:#1E1E1E;--border:#242424;--text:#F5F5F0;--muted:#666;
-  --green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;--purple:#A855F7;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
+  --text:#fff;--muted:#888;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;overscroll-behavior:none}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;}
 
-/* ── LOGIN ── */
-.login-screen{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:100vh;padding:24px;background:var(--dark);
-  padding-top:calc(var(--safe-top) + 24px);
-}
-.login-logo{
-  font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:900;
-  color:var(--yellow);margin-bottom:6px;
-  display:flex;align-items:center;gap:10px;
-}
-.login-logo-dot{width:10px;height:10px;background:var(--yellow);border-radius:50%;animation:pdot 1.5s infinite}
-@keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
-.login-sub{color:var(--muted);font-size:.85rem;margin-bottom:28px}
-.login-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:20px;padding:26px;width:100%;max-width:380px;
-}
-.login-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:18px;text-align:center;color:var(--yellow)}
-.field{margin-bottom:13px}
-.field label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
-.field input,.field select{
-  width:100%;background:var(--dark);border:1px solid var(--border);
-  border-radius:10px;color:var(--text);padding:11px 13px;
-  font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;
-}
-.field input:focus,.field select:focus{border-color:var(--yellow)}
-.btn-login{
-  width:100%;padding:14px;background:var(--yellow);color:var(--black);
-  border:none;border-radius:12px;font-size:.95rem;font-weight:800;
-  font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px;
-  transition:background .15s,transform .1s;
-}
-.btn-login:active{transform:scale(.98);background:var(--yellow-dark)}
-.login-hint{font-size:.72rem;color:var(--muted);margin-top:10px;text-align:center;line-height:1.6}
+/* HEADER */
+.header{padding:14px 20px;background:#0a0a0a;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{font-size:2rem;}
+.brand-name{font-size:1.2rem;font-weight:900;color:var(--yellow);}
+.brand-sub{font-size:.75rem;color:var(--muted);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.clock{color:var(--muted);font-size:.9rem;}
+.open-toggle{padding:8px 16px;border-radius:20px;font-weight:700;cursor:pointer;border:none;font-size:.85rem;}
+.open{background:var(--green);color:#fff;}
+.closed{background:var(--red);color:#fff;}
 
-/* ── APP ── */
-.app{display:none;flex-direction:column;height:100dvh;overflow:hidden;padding-top:var(--safe-top)}
+/* STATS GRID */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;padding:16px 20px;
+  background:#060606;border-bottom:1px solid var(--border);}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--card2);border-radius:12px;padding:14px;border:1px solid var(--border);text-align:center;}
+.stat-val{font-size:1.7rem;font-weight:900;margin-bottom:4px;}
+.stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.stat-delta{font-size:.72rem;margin-top:4px;}
 
-/* ── TOP HEADER ── */
-.top-bar{
-  background:var(--dark);border-bottom:1px solid var(--border);
-  padding:11px 16px;display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;position:sticky;top:0;z-index:100;
-}
-.top-bar-logo{
-  display:flex;align-items:center;gap:8px;
-}
-.logo-icon{
-  width:38px;height:38px;background:var(--yellow);border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-}
-.logo-icon img{width:100%;height:100%;object-fit:cover;border-radius:10px}
-.logo-icon-fallback{font-size:1.1rem;font-weight:900;color:#111}
-.logo-pro-badge{
-  position:absolute;bottom:0;right:0;
-  background:var(--red);color:#fff;font-size:.45rem;font-weight:800;
-  padding:1px 4px;border-radius:3px 0 0 0;letter-spacing:.3px;
-}
-.top-bar-actions{display:flex;align-items:center;gap:10px}
-.notif-btn{
-  position:relative;width:36px;height:36px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-}
-.notif-badge{
-  position:absolute;top:-3px;right:-3px;
-  background:var(--red);color:#fff;font-size:.6rem;font-weight:800;
-  width:17px;height:17px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:1.5px solid var(--dark);
-}
-.settings-btn{
-  width:36px;height:36px;background:var(--card);border:1px solid var(--border);
-  border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;
-}
+/* MAIN */
+.main{display:grid;grid-template-columns:1fr 280px;gap:0;}
+@media(max-width:800px){.main{grid-template-columns:1fr;}}
 
-/* ── SCROLLABLE CONTENT ── */
-.app-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(72px + var(--safe-bottom))}
-.app-scroll::-webkit-scrollbar{display:none}
+/* PANEL */
+.panel{padding:18px 20px;border-right:1px solid var(--border);}
+.panel-title{font-size:.95rem;font-weight:900;margin-bottom:14px;color:var(--yellow);
+  display:flex;justify-content:space-between;align-items:center;}
 
-/* ── COVER SECTION ── */
-.cover-section{position:relative}
-.cover-img{
-  width:100%;height:220px;background:var(--card2);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;overflow:hidden;
-}
-.cover-img img{width:100%;height:100%;object-fit:cover}
-.cover-img-placeholder{font-size:4rem}
-.cover-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to bottom,rgba(0,0,0,.2) 0%,rgba(0,0,0,.7) 100%);
-}
-/* Rating badge - top left */
-.rating-badge{
-  position:absolute;top:14px;left:14px;
-  background:rgba(255,255,255,.95);color:#111;
-  border-radius:10px;padding:7px 12px;
-  display:flex;align-items:center;gap:7px;
-  backdrop-filter:blur(8px);
-}
-.rating-star{color:#F59E0B;font-size:1rem}
-.rating-val{font-weight:800;font-size:.95rem;color:#111}
-.rating-count{font-size:.73rem;color:#666;font-weight:500}
+/* QUICK LINKS */
+.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+.quick-card{background:var(--card2);border-radius:14px;padding:16px;border:1px solid var(--border);
+  cursor:pointer;text-decoration:none;color:#fff;transition:border-color .2s;display:block;}
+.quick-card:hover{border-color:var(--yellow);}
+.quick-icon{font-size:1.8rem;margin-bottom:8px;}
+.quick-name{font-weight:800;margin-bottom:2px;}
+.quick-desc{font-size:.75rem;color:var(--muted);}
 
-/* Edit button - top right */
-.edit-btn{
-  position:absolute;top:14px;right:14px;
-  background:#2196F3;color:#fff;
-  border-radius:10px;padding:8px 14px;
-  font-size:.78rem;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;gap:6px;
-  border:none;
-  box-shadow:0 2px 12px rgba(33,150,243,.4);
-  font-family:'DM Sans',sans-serif;
-}
+/* ORDER TABLE */
+.order-table{width:100%;border-collapse:collapse;}
+.order-table th{text-align:left;font-size:.72rem;color:var(--muted);font-weight:700;
+  text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border);}
+.order-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:.85rem;vertical-align:middle;}
+.order-table tr:hover td{background:#0a0a0a;}
 
-/* Logo + name bottom of cover */
-.cover-bottom{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:0 16px 12px;
-  display:flex;align-items:flex-end;gap:12px;
-}
-.resto-logo{
-  width:70px;height:70px;border-radius:14px;
-  background:#fff;border:2px solid rgba(255,255,255,.3);
-  overflow:hidden;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:-8px;
-}
-.resto-logo img{width:100%;height:100%;object-fit:cover}
-.resto-name-wrap{flex:1;padding-bottom:0}
-.resto-name{
-  font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;
-  color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.5);line-height:1.2;
-}
+/* STATUS BADGE */
+.sbadge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:700;}
+.s-nouvelle{background:#1a0a00;color:var(--orange);}
+.s-acceptee{background:#0a1a00;color:var(--green);}
+.s-prete{background:#1a1500;color:var(--yellow);}
+.s-en-route{background:#00001a;color:var(--blue);}
+.s-livree{background:#0a150a;color:var(--green);}
 
-/* ── STATUS BANNER (Fermé / promo) ── */
-.status-banner{
-  margin:12px 14px 0;border-radius:12px;padding:12px 15px;
-  display:flex;align-items:center;gap:10px;
-  font-weight:700;font-size:.88rem;
-}
-.status-banner.closed{background:var(--red);color:#fff}
-.status-banner.open{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:var(--green)}
-.status-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.status-banner.closed .status-dot{background:#fff}
-.status-banner.open .status-dot{background:var(--green);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+/* REVENUE CHART (CSS bars) */
+.chart{margin-top:14px;}
+.chart-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.chart-label{font-size:.75rem;color:var(--muted);width:70px;text-align:right;white-space:nowrap;}
+.chart-bar-wrap{flex:1;background:#1a1a1a;border-radius:4px;height:20px;overflow:hidden;}
+.chart-bar{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));border-radius:4px;transition:width .5s;}
+.chart-val{font-size:.75rem;font-weight:700;white-space:nowrap;min-width:60px;}
 
-/* ── CATEGORIES PILLS ── */
-.section-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 16px 0;
-}
-.section-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+/* TOP ZONES */
+.zone-item{display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:.85rem;}
+.zone-item:last-child{border:none;}
+.zone-name{font-weight:700;}
+.zone-count{color:var(--yellow);font-weight:900;}
 
-.categories-wrap{
-  display:flex;gap:9px;padding:10px 14px 4px;
-  overflow-x:auto;scrollbar-width:none;
-}
-.categories-wrap::-webkit-scrollbar{display:none}
-.cat-pill{
-  display:flex;align-items:center;gap:6px;flex-shrink:0;
-  background:var(--card2);border:1px solid var(--border);
-  border-radius:100px;padding:8px 14px;
-  font-size:.82rem;font-weight:600;color:var(--text);
-  cursor:pointer;transition:all .2s;white-space:nowrap;
-}
-.cat-pill.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
-.cat-pill-ico{font-size:1rem}
+/* SIDEBAR */
+.sidebar{padding:18px 16px;}
 
-/* ── TOGGLE ROW ── */
-.toggle-row{
-  display:flex;align-items:center;justify-content:flex-end;
-  padding:10px 16px 0;gap:10px;
-}
-.toggle-label{font-size:.82rem;font-weight:600}
-.toggle-label.open{color:var(--green)}
-.toggle-label.closed{color:var(--red)}
+/* ACTIVITY LOG */
+.log-list{max-height:300px;overflow-y:auto;}
+.log-entry{padding:8px 0;border-bottom:1px solid var(--border);font-size:.8rem;}
+.log-time{font-size:.7rem;color:var(--yellow);display:block;margin-bottom:2px;}
+.log-msg{color:var(--muted);}
 
-/* iOS-style toggle */
-.ios-toggle{
-  width:52px;height:28px;background:#333;border-radius:14px;
-  position:relative;cursor:pointer;transition:background .3s;
-  flex-shrink:0;border:none;outline:none;
-}
-.ios-toggle.on{background:var(--green)}
-.ios-toggle-thumb{
-  position:absolute;top:3px;left:3px;
-  width:22px;height:22px;background:#fff;border-radius:50%;
-  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 1px 4px rgba(0,0,0,.3);
-}
-.ios-toggle.on .ios-toggle-thumb{transform:translateX(24px)}
-.toggle-sub{font-size:.7rem;color:var(--muted)}
-
-/* ── STATS TITLE ── */
-.stats-title{
-  font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;
-  text-transform:uppercase;letter-spacing:.5px;
-  padding:16px 16px 10px;color:var(--text);
-}
-
-/* ── STAT CARDS GRID ── */
-.stats-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-  padding:0 14px;
-}
-.stat-card{
-  border-radius:16px;padding:16px;position:relative;overflow:hidden;
-  cursor:pointer;transition:transform .15s;
-}
-.stat-card:active{transform:scale(.97)}
-
-/* Card colors matching screenshot */
-.stat-card.pending{background:#FFFDE7;border:1.5px solid #F59E0B}
-.stat-card.reserved{background:#E3F2FD;border:1.5px solid #2196F3}
-.stat-card.preparing{background:#FFF3E0;border:1.5px solid #F97316}
-.stat-card.delivered{background:#E8F5E9;border:1.5px solid #22C55E}
-.stat-card.refused{background:#FFEBEE;border:1.5px solid #EF4444}
-.stat-card.revenue{background:#F3E5F5;border:1.5px solid #A855F7}
-
-.stat-card-label{
-  font-size:.68rem;font-weight:800;text-transform:uppercase;
-  letter-spacing:.5px;line-height:1.4;margin-bottom:10px;
-}
-.stat-card.pending .stat-card-label{color:#92400E}
-.stat-card.reserved .stat-card-label{color:#1565C0}
-.stat-card.preparing .stat-card-label{color:#9A3412}
-.stat-card.delivered .stat-card-label{color:#14532D}
-.stat-card.refused .stat-card-label{color:#991B1B}
-.stat-card.revenue .stat-card-label{color:#6B21A8}
-
-.stat-card-num{
-  font-family:'Syne',sans-serif;font-size:2.2rem;font-weight:900;
-  line-height:1;margin-bottom:12px;
-}
-.stat-card.pending .stat-card-num{color:#D97706}
-.stat-card.reserved .stat-card-num{color:#1976D2}
-.stat-card.preparing .stat-card-num{color:#EA580C}
-.stat-card.delivered .stat-card-num{color:#16A34A}
-.stat-card.refused .stat-card-num{color:#DC2626}
-.stat-card.revenue .stat-card-num{font-size:1.3rem;color:#9333EA}
-
-.stat-card-arrow{
-  position:absolute;bottom:12px;right:12px;
-  width:30px;height:30px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;
-}
-.stat-card.pending .stat-card-arrow{background:#F59E0B;color:#fff}
-.stat-card.reserved .stat-card-arrow{background:#2196F3;color:#fff}
-.stat-card.preparing .stat-card-arrow{background:#F97316;color:#fff}
-.stat-card.delivered .stat-card-arrow{background:#22C55E;color:#fff}
-.stat-card.refused .stat-card-arrow{background:#EF4444;color:#fff}
-.stat-card.revenue .stat-card-arrow{background:#A855F7;color:#fff}
-
-/* ── PAGES ── */
-.page{display:none;padding-bottom:8px}
-.page.active{display:block}
-
-/* ── COMMANDES LIST ── */
-.page-orders{padding:0 14px}
-.filter-tabs{display:flex;gap:7px;padding:12px 0 8px;overflow-x:auto;scrollbar-width:none}
-.filter-tabs::-webkit-scrollbar{display:none}
-.ftab{
-  padding:7px 14px;border-radius:100px;border:1px solid var(--border);
-  font-size:.78rem;font-weight:600;white-space:nowrap;
-  cursor:pointer;color:var(--muted);transition:all .2s;flex-shrink:0;
-}
-.ftab.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
-
-.order-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:15px;overflow:hidden;margin-bottom:10px;
-}
-.order-card.new-order{border-color:var(--yellow);animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
-.order-card.urgent{border-left:4px solid var(--red)}
-@keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
-
-.oc-head{padding:12px 14px 8px;display:flex;align-items:center;justify-content:space-between}
-.oc-id{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--yellow)}
-.oc-time{font-size:.7rem;color:var(--muted)}
-.oc-body{padding:0 14px 13px}
-.oc-items{font-size:.88rem;font-weight:600;margin-bottom:4px}
-.oc-meta{font-size:.78rem;color:var(--muted);margin-bottom:10px}
-.oc-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.chip{background:var(--card2);border-radius:7px;padding:4px 9px;font-size:.72rem}
-.chip.urg{background:rgba(239,68,68,.12);color:var(--red)}
-.oc-actions{display:flex;gap:7px}
-.btn{
-  padding:10px 14px;border-radius:10px;font-size:.82rem;font-weight:700;
-  border:none;cursor:pointer;display:flex;align-items:center;
-  gap:5px;transition:all .15s;justify-content:center;
-  font-family:'DM Sans',sans-serif;
-}
-.btn:active{transform:scale(.97)}
-.btn-acc{background:var(--yellow);color:#111;flex:1}
-.btn-rdy{background:var(--green);color:#fff;flex:1}
-.btn-ref{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
-.status-pill{padding:3px 9px;border-radius:100px;font-size:.68rem;font-weight:700}
-.sp-nouvelle{background:rgba(245,200,0,.15);color:var(--yellow);border:1px solid rgba(245,200,0,.3)}
-.sp-acceptee{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)}
-.sp-prete{background:rgba(34,197,94,.15);color:var(--green);border:1px solid rgba(34,197,94,.3)}
-.sp-en-route{background:rgba(59,130,246,.15);color:var(--blue);border:1px solid rgba(59,130,246,.3)}
-.sp-livree{background:rgba(255,255,255,.07);color:var(--muted)}
-.empty{text-align:center;padding:46px 18px;color:var(--muted);font-size:.9rem}
-
-/* ── HISTORIQUE ── */
-.page-histo{padding:14px}
-.histo-kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-.hkpi{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;text-align:center}
-.hkpi-val{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800}
-.hkpi-val.y{color:var(--yellow)}.hkpi-val.g{color:var(--green)}.hkpi-val.b{color:var(--blue)}.hkpi-val.o{color:var(--orange)}
-.hkpi-lbl{font-size:.68rem;color:var(--muted);margin-top:2px}
-.period-row{display:flex;gap:7px;margin-bottom:14px}
-.ptab{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border);font-size:.78rem;font-weight:600;text-align:center;cursor:pointer;color:var(--muted);transition:all .2s}
-.ptab.active{background:var(--yellow);color:#111;border-color:var(--yellow)}
-.hlist-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:700;margin-bottom:10px}
-.hitem{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px}
-.hitem-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
-.hitem-id{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--yellow)}
-.hitem-name{font-size:.85rem;font-weight:600;margin-bottom:3px}
-.hitem-meta{display:flex;align-items:center;justify-content:space-between}
-.hitem-info{font-size:.72rem;color:var(--muted)}
-.hitem-amount{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;color:var(--yellow)}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--dark);border-top:1px solid var(--border);
-  display:flex;padding:9px 0;
-  padding-bottom:calc(9px + var(--safe-bottom));
-  z-index:100;
-}
-.nav-item{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
-  cursor:pointer;transition:all .2s;position:relative;
-}
-.nav-ico{font-size:1.2rem;line-height:1}
-.nav-lbl{font-size:.62rem;color:var(--muted);font-weight:500}
-.nav-item.active .nav-lbl{color:var(--yellow)}
-.nav-item.active .nav-ico{transform:scale(1.1)}
-.nav-badge{
-  position:absolute;top:0;right:calc(50% - 18px);
-  background:var(--red);color:#fff;font-size:.55rem;font-weight:800;
-  width:14px;height:14px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:1.5px solid var(--dark);
-}
-/* Active indicator bar */
-.nav-item.active::before{
-  content:'';position:absolute;top:-10px;left:50%;transform:translateX(-50%);
-  width:20px;height:2.5px;background:var(--yellow);border-radius:0 0 3px 3px;
-}
-
-/* ── ALERT SHEET ── */
-.alert-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.88);backdrop-filter:blur(6px);
-  z-index:200;align-items:flex-end;justify-content:center;
-}
-.alert-overlay.show{display:flex}
-.sheet{
-  background:var(--card);border:2px solid var(--yellow);
-  border-radius:24px 24px 0 0;padding:22px 20px 32px;
-  width:100%;max-width:480px;
-  animation:slideup .35s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes slideup{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.sheet-handle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
-.sheet-emoji{font-size:2.6rem;text-align:center;margin-bottom:6px}
-.sheet-title{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;color:var(--yellow);text-align:center;margin-bottom:3px}
-.sheet-sub{font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:14px}
-.sheet-detail{background:var(--dark);border-radius:11px;padding:13px;margin-bottom:14px}
-.srow{display:flex;justify-content:space-between;padding:5px 0;font-size:.82rem}
-.srow:not(:last-child){border-bottom:1px solid var(--border)}
-.srow .sl{color:var(--muted)}.srow .sv{font-weight:600;text-align:right;max-width:62%}
-.sheet-btns{display:flex;gap:9px}
-.sheet-btns .btn{flex:1;padding:13px}
-
-/* ── TOAST ── */
-.toast-wrap{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:300;display:flex;flex-direction:column;gap:7px;width:calc(100% - 28px);max-width:380px}
-.toast{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:11px;padding:11px 14px;
-  display:flex;align-items:center;gap:9px;
-  animation:tdrop .3s ease;box-shadow:0 4px 18px rgba(0,0,0,.5);
-}
-.toast.s{border-left:3px solid var(--green)}
-.toast.w{border-left:3px solid var(--yellow)}
-.toast.e{border-left:3px solid var(--red)}
-@keyframes tdrop{from{transform:translateY(-14px);opacity:0}to{transform:translateY(0);opacity:1}}
-.toast-ico{font-size:1.1rem}.toast-txt{font-size:.81rem;font-weight:600}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
-<!-- ════ LOGIN ════ -->
-<div class="login-screen" id="loginScreen">
-  <div class="login-logo">
-    <div class="login-logo-dot"></div>
-    TropRapide
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <span class="brand-logo">🍗</span>
+    <div>
+      <div class="brand-name">Meme Choco</div>
+      <div class="brand-sub">Dashboard Restaurant — <span id="today-date"></span></div>
+    </div>
   </div>
-  <div class="login-sub">Espace Restaurant — Pro</div>
-  <div class="login-card">
-    <div class="login-title">🔥 Connexion Firebase</div>
-    <div class="field">
-      <label>Database URL Firebase</label>
-      <input type="text" id="c_dburl" placeholder="https://troprapide-xxx.firebaseio.com">
-    </div>
-    <div class="field">
-      <label>API Key</label>
-      <input type="text" id="c_apikey" placeholder="AIzaSy...">
-    </div>
-    <div class="field">
-      <label>Project ID</label>
-      <input type="text" id="c_projectid" placeholder="troprapide-xxxxx">
-    </div>
-    <div class="field">
-      <label>Votre restaurant</label>
-      <select id="c_resto">
-        <option>Mémé Choco</option>
-        <option>Le Palais du Poulet</option>
-        <option>Saveurs du Soleil</option>
-        <option>Pizza House Abidjan</option>
-        <option>Street Burger Corner</option>
-        <option>Délices Asiatiques</option>
-        <option>Juice & Smoothies Bar</option>
-      </select>
-    </div>
-    <button class="btn-login" onclick="connectFirebase()">🔥 SE CONNECTER →</button>
-    <div class="login-hint">Mêmes identifiants Firebase que l'admin</div>
+  <div class="header-right">
+    <span class="clock" id="clock"></span>
+    <button class="open-toggle open" id="open-btn" onclick="toggleOpen()">🟢 OUVERT</button>
   </div>
 </div>
 
-<!-- ════ APP ════ -->
-<div class="app" id="appScreen">
-
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="top-bar-logo">
-      <div class="logo-icon">
-        <div class="logo-icon-fallback" id="logoFallback">🍽</div>
-        <div class="logo-pro-badge">PRO</div>
-      </div>
-      <div style="margin-left:2px">
-        <div style="font-family:'Syne',sans-serif;font-size:.85rem;font-weight:800;color:var(--yellow)" id="hRestoName">Restaurant</div>
-        <div style="font-size:.62rem;color:var(--muted)">TropRapide · Espace Pro</div>
-      </div>
-    </div>
-    <div class="top-bar-actions">
-      <div class="notif-btn" onclick="showPage('commandes')">
-        <span style="font-size:1.1rem">🔔</span>
-        <div class="notif-badge" id="notifBadge" style="display:none">0</div>
-      </div>
-      <div class="settings-btn" onclick="logout()">
-        <span style="font-size:1.1rem">⚙️</span>
-      </div>
-    </div>
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-val" id="s-total" style="color:var(--yellow);">0</div>
+    <div class="stat-label">Total aujourd'hui</div>
   </div>
-
-  <!-- SCROLLABLE -->
-  <div class="app-scroll" id="appScroll">
-
-    <!-- HOME PAGE -->
-    <div class="page active" id="page-home">
-
-      <!-- COVER -->
-      <div class="cover-section">
-        <div class="cover-img" id="coverImg">
-          <div class="cover-img-placeholder" id="coverEmoji">🍽</div>
-          <div class="cover-overlay"></div>
-        </div>
-
-        <!-- Rating -->
-        <div class="rating-badge">
-          <span class="rating-star">⭐</span>
-          <span class="rating-val" id="restoRating">4.9</span>
-          <div>
-            <div style="font-size:.72rem;color:#555;font-weight:600" id="restoAvisCount">(127)</div>
-            <div style="font-size:.65rem;color:#999">avis</div>
-          </div>
-        </div>
-
-        <!-- Edit button -->
-        <button class="edit-btn" onclick="toast('Modification disponible prochainement','w')">
-          ✏️ MODIFIER LES INFORMATIONS DU RESTAURANT
-        </button>
-
-        <!-- Logo + name -->
-        <div class="cover-bottom">
-          <div class="resto-logo">
-            <div style="font-size:1.8rem" id="restoLogoFallback">🍽</div>
-          </div>
-          <div class="resto-name-wrap">
-            <div class="resto-name" id="restoNameCover">Restaurant</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- STATUS BANNER -->
-      <div class="status-banner closed" id="statusBanner">
-        <div class="status-dot"></div>
-        <div>
-          <div id="statusLabel">Fermé</div>
-          <div style="font-size:.72rem;opacity:.85" id="statusSub">• MENU DÉJEUNER POULET BRAISÉ</div>
-        </div>
-      </div>
-
-      <!-- CATEGORIES + TOGGLE ROW -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 14px 0">
-        <div class="categories-wrap" style="flex:1;padding:0;overflow-x:auto">
-          <div class="cat-pill active"><span class="cat-pill-ico">🍔</span> Fast Food</div>
-          <div class="cat-pill"><span class="cat-pill-ico">🥗</span> Salades</div>
-          <div class="cat-pill"><span class="cat-pill-ico">🍗</span> Grillés</div>
-          <div class="cat-pill"><span class="cat-pill-ico">🍹</span> Boissons</div>
-        </div>
-      </div>
-
-      <!-- OUVERT TOGGLE -->
-      <div class="toggle-row">
-        <div>
-          <div class="toggle-label closed" id="toggleLabel">FERMÉ</div>
-          <div class="toggle-sub" id="toggleSub">Fermer le restaurant</div>
-        </div>
-        <button class="ios-toggle" id="onlineToggle" onclick="toggleOnline()">
-          <div class="ios-toggle-thumb"></div>
-        </button>
-      </div>
-
-      <!-- STATS TITLE -->
-      <div class="stats-title">📊 Statistiques des commandes</div>
-
-      <!-- STAT CARDS -->
-      <div class="stats-grid">
-        <div class="stat-card pending" onclick="showPage('commandes');filterOrders('nouvelle')">
-          <div class="stat-card-label">EN ATTENTES DE<br>CONFIRMATION</div>
-          <div class="stat-card-num" id="sc-pending">0</div>
-          <div class="stat-card-arrow">→</div>
-        </div>
-        <div class="stat-card reserved" onclick="showPage('commandes');filterOrders('acceptee')">
-          <div class="stat-card-label">COMMANDES<br>RÉSERVÉES</div>
-          <div class="stat-card-num" id="sc-reserved">0</div>
-          <div class="stat-card-arrow">📅</div>
-        </div>
-        <div class="stat-card preparing" onclick="showPage('commandes');filterOrders('prete')">
-          <div class="stat-card-label">COMMANDES<br>EN PRÉPARATION</div>
-          <div class="stat-card-num" id="sc-preparing">0</div>
-          <div class="stat-card-arrow">🍳</div>
-        </div>
-        <div class="stat-card delivered" onclick="showPage('historique')">
-          <div class="stat-card-label">COMMANDES<br>LIVRÉES</div>
-          <div class="stat-card-num" id="sc-delivered">0</div>
-          <div class="stat-card-arrow">✓</div>
-        </div>
-        <div class="stat-card refused" onclick="showPage('commandes');filterOrders('refuse')">
-          <div class="stat-card-label">COMMANDES<br>REFUSÉES</div>
-          <div class="stat-card-num" id="sc-refused">0</div>
-          <div class="stat-card-arrow">✕</div>
-        </div>
-        <div class="stat-card revenue" onclick="showPage('historique')">
-          <div class="stat-card-label">REVENU<br>AUJOURD'HUI</div>
-          <div class="stat-card-num" id="sc-revenue">0 F</div>
-          <div class="stat-card-arrow">💰</div>
-        </div>
-      </div>
-
-      <div style="height:16px"></div>
-    </div><!-- /page-home -->
-
-    <!-- COMMANDES PAGE -->
-    <div class="page" id="page-commandes">
-      <div class="page-orders">
-        <div style="padding:14px 0 0;font-family:'Syne',sans-serif;font-size:1rem;font-weight:800">Commandes</div>
-        <div class="filter-tabs">
-          <div class="ftab active" onclick="filterOrders('all',this)">Toutes</div>
-          <div class="ftab" onclick="filterOrders('nouvelle',this)">🔴 Nouvelles</div>
-          <div class="ftab" onclick="filterOrders('acceptee',this)">En prépa</div>
-          <div class="ftab" onclick="filterOrders('prete',this)">Prêtes</div>
-          <div class="ftab" onclick="filterOrders('livree',this)">Livrées</div>
-        </div>
-        <div id="ordersWrap"></div>
-      </div>
-    </div>
-
-    <!-- MENUS PAGE -->
-    <div class="page" id="page-menus">
-      <div style="padding:20px;text-align:center;color:var(--muted)">
-        <div style="font-size:2.5rem;margin-bottom:10px">🍽</div>
-        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Vos Menus</div>
-        <div style="font-size:.82rem;margin-top:6px">Gérez vos menus et leurs disponibilités</div>
-      </div>
-    </div>
-
-    <!-- PLATS PAGE -->
-    <div class="page" id="page-plats">
-      <div style="padding:20px;text-align:center;color:var(--muted)">
-        <div style="font-size:2.5rem;margin-bottom:10px">🥘</div>
-        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Vos Plats</div>
-        <div style="font-size:.82rem;margin-top:6px">Modifiez prix, disponibilité et photos</div>
-      </div>
-    </div>
-
-    <!-- HISTORIQUE PAGE -->
-    <div class="page" id="page-historique">
-      <div class="page-histo">
-        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:800;margin-bottom:12px">Historique</div>
-        <div class="histo-kpis">
-          <div class="hkpi"><div class="hkpi-val y" id="h-today">0</div><div class="hkpi-lbl">Aujourd'hui</div></div>
-          <div class="hkpi"><div class="hkpi-val g" id="h-livrees">0</div><div class="hkpi-lbl">Livrées auj.</div></div>
-          <div class="hkpi"><div class="hkpi-val b" id="h-week">0</div><div class="hkpi-lbl">Cette semaine</div></div>
-          <div class="hkpi"><div class="hkpi-val o" id="h-revenu">0</div><div class="hkpi-lbl">FCFA total</div></div>
-        </div>
-        <div class="period-row">
-          <div class="ptab active" onclick="setPeriod('today',this)">Aujourd'hui</div>
-          <div class="ptab" onclick="setPeriod('week',this)">Cette semaine</div>
-          <div class="ptab" onclick="setPeriod('all',this)">Tout</div>
-        </div>
-        <div class="hlist-title">📋 Historique des commandes</div>
-        <div id="histoList"></div>
-      </div>
-    </div>
-
-    <!-- RÉSERVATIONS PAGE -->
-    <div class="page" id="page-reservations">
-      <div style="padding:20px;text-align:center;color:var(--muted)">
-        <div style="font-size:2.5rem;margin-bottom:10px">📅</div>
-        <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--text)">Réservations</div>
-        <div style="font-size:.82rem;margin-top:6px">Gérez les réservations de table</div>
-      </div>
-    </div>
-
-  </div><!-- /app-scroll -->
-
-  <!-- BOTTOM NAV (5 onglets matching screenshot) -->
-  <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
-      <div class="nav-ico">🏠</div>
-      <div class="nav-lbl">Accueil</div>
-      <div class="nav-badge" id="home-badge" style="display:none">0</div>
-    </div>
-    <div class="nav-item" id="nav-commandes" onclick="showPage('commandes')">
-      <div class="nav-ico">🛒</div>
-      <div class="nav-lbl">Commandes</div>
-      <div class="nav-badge" id="orders-badge" style="display:none">0</div>
-    </div>
-    <div class="nav-item" id="nav-menus" onclick="showPage('menus')">
-      <div class="nav-ico">🍽</div>
-      <div class="nav-lbl">Menus</div>
-    </div>
-    <div class="nav-item" id="nav-plats" onclick="showPage('plats')">
-      <div class="nav-ico">🥘</div>
-      <div class="nav-lbl">Plats</div>
-    </div>
-    <div class="nav-item" id="nav-reservations" onclick="showPage('reservations')">
-      <div class="nav-ico">📅</div>
-      <div class="nav-lbl">Réservations</div>
-    </div>
+  <div class="stat">
+    <div class="stat-val" id="s-active" style="color:var(--orange);">0</div>
+    <div class="stat-label">En cours</div>
   </div>
-
-</div><!-- /app -->
-
-<!-- ALERT SHEET -->
-<div class="alert-overlay" id="alertOverlay">
-  <div class="sheet">
-    <div class="sheet-handle"></div>
-    <div class="sheet-emoji">🔔</div>
-    <div class="sheet-title">Nouvelle commande !</div>
-    <div class="sheet-sub" id="shSub"></div>
-    <div class="sheet-detail" id="shDetail"></div>
-    <div class="sheet-btns">
-      <button class="btn btn-acc" onclick="acceptFromAlert()">✓ Accepter</button>
-      <button class="btn btn-ref" onclick="closeAlert()">✕ Fermer</button>
-    </div>
+  <div class="stat">
+    <div class="stat-val" id="s-livrees" style="color:var(--green);">0</div>
+    <div class="stat-label">Livrées</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="s-revenue" style="color:var(--yellow);">0</div>
+    <div class="stat-label">Revenus (FCFA)</div>
+  </div>
+  <div class="stat">
+    <div class="stat-val" id="s-avg" style="color:var(--blue);">0</div>
+    <div class="stat-label">Panier moyen</div>
   </div>
 </div>
 
-<div class="toast-wrap" id="toastWrap"></div>
+<!-- MAIN -->
+<div class="main">
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+  <!-- LEFT PANEL -->
+  <div class="panel">
 
-const CFG_KEY = 'troprapide_resto_cfg';
-let db = null, myResto = '', isOnline = false;
-let orders = {}, alertPending = null, currentFilter = 'all', currentPeriod = 'today';
-let prevNewCount = 0;
+    <!-- QUICK LINKS -->
+    <div class="panel-title">⚡ Accès Rapide</div>
+    <div class="quick-links">
+      <a href="kds.html" class="quick-card">
+        <div class="quick-icon">📺</div>
+        <div class="quick-name">Cuisine (KDS)</div>
+        <div class="quick-desc">Gérer les commandes en cuisine</div>
+      </a>
+      <a href="admin.html" class="quick-card">
+        <div class="quick-icon">🚀</div>
+        <div class="quick-name">Admin Panel</div>
+        <div class="quick-desc">Dashboard complet & dispatch</div>
+      </a>
+      <a href="tracking.html" class="quick-card">
+        <div class="quick-icon">📍</div>
+        <div class="quick-name">Tracking GPS</div>
+        <div class="quick-desc">Voir les livreurs en temps réel</div>
+      </a>
+      <a href="app.html" class="quick-card">
+        <div class="quick-icon">📱</div>
+        <div class="quick-name">App Client</div>
+        <div class="quick-desc">Simuler une commande client</div>
+      </a>
+    </div>
 
-const PAYLBL = { cash:'💵 Cash', momo:'📱 MoMo', wave:'🌊 Wave', prepaye:'✅ Prépayé' };
+    <!-- ORDERS TABLE -->
+    <div class="panel-title">
+      📦 Commandes Récentes
+      <span id="refresh-time" style="font-size:.72rem;color:var(--muted);font-weight:400;"></span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="order-table">
+        <thead>
+          <tr>
+            <th>#ID</th>
+            <th>Client</th>
+            <th>Plat</th>
+            <th>Zone</th>
+            <th>Montant</th>
+            <th>Statut</th>
+            <th>Durée</th>
+          </tr>
+        </thead>
+        <tbody id="orders-tbody">
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px;">Aucune commande</td></tr>
+        </tbody>
+      </table>
+    </div>
 
-// ── FIREBASE CONNECT ──
-window.connectFirebase = function() {
-  const dburl = document.getElementById('c_dburl').value.trim();
-  const apiKey = document.getElementById('c_apikey').value.trim();
-  const projectId = document.getElementById('c_projectid').value.trim();
-  const resto = document.getElementById('c_resto').value;
-  if (!dburl || !apiKey || !projectId) { alert('Remplissez tous les champs !'); return; }
-  const cfg = { dburl, apiKey, projectId, resto };
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
-  initApp(cfg);
-};
+    <!-- REVENUE BY HOUR -->
+    <div class="panel-title" style="margin-top:20px;">📊 Revenus par Zone (top)</div>
+    <div class="chart" id="zone-chart"></div>
 
-function initApp(cfg) {
-  myResto = cfg.resto;
-  try {
-    const app = initializeApp({ apiKey: cfg.apiKey, databaseURL: cfg.dburl, projectId: cfg.projectId }, 'resto-' + Date.now());
-    db = getDatabase(app);
-  } catch(e) { console.error(e); }
+  </div>
 
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'flex';
+  <!-- SIDEBAR -->
+  <div class="sidebar">
 
-  // Update UI with resto name
-  document.getElementById('hRestoName').textContent = myResto;
-  document.getElementById('restoNameCover').textContent = myResto;
-  document.getElementById('restoLogoFallback').textContent = getRestoEmoji(myResto);
-  document.getElementById('coverEmoji').textContent = getRestoEmoji(myResto);
-  document.getElementById('logoFallback').textContent = getRestoEmoji(myResto);
+    <!-- TOP ZONES -->
+    <div class="panel-title">🗺️ Zones Actives</div>
+    <div id="top-zones"></div>
 
-  if (db) startListening();
-  requestNotifPermission();
-  registerPush();
+    <div style="height:1px;background:var(--border);margin:16px 0;"></div>
+
+    <!-- LIVE LOG -->
+    <div class="panel-title" style="margin-bottom:10px;">
+      📋 Activité Live
+      <button onclick="clearLog()" style="background:none;border:1px solid var(--border);color:var(--muted);
+        padding:3px 8px;border-radius:6px;cursor:pointer;font-size:.7rem;">Effacer</button>
+    </div>
+    <div class="log-list" id="activity-log">
+      <p style="color:var(--muted);font-size:.8rem;text-align:center;padding:20px 0;">Aucune activité</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   SHARED DB
+   ============================================================ */
+const DB_KEY = 'meme_choco_delivery';
+function getDB(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || {orders:{},drivers:{},log:[],revenue:0}; }
+  catch(e){ return {orders:{},drivers:{},log:[],revenue:0}; }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+
+let restaurantOpen = true;
+function toggleOpen(){
+  restaurantOpen = !restaurantOpen;
+  const btn = document.getElementById('open-btn');
+  btn.textContent = restaurantOpen ? '🟢 OUVERT' : '🔴 FERMÉ';
+  btn.className = 'open-toggle ' + (restaurantOpen?'open':'closed');
 }
 
-function getRestoEmoji(name) {
-  const n = name.toLowerCase();
-  if (n.includes('pizza')) return '🍕';
-  if (n.includes('burger') || n.includes('fast')) return '🍔';
-  if (n.includes('poulet') || n.includes('brais')) return '🍗';
-  if (n.includes('juice') || n.includes('smoothie')) return '🥤';
-  if (n.includes('asiat') || n.includes('sushi')) return '🍱';
-  return '🍽';
+function clearLog(){
+  const db=getDB(); db.log=[]; saveDB(db); render();
 }
 
-function startListening() {
-  onValue(ref(db, 'orders'), snap => {
-    orders = snap.val() || {};
-    const myOrders = Object.entries(orders).filter(([k,v]) => v.restaurant === myResto);
-    const newOnes = myOrders.filter(([k,v]) => v.status === 'nouvelle');
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render(){
+  const db = getDB();
+  const orders = Object.entries(db.orders||{});
+  const allOrders = orders.map(([,o])=>o);
 
-    if (newOnes.length > prevNewCount) {
-      const latest = newOnes[newOnes.length - 1];
-      showAlert({ ...latest[1], _key: latest[0] });
-      playBeep();
-      sendNotif(latest[1]);
-    }
-    prevNewCount = newOnes.length;
+  // Stats
+  const active  = allOrders.filter(o=>['nouvelle','acceptee','prete','en-route'].includes(o.status));
+  const livrees = allOrders.filter(o=>o.status==='livree');
+  const revenue = livrees.reduce((s,o)=>s+(o.total||0),0);
+  const avg     = livrees.length > 0 ? Math.round(revenue/livrees.length) : 0;
 
-    updateStats();
-    renderOrders();
-    updateHistoStats();
+  document.getElementById('s-total').textContent   = allOrders.length;
+  document.getElementById('s-active').textContent  = active.length;
+  document.getElementById('s-livrees').textContent = livrees.length;
+  document.getElementById('s-revenue').textContent = revenue.toLocaleString('fr');
+  document.getElementById('s-avg').textContent     = avg.toLocaleString('fr');
 
-    // Badge
-    const nc = newOnes.length;
-    const badge = document.getElementById('notifBadge');
-    const obadge = document.getElementById('orders-badge');
-    const hbadge = document.getElementById('home-badge');
-    badge.textContent = nc;
-    badge.style.display = nc > 0 ? 'flex' : 'none';
-    obadge.textContent = nc;
-    obadge.style.display = nc > 0 ? 'flex' : 'none';
-    hbadge.textContent = nc;
-    hbadge.style.display = nc > 0 ? 'flex' : 'none';
-  });
-}
+  // Orders table (most recent 15)
+  const recent = orders
+    .sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0))
+    .slice(0,15);
 
-// ── STATS ──
-function updateStats() {
-  const my = Object.entries(orders)
-    .filter(([k,v]) => v.restaurant === myResto)
-    .map(([k,v]) => ({...v, _key: k}));
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const todayOrders = my.filter(o => o.createdAt >= today.getTime());
-
-  document.getElementById('sc-pending').textContent    = my.filter(o => o.status === 'nouvelle').length;
-  document.getElementById('sc-reserved').textContent   = my.filter(o => o.status === 'acceptee').length;
-  document.getElementById('sc-preparing').textContent  = my.filter(o => o.status === 'prete').length;
-  document.getElementById('sc-delivered').textContent  = my.filter(o => o.status === 'livree').length;
-  document.getElementById('sc-refused').textContent    = my.filter(o => o.status === 'refuse').length;
-  const rev = todayOrders.filter(o => o.status === 'livree').reduce((s,o) => s + Number(o.amount||0), 0);
-  document.getElementById('sc-revenue').textContent    = rev.toLocaleString('fr-CI') + ' F';
-}
-
-// ── PAGES ──
-window.showPage = function(page) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.getElementById('nav-' + page).classList.add('active');
-  document.getElementById('appScroll').scrollTop = 0;
-  if (page === 'commandes') renderOrders();
-  if (page === 'historique') { updateHistoStats(); renderHistoList(); }
-};
-
-// ── COMMANDES ──
-window.filterOrders = function(s, el) {
-  currentFilter = s;
-  document.querySelectorAll('.ftab').forEach(t => t.classList.remove('active'));
-  if (el) el.classList.add('active');
-  if (!document.getElementById('page-commandes').classList.contains('active')) showPage('commandes');
-  renderOrders();
-};
-
-function renderOrders() {
-  const my = Object.entries(orders)
-    .filter(([k,v]) => v.restaurant === myResto)
-    .map(([k,v]) => ({...v, _key: k}))
-    .sort((a,b) => b.createdAt - a.createdAt);
-
-  const list = currentFilter === 'all' ? my : my.filter(o => o.status === currentFilter);
-  const wrap = document.getElementById('ordersWrap');
-
-  if (!list.length) {
-    wrap.innerHTML = `<div class="empty">🍽<br><br>Aucune commande ici.</div>`;
-    return;
-  }
-
-  const SL = {
-    nouvelle: '🔴 Nouvelle', acceptee: '🟠 En prépa',
-    prete: '🟢 Prête', 'en-route': '🔵 En route', livree: '✅ Livrée', refuse: '❌ Refusée'
-  };
-  const SC = { nouvelle:'nouvelle', acceptee:'acceptee', prete:'prete', 'en-route':'en-route', livree:'livree' };
-
-  wrap.innerHTML = list.map(o => {
-    const elapsed = Math.floor((Date.now() - o.createdAt) / 60000);
-    return `<div class="order-card ${o.isNew?'new-order':''} ${o.priority==='urgente'?'urgent':''}">
-      <div class="oc-head">
-        <div>
-          <div class="oc-id">#${o._key.slice(-6).toUpperCase()}</div>
-          <div class="oc-time">il y a ${elapsed < 1 ? 'quelques sec' : elapsed + ' min'}</div>
-        </div>
-        <span class="status-pill sp-${SC[o.status]||''}">${SL[o.status]||o.status}</span>
-      </div>
-      <div class="oc-body">
-        <div class="oc-items">${o.items||'—'}</div>
-        <div class="oc-chips">
-          <span class="chip">👤 ${o.client||'?'}</span>
-          <span class="chip">📍 ${o.zone||'?'}</span>
-          <span class="chip">💰 ${Number(o.amount||0).toLocaleString('fr-CI')} FCFA</span>
-          <span class="chip">${PAYLBL[o.paiement]||''}</span>
-          ${o.priority==='urgente'?'<span class="chip urg">🔴 URGENT</span>':''}
-          ${o.notes?`<span class="chip">📝 ${o.notes}</span>`:''}
-        </div>
-        <div class="oc-actions">
-          ${o.status==='nouvelle'
-            ? `<button class="btn btn-acc" onclick="updateStatus('${o._key}','acceptee')">✓ Accepter & Préparer</button>
-               <button class="btn btn-ref" onclick="updateStatus('${o._key}','refuse')">✕</button>`
-            : ''}
-          ${o.status==='acceptee'
-            ? `<button class="btn btn-rdy" onclick="updateStatus('${o._key}','prete')">🍽 Commande Prête !</button>`
-            : ''}
-          ${o.status==='prete'
-            ? `<span style="color:var(--green);font-size:.8rem;font-weight:600">✅ En attente du livreur</span>`
-            : ''}
-          ${o.status==='livree'
-            ? `<span style="color:var(--muted);font-size:.8rem">Livraison confirmée ✅</span>`
-            : ''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-window.updateStatus = async function(key, status) {
-  if (!db) return;
-  await update(ref(db, 'orders/' + key), { status });
-  const msgs = { acceptee:'✓ Commande acceptée', prete:'🍽 Prête !', refuse:'Commande refusée' };
-  toast(msgs[status]||'Mis à jour', status==='refuse'?'e':'s');
-};
-
-// ── HISTORIQUE ──
-function updateHistoStats() {
-  const my = Object.entries(orders)
-    .filter(([k,v]) => v.restaurant === myResto)
-    .map(([k,v]) => ({...v, _key: k}));
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const week  = new Date(); week.setDate(week.getDate()-7); week.setHours(0,0,0,0);
-
-  const todayO  = my.filter(o => o.createdAt >= today.getTime());
-  const weekO   = my.filter(o => o.createdAt >= week.getTime());
-  const livrees = my.filter(o => o.status === 'livree');
-  const todayL  = todayO.filter(o => o.status === 'livree');
-  const totalRev = livrees.reduce((s,o) => s + Number(o.amount||0), 0);
-
-  document.getElementById('h-today').textContent   = todayO.length;
-  document.getElementById('h-livrees').textContent = todayL.length;
-  document.getElementById('h-week').textContent    = weekO.length;
-  document.getElementById('h-revenu').textContent  = totalRev.toLocaleString('fr-CI');
-}
-
-window.setPeriod = function(p, el) {
-  currentPeriod = p;
-  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  renderHistoList();
-};
-
-function renderHistoList() {
-  const my = Object.entries(orders)
-    .filter(([k,v]) => v.restaurant === myResto)
-    .map(([k,v]) => ({...v, _key: k}))
-    .sort((a,b) => b.createdAt - a.createdAt);
-
-  const today = new Date(); today.setHours(0,0,0,0);
-  const week  = new Date(); week.setDate(week.getDate()-7); week.setHours(0,0,0,0);
-
-  let list = my;
-  if (currentPeriod === 'today') list = my.filter(o => o.createdAt >= today.getTime());
-  if (currentPeriod === 'week')  list = my.filter(o => o.createdAt >= week.getTime());
-
-  const el = document.getElementById('histoList');
-  if (!list.length) {
-    el.innerHTML = `<div class="empty">📋<br><br>Aucune commande sur cette période.</div>`;
-    return;
-  }
-  const SL = { nouvelle:'🔴 Nouvelle',acceptee:'🟠 En prépa',prete:'🟢 Prête','en-route':'🔵 En route',livree:'✅ Livrée' };
-  el.innerHTML = list.map(o => {
-    const d = new Date(o.createdAt);
-    const ds = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
-    const ts = d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    return `<div class="hitem">
-      <div class="hitem-top">
-        <div class="hitem-id">#${o._key.slice(-6).toUpperCase()}</div>
-        <span class="status-pill sp-${o.status||''}" style="font-size:.65rem">${SL[o.status]||o.status}</span>
-      </div>
-      <div class="hitem-name">${o.items||'—'}</div>
-      <div class="hitem-meta">
-        <div><div class="hitem-info">👤 ${o.client||'?'} · 📍 ${o.zone||'?'}</div><div class="hitem-info" style="margin-top:2px">📅 ${ds} à ${ts}</div></div>
-        <div class="hitem-amount">${Number(o.amount||0).toLocaleString('fr-CI')} F</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-// ── TOGGLE ONLINE ──
-window.toggleOnline = function() {
-  isOnline = !isOnline;
-  const toggle  = document.getElementById('onlineToggle');
-  const label   = document.getElementById('toggleLabel');
-  const sub     = document.getElementById('toggleSub');
-  const banner  = document.getElementById('statusBanner');
-  const bLabel  = document.getElementById('statusLabel');
-
-  toggle.classList.toggle('on', isOnline);
-  if (isOnline) {
-    label.textContent = 'OUVERT';
-    label.className = 'toggle-label open';
-    sub.textContent = 'Fermer le restaurant';
-    banner.className = 'status-banner open';
-    banner.querySelector('.status-dot').style.background = 'var(--green)';
-    bLabel.textContent = 'Ouvert — Prêt à recevoir des commandes';
-    document.getElementById('statusSub').textContent = '';
-    toast('🟢 Restaurant ouvert !', 's');
+  const tbody = document.getElementById('orders-tbody');
+  if(recent.length === 0){
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px;">Aucune commande — Ouvre KDS ou Admin pour commencer</td></tr>';
   } else {
-    label.textContent = 'FERMÉ';
-    label.className = 'toggle-label closed';
-    sub.textContent = 'Ouvrir le restaurant';
-    banner.className = 'status-banner closed';
-    bLabel.textContent = 'Fermé';
-    document.getElementById('statusSub').textContent = '• Cliquez sur le toggle pour ouvrir';
-    toast('🔴 Restaurant fermé', 'e');
+    tbody.innerHTML = recent.map(([id,o])=>{
+      const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+      const badge = {
+        'nouvelle':`<span class="sbadge s-nouvelle">🔴 Nouvelle</span>`,
+        'acceptee':`<span class="sbadge s-acceptee">🍳 Cuisine</span>`,
+        'prete':   `<span class="sbadge s-prete">🟡 Prête</span>`,
+        'en-route':`<span class="sbadge s-en-route">🔵 En route</span>`,
+        'livree':  `<span class="sbadge s-livree">✅ Livrée</span>`,
+        'annulee': `<span class="sbadge" style="background:#1a0000;color:var(--red);">❌ Annulée</span>`
+      }[o.status] || `<span class="sbadge">${o.status}</span>`;
+      return `
+      <tr>
+        <td style="font-family:monospace;color:var(--yellow);font-size:.8rem;">${id.slice(-6)}</td>
+        <td style="font-weight:700;">${o.client||'—'}</td>
+        <td style="color:var(--muted);font-size:.8rem;">${(o.items||'').slice(0,30)}${(o.items||'').length>30?'…':''}</td>
+        <td>📍 ${o.zone||'—'}</td>
+        <td style="font-weight:700;color:var(--yellow);">${o.total?(o.total.toLocaleString('fr')+' FCFA'):'—'}</td>
+        <td>${badge}</td>
+        <td style="color:var(--muted);">${elapsed}min</td>
+      </tr>`;
+    }).join('');
   }
-};
 
-// ── ALERT ──
-function showAlert(o) {
-  alertPending = o;
-  document.getElementById('shSub').textContent = `${o.restaurant} · ${new Date(o.createdAt).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
-  document.getElementById('shDetail').innerHTML = `
-    <div class="srow"><span class="sl">Commande</span><span class="sv">${o.items||'—'}</span></div>
-    <div class="srow"><span class="sl">Client</span><span class="sv">${o.client||'?'}</span></div>
-    <div class="srow"><span class="sl">Zone</span><span class="sv">📍 ${o.zone||'?'}</span></div>
-    <div class="srow"><span class="sl">Montant</span><span class="sv">${Number(o.amount||0).toLocaleString('fr-CI')} FCFA</span></div>
-    <div class="srow"><span class="sl">Paiement</span><span class="sv">${PAYLBL[o.paiement]||'—'}</span></div>
-    ${o.notes?`<div class="srow"><span class="sl">Notes</span><span class="sv">${o.notes}</span></div>`:''}
-    <div class="srow"><span class="sl">Priorité</span><span class="sv">${o.priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
-  `;
-  document.getElementById('alertOverlay').classList.add('show');
-}
-window.closeAlert  = () => document.getElementById('alertOverlay').classList.remove('show');
-window.acceptFromAlert = () => { if (alertPending) updateStatus(alertPending._key,'acceptee'); closeAlert(); };
+  // Zone stats
+  const zoneCounts = {};
+  allOrders.forEach(o=>{ if(o.zone) zoneCounts[o.zone] = (zoneCounts[o.zone]||0)+1; });
+  const zonesSorted = Object.entries(zoneCounts).sort((a,b)=>b[1]-a[1]);
+  const maxCount = zonesSorted[0]?.[1] || 1;
 
-// ── SOUND ──
-function playBeep() {
-  try {
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    [[880,0],[1100,.18],[880,.36],[1320,.54]].forEach(([f,t]) => {
-      const o=ctx.createOscillator(), g=ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value=f; o.type='sine';
-      g.gain.setValueAtTime(0,ctx.currentTime+t);
-      g.gain.linearRampToValueAtTime(.3,ctx.currentTime+t+.05);
-      g.gain.linearRampToValueAtTime(0,ctx.currentTime+t+.14);
-      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+.15);
-    });
-  } catch(e) {}
-}
+  document.getElementById('top-zones').innerHTML = zonesSorted.length ? zonesSorted.map(([z,c])=>`
+    <div class="zone-item">
+      <span class="zone-name">📍 ${z}</span>
+      <span class="zone-count">${c} cmd</span>
+    </div>`).join('') : '<p style="color:var(--muted);font-size:.8rem;">Aucune donnée</p>';
 
-// ── PUSH NOTIFICATIONS ──
-const VAPID_PUBLIC_KEY = 'BJfInU0rBhiJFuXv5tfZK67vDT4HUcdhtaZ5hkJH7bWJsfedQ8lqJPYyI2niFal6Aiy6ZYDu0Ofsya9bzk_kM0Q';
+  // Zone revenue chart
+  const zoneRevenue = {};
+  allOrders.filter(o=>o.status==='livree').forEach(o=>{ if(o.zone) zoneRevenue[o.zone]=(zoneRevenue[o.zone]||0)+(o.total||0); });
+  const revSorted = Object.entries(zoneRevenue).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxRev = revSorted[0]?.[1] || 1;
 
-function requestNotifPermission() {
-  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission();
+  document.getElementById('zone-chart').innerHTML = revSorted.length ?
+    revSorted.map(([z,r])=>`
+      <div class="chart-row">
+        <span class="chart-label">${z}</span>
+        <div class="chart-bar-wrap"><div class="chart-bar" style="width:${Math.max(5,r/maxRev*100)}%;"></div></div>
+        <span class="chart-val">${r.toLocaleString('fr')}</span>
+      </div>`).join('') :
+    '<p style="color:var(--muted);font-size:.8rem;">Aucune livraison terminée</p>';
+
+  // Activity log
+  const log = (db.log||[]).slice(0,20);
+  document.getElementById('activity-log').innerHTML = log.length ? log.map(l=>`
+    <div class="log-entry">
+      <span class="log-time">${new Date(l.time).toLocaleTimeString('fr')}</span>
+      <span class="log-msg">${l.msg}</span>
+    </div>`).join('') :
+    '<p style="color:var(--muted);font-size:.8rem;text-align:center;padding:20px 0;">Aucune activité</p>';
+
+  // Refresh time
+  document.getElementById('refresh-time').textContent = 'Mis à jour ' + new Date().toLocaleTimeString('fr');
 }
 
-async function registerPush() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  try {
-    const reg = await navigator.serviceWorker.register('./sw.js');
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') return;
-    const sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-    });
-    if (db) {
-      const key = myResto.replace(/[^a-zA-Z0-9]/g,'_') + '_resto';
-      await update(ref(db, 'push_subscriptions/' + key), {
-        subscription: JSON.stringify(sub), name: myResto, type: 'restaurant', updatedAt: Date.now()
-      });
-    }
-    toast('🔔 Notifications activées !', 's');
-  } catch(err) { console.error('Push error:', err); }
-}
+/* ============================================================
+   CLOCK + INIT
+   ============================================================ */
+setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr'); }, 1000);
+document.getElementById('today-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 
-function sendNotif(o) {
-  if ('Notification' in window && Notification.permission === 'granted') {
-    const n = new Notification('🔔 TropRapide · Nouvelle commande', {
-      body: `${o.items||''} · Zone: ${o.zone}`,
-      icon: 'https://www.troprapide.com/images/logo/yellow/eccursson.svg',
-      requireInteraction: true, tag: 'troprapide-' + Date.now()
-    });
-    n.onclick = () => { window.focus(); n.close(); };
-    setTimeout(() => n.close(), 8000);
-  }
-}
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g,'+').replace(/_/g,'/');
-  const raw = window.atob(base64);
-  const out = new Uint8Array(raw.length);
-  for (let i=0; i<raw.length; ++i) out[i] = raw.charCodeAt(i);
-  return out;
-}
-
-// ── TOAST ──
-window.toast = function(msg, type='s') {
-  const wrap = document.getElementById('toastWrap');
-  const el = document.createElement('div');
-  el.className = `toast ${type}`;
-  el.innerHTML = `<span class="toast-ico">${{s:'✅',w:'⚠️',e:'❌'}[type]||'📢'}</span><span class="toast-txt">${msg}</span>`;
-  wrap.prepend(el);
-  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; }, 2800);
-  setTimeout(() => el.remove(), 3200);
-};
-
-window.logout = function() { localStorage.removeItem(CFG_KEY); location.reload(); };
-
-// ── AUTO-LOGIN ──
-const saved = localStorage.getItem(CFG_KEY);
-if (saved) { try { initApp(JSON.parse(saved)); } catch(e) {} }
+window.addEventListener('storage', e=>{ if(e.key===DB_KEY) render(); });
+setInterval(render, 5000);
+render();
 </script>
 </body>
 </html>

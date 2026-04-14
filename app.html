@@ -2,1473 +2,403 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#F5C800">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TropRapide">
-<meta name="description" content="Livraison express à Abidjan en 25 min. Repas, colis, médicaments — commandez maintenant.">
-
-<!-- PWA Manifest -->
-<link rel="manifest" href="manifest.json">
-
-<!-- Apple Touch Icons -->
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
-<link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
-
-<!-- Splash screens iOS -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-
-<title>TropRapide · Livraison Express Abidjan</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meme Choco — Commander</title>
 <style>
 :root{
-  --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#0F0F0F;
-  --card:#161616;--card2:#1E1E1E;--border:#242424;--text:#F5F5F0;--muted:#666;
-  --green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
-  --safe-top:env(safe-area-inset-top,0px);
-  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;
+  --text:#fff;--muted:#888;
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
-html,body{height:100%;overflow:hidden;overscroll-behavior:none}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
-  padding-top:var(--safe-top);padding-bottom:var(--safe-bottom)}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;min-height:100vh;}
 
-/* ── SPLASH SCREEN ── */
-.splash{
-  position:fixed;inset:0;z-index:1000;background:var(--black);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity .5s ease;
-}
-.splash.hide{opacity:0;pointer-events:none}
-.splash-logo{font-family:'Syne',sans-serif;font-weight:900;font-size:2.4rem;color:var(--yellow);margin-bottom:8px;letter-spacing:-1px}
-.splash-dot{width:12px;height:12px;background:var(--yellow);border-radius:50%;animation:splashdot 1s ease infinite;display:inline-block;margin:0 3px}
-.splash-dot:nth-child(2){animation-delay:.2s}
-.splash-dot:nth-child(3){animation-delay:.4s}
-@keyframes splashdot{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(1.3);opacity:1}}
-.splash-sub{color:var(--muted);font-size:.9rem;margin-bottom:32px}
+/* HEADER */
+.header{padding:16px 20px;background:#0a0a0a;border-bottom:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-logo{font-size:1.8rem;}
+.brand-name{font-size:1.1rem;font-weight:900;color:var(--yellow);}
+.brand-sub{font-size:.75rem;color:var(--muted);}
+.cart-btn{background:var(--yellow);color:#000;border:none;padding:8px 16px;border-radius:20px;
+  font-weight:900;cursor:pointer;font-size:.9rem;display:flex;align-items:center;gap:6px;}
+.cart-count{background:#000;color:var(--yellow);border-radius:50%;width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;}
 
-/* ── APP SHELL ── */
-.app-shell{height:100%;display:flex;flex-direction:column;overflow:hidden}
+/* HERO */
+.hero{background:linear-gradient(135deg,#111 0%,#1a1200 100%);padding:24px 20px;
+  border-bottom:1px solid var(--border);}
+.hero-title{font-size:1.5rem;font-weight:900;margin-bottom:4px;}
+.hero-sub{color:var(--muted);font-size:.9rem;}
+.hero-tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.hero-tag{background:var(--border);padding:4px 10px;border-radius:20px;font-size:.75rem;color:var(--muted);}
 
-/* ── HEADER ── */
-.app-header{
-  background:var(--dark);border-bottom:1px solid var(--border);
-  padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-}
-.header-logo{font-family:'Syne',sans-serif;font-weight:900;font-size:1.15rem;color:var(--yellow);display:flex;align-items:center;gap:8px}
-.header-logo-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;animation:splashdot 1.5s infinite}
-.header-right{display:flex;align-items:center;gap:10px}
-.header-badge{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:var(--green);padding:5px 12px;border-radius:100px;font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:5px}
-.hbadge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:splashdot 1s infinite}
-.cart-btn{position:relative;background:var(--card);border:1px solid var(--border);width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;cursor:pointer}
-.cart-count{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;width:18px;height:18px;border-radius:50%;font-size:.65rem;font-weight:800;display:flex;align-items:center;justify-content:center;display:none}
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:1fr 340px;gap:0;min-height:calc(100vh - 130px);}
+@media(max-width:800px){.layout{grid-template-columns:1fr;}}
 
-/* ── SCROLL AREA ── */
-.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
-.scroll-area::-webkit-scrollbar{display:none}
+/* MENU */
+.menu-section{padding:20px;border-right:1px solid var(--border);}
+.section-title{font-size:1rem;font-weight:900;margin-bottom:14px;color:var(--yellow);}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+.menu-card{background:var(--card2);border-radius:14px;padding:16px;border:1px solid var(--border);
+  cursor:pointer;transition:border-color .2s,transform .1s;}
+.menu-card:hover{border-color:var(--yellow);}
+.menu-card:active{transform:scale(.97);}
+.menu-card.in-cart{border-color:var(--green);}
+.menu-emoji{font-size:2.5rem;margin-bottom:10px;}
+.menu-name{font-weight:800;margin-bottom:4px;}
+.menu-desc{font-size:.75rem;color:var(--muted);margin-bottom:12px;}
+.menu-footer{display:flex;justify-content:space-between;align-items:center;}
+.menu-price{font-weight:900;color:var(--yellow);}
+.add-btn{background:var(--yellow);color:#000;border:none;padding:6px 14px;
+  border-radius:20px;font-weight:700;cursor:pointer;font-size:.8rem;}
+.qty-ctrl{display:flex;align-items:center;gap:8px;}
+.qty-btn{background:var(--border);color:#fff;border:none;width:26px;height:26px;
+  border-radius:50%;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.qty-val{font-weight:900;min-width:16px;text-align:center;}
 
-/* ── PAGES ── */
-.page{display:none;animation:fadein .2s ease}
-.page.active{display:block}
-@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+/* CART PANEL */
+.cart-panel{padding:20px;display:flex;flex-direction:column;gap:16px;}
+.cart-empty{text-align:center;color:var(--muted);padding:40px 0;}
+.cart-items{display:flex;flex-direction:column;gap:8px;}
+.cart-item{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 12px;background:var(--card2);border-radius:10px;border:1px solid var(--border);}
+.cart-item-name{font-weight:700;font-size:.85rem;}
+.cart-item-sub{font-size:.75rem;color:var(--muted);}
+.cart-item-price{font-weight:900;color:var(--yellow);white-space:nowrap;}
+.remove-btn{background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem;padding:0 4px;}
 
-/* ── HOME PAGE ── */
-.hero-banner{
-  background:linear-gradient(135deg, rgba(245,200,0,.12) 0%, transparent 60%);
-  border-bottom:1px solid var(--border);padding:20px;
-  position:relative;overflow:hidden;
-}
-.hero-banner::after{
-  content:'🛵';position:absolute;right:16px;top:50%;transform:translateY(-50%);
-  font-size:3.5rem;opacity:.15;
-}
-.hero-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(245,200,0,.1);border:1px solid rgba(245,200,0,.2);color:var(--yellow);padding:4px 12px;border-radius:100px;font-size:.72rem;font-weight:600;margin-bottom:10px}
-.hero-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;line-height:1.1;margin-bottom:6px;letter-spacing:-.5px}
-.hero-title em{color:var(--yellow);font-style:normal}
-.hero-sub{color:var(--muted);font-size:.82rem;margin-bottom:16px;line-height:1.6}
-.hero-stats{display:flex;gap:16px}
-.hstat{text-align:center}
-.hstat-n{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:900;color:var(--yellow)}
-.hstat-l{font-size:.65rem;color:var(--muted)}
+/* ORDER FORM */
+.order-form{background:var(--card2);border-radius:14px;padding:16px;border:1px solid var(--border);}
+.form-title{font-weight:900;margin-bottom:12px;}
+.form-group{margin-bottom:12px;}
+.form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px;font-weight:700;}
+.form-group input, .form-group select{
+  width:100%;padding:10px 12px;background:#1a1a1a;border:1px solid var(--border);
+  border-radius:8px;color:#fff;font-size:.9rem;}
+.form-group input:focus, .form-group select:focus{outline:none;border-color:var(--yellow);}
+.form-group select option{background:#1a1a1a;}
 
-/* TYPE SELECTOR */
-.section-title{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:18px 20px 10px;display:flex;align-items:center;gap:8px}
-.section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+/* TOTAL & SUBMIT */
+.cart-total{border-top:1px solid var(--border);padding-top:14px;}
+.total-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:.85rem;}
+.total-row.grand{font-weight:900;font-size:1.1rem;color:var(--yellow);}
+.submit-btn{width:100%;padding:14px;background:var(--yellow);color:#000;border:none;
+  border-radius:10px;font-weight:900;font-size:1rem;cursor:pointer;margin-top:12px;transition:opacity .2s;}
+.submit-btn:hover{opacity:.9;}
+.submit-btn:disabled{opacity:.4;cursor:default;}
 
-.type-scroll{display:flex;gap:10px;padding:0 20px 16px;overflow-x:auto}
-.type-scroll::-webkit-scrollbar{display:none}
-.type-chip{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  background:var(--card);border:1.5px solid var(--border);border-radius:14px;
-  padding:12px 16px;cursor:pointer;transition:all .2s;flex-shrink:0;min-width:72px;
-}
-.type-chip:active{transform:scale(.95)}
-.type-chip.active{border-color:var(--yellow);background:rgba(245,200,0,.06)}
-.tc-ico{font-size:1.6rem}
-.tc-lbl{font-size:.7rem;font-weight:600;color:var(--muted);white-space:nowrap}
-.type-chip.active .tc-lbl{color:var(--yellow)}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;
+  display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card2);border-radius:20px;padding:30px;max-width:400px;width:100%;
+  border:1px solid var(--border);text-align:center;}
+.modal-icon{font-size:3rem;margin-bottom:16px;}
+.modal h2{font-size:1.4rem;font-weight:900;margin-bottom:8px;}
+.modal p{color:var(--muted);margin-bottom:20px;line-height:1.5;}
+.modal-id{background:#000;border:1px solid var(--yellow);border-radius:10px;padding:12px;
+  font-size:1.2rem;font-weight:900;color:var(--yellow);margin-bottom:20px;font-family:monospace;}
+.modal-btn{display:block;width:100%;padding:12px;border-radius:10px;font-weight:900;
+  cursor:pointer;font-size:.95rem;margin-top:8px;border:none;text-decoration:none;text-align:center;}
+.modal-btn-yellow{background:var(--yellow);color:#000;}
+.modal-btn-ghost{background:var(--border);color:#fff;}
 
-/* RESTAURANT CARDS */
-.resto-list{padding:0 20px;display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-.resto-card{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  overflow:hidden;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;gap:0;
-}
-.resto-card:active{transform:scale(.98)}
-.resto-img{width:90px;height:90px;object-fit:cover;flex-shrink:0;background:var(--border)}
-.resto-info{padding:12px 14px;flex:1}
-.resto-name{font-family:'Syne',sans-serif;font-size:.9rem;font-weight:700;margin-bottom:3px}
-.resto-type{font-size:.72rem;color:var(--muted);margin-bottom:6px}
-.resto-meta{display:flex;align-items:center;gap:8px}
-.resto-time{font-size:.72rem;color:var(--text);background:var(--card2);padding:3px 8px;border-radius:6px}
-.resto-rating{font-size:.72rem;color:var(--yellow)}
-.resto-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
-.resto-tag{font-size:.65rem;background:var(--card2);color:var(--muted);padding:2px 7px;border-radius:4px}
-
-/* PLATS */
-.plat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 20px}
-.plat-card{
-  background:var(--card);border:1px solid var(--border);border-radius:14px;
-  overflow:hidden;cursor:pointer;transition:all .2s;
-}
-.plat-card:active{transform:scale(.96)}
-.plat-img{width:100%;height:100px;object-fit:cover;background:var(--border)}
-.plat-body{padding:10px}
-.plat-name{font-size:.82rem;font-weight:600;margin-bottom:3px;line-height:1.3}
-.plat-resto{font-size:.7rem;color:var(--muted);margin-bottom:6px}
-.plat-footer{display:flex;align-items:center;justify-content:space-between}
-.plat-price{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:800;color:var(--yellow)}
-.plat-add{width:26px;height:26px;background:var(--yellow);color:var(--black);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:700;border:none;cursor:pointer}
-.plat-add:active{transform:scale(.9)}
-
-/* PROMO BANNER */
-.promo-banner{margin:0 20px 16px;background:linear-gradient(135deg,rgba(245,200,0,.15),rgba(249,115,22,.1));border:1px solid rgba(245,200,0,.2);border-radius:16px;padding:16px;display:flex;align-items:center;gap:14px}
-.promo-ico{font-size:2rem;flex-shrink:0}
-.promo-text .pt-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;color:var(--yellow);margin-bottom:3px}
-.promo-text .pt-sub{font-size:.75rem;color:var(--muted);line-height:1.5}
-
-/* ── ORDER FORM PAGE ── */
-.form-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px}
-.back-btn{width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer}
-.back-btn:active{transform:scale(.9)}
-.form-header-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
-
-.step-indicator{display:flex;align-items:center;padding:16px 20px;gap:0}
-.si-step{display:flex;flex-direction:column;align-items:center;flex:1}
-.si-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--muted);transition:all .3s}
-.si-dot.done{background:var(--green);border-color:var(--green);color:#fff}
-.si-dot.active{background:var(--yellow);border-color:var(--yellow);color:var(--black)}
-.si-lbl{font-size:.65rem;color:var(--muted);margin-top:4px}
-.si-lbl.active{color:var(--yellow)}
-.si-line{flex:1;height:2px;background:var(--border);margin-bottom:16px;transition:background .3s}
-.si-line.done{background:var(--green)}
-
-.form-body{padding:16px 20px}
-.fg{margin-bottom:14px}
-.fg label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
-.fg input,.fg select,.fg textarea{
-  width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:10px;
-  color:var(--text);padding:12px 14px;font-size:.9rem;font-family:'DM Sans',sans-serif;
-  outline:none;-webkit-appearance:none;transition:border-color .2s;
-}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--yellow)}
-.fg select option{background:var(--dark)}
-.fg textarea{resize:none;height:80px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-.pay-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
-.pay-opt{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all .2s}
-.pay-opt:active{transform:scale(.96)}
-.pay-opt.active{border-color:var(--yellow);background:rgba(245,200,0,.06)}
-.pay-ico{font-size:1.4rem;margin-bottom:4px}
-.pay-lbl{font-size:.75rem;font-weight:600;color:var(--muted)}
-.pay-opt.active .pay-lbl{color:var(--yellow)}
-
-.btn-next{
-  width:100%;padding:15px;background:var(--yellow);color:var(--black);
-  border:none;border-radius:12px;font-size:.95rem;font-weight:800;
-  font-family:'Syne',sans-serif;cursor:pointer;transition:all .2s;margin-top:8px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-.btn-next:active{transform:scale(.97);background:var(--yellow-dark)}
-.btn-next:disabled{opacity:.5;cursor:not-allowed}
-.btn-back-step{
-  width:100%;padding:12px;background:var(--card);color:var(--muted);
-  border:1px solid var(--border);border-radius:12px;font-size:.88rem;font-weight:600;
-  cursor:pointer;transition:all .2s;margin-top:8px;
-}
-
-/* SUMMARY BOX */
-.summary-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
-.sum-row{display:flex;justify-content:space-between;padding:6px 0;font-size:.84rem}
-.sum-row:not(:last-child){border-bottom:1px solid var(--border)}
-.sum-row .sl{color:var(--muted)}.sum-row .sv{font-weight:600;text-align:right;max-width:60%}
-.sum-total{display:flex;justify-content:space-between;padding-top:12px;margin-top:4px}
-.sum-total-lbl{font-family:'Syne',sans-serif;font-weight:700}
-.sum-total-val{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900;color:var(--yellow)}
-
-/* ── SUCCESS ── */
-.success-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;padding:32px 24px;text-align:center}
-.success-emoji{font-size:4rem;margin-bottom:16px;animation:bounce .6s ease}
-@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
-.success-title{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:900;color:var(--yellow);margin-bottom:8px}
-.success-sub{color:var(--muted);font-size:.88rem;margin-bottom:24px;line-height:1.7;max-width:320px}
-.success-id{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 20px;margin-bottom:20px}
-.success-id-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.success-id-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;color:var(--yellow)}
-.success-btns{display:flex;gap:10px;width:100%}
-.btn-wa{flex:1;padding:13px;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);border-radius:11px;font-size:.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.btn-new{flex:1;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:11px;font-size:.85rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer}
-
-/* ── SUIVI PAGE ── */
-.suivi-header{padding:20px;text-align:center;border-bottom:1px solid var(--border)}
-.suivi-title{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:4px}
-.suivi-sub{font-size:.8rem;color:var(--muted)}
-.tracking-box{margin:20px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
-.tracking-steps{display:flex;flex-direction:column;gap:0}
-.ts{display:flex;gap:14px;padding:12px 0}
-.ts:not(:last-child){border-bottom:1px solid var(--border)}
-.ts-ico{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.ts-ico.done{background:rgba(34,197,94,.12);border:2px solid var(--green)}
-.ts-ico.active{background:rgba(245,200,0,.12);border:2px solid var(--yellow);animation:splashdot 1.5s infinite}
-.ts-ico.pending{background:var(--card2);border:2px solid var(--border);opacity:.5}
-.ts-info{flex:1}
-.ts-title{font-weight:600;font-size:.88rem;margin-bottom:2px}
-.ts-desc{font-size:.75rem;color:var(--muted)}
-.ts-time{font-size:.7rem;color:var(--muted);white-space:nowrap}
-
-/* ── PROFIL PAGE ── */
-.profil-header{padding:28px 20px 20px;text-align:center;border-bottom:1px solid var(--border)}
-.profil-avatar{width:70px;height:70px;border-radius:50%;background:rgba(245,200,0,.1);border:2px solid var(--yellow);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 12px}
-.profil-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--yellow)}
-.profil-sub{font-size:.78rem;color:var(--muted)}
-.profil-menu{padding:16px 20px}
-.pm-item{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;cursor:pointer;margin-bottom:8px;transition:all .2s}
-.pm-item:active{transform:scale(.98)}
-.pm-ico{font-size:1.3rem;flex-shrink:0}
-.pm-info{flex:1}
-.pm-title{font-size:.88rem;font-weight:600}
-.pm-sub{font-size:.72rem;color:var(--muted)}
-.pm-arrow{color:var(--muted);font-size:.8rem}
-
-/* ── BOTTOM NAV ── */
-.bottom-nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:var(--dark);border-top:1px solid var(--border);
-  display:flex;padding:8px 0;
-  padding-bottom:calc(8px + var(--safe-bottom));
-  z-index:100;
-}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0;transition:all .2s;position:relative}
-.nav-item:active{transform:scale(.9)}
-.nav-ico{font-size:1.3rem;line-height:1}
-.nav-lbl{font-size:.62rem;color:var(--muted);font-weight:500}
-.nav-item.active .nav-lbl{color:var(--yellow);font-weight:700}
-.nav-item.active .nav-ico{transform:scale(1.1)}
-.nav-badge{position:absolute;top:2px;right:calc(50% - 18px);background:var(--red);color:#fff;width:16px;height:16px;border-radius:50%;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;display:none}
-
-/* ── INSTALL PROMPT ── */
-.install-bar{
-  position:fixed;bottom:70px;left:16px;right:16px;z-index:200;
-  background:var(--card);border:1.5px solid var(--yellow);border-radius:14px;
-  padding:14px 16px;display:flex;align-items:center;gap:12px;
-  animation:slidein .4s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 8px 32px rgba(0,0,0,.5);
-}
-@keyframes slidein{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.ib-ico{font-size:1.8rem;flex-shrink:0}
-.ib-text{flex:1}
-.ib-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.85rem;color:var(--yellow);margin-bottom:2px}
-.ib-sub{font-size:.72rem;color:var(--muted)}
-.ib-btn{background:var(--yellow);color:var(--black);border:none;padding:8px 14px;border-radius:8px;font-size:.78rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;white-space:nowrap}
-.ib-close{color:var(--muted);cursor:pointer;padding:4px;font-size:1rem;flex-shrink:0}
-
-/* TOAST */
-.toast-wrap{position:fixed;top:calc(var(--safe-top) + 70px);left:16px;right:16px;z-index:500;display:flex;flex-direction:column;gap:8px}
-.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:10px;animation:tup .3s ease;box-shadow:0 4px 20px rgba(0,0,0,.4)}
-.toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.w{border-left:3px solid var(--yellow)}
-@keyframes tup{from{transform:translateY(-12px);opacity:0}to{transform:translateY(0);opacity:1}}
-
-
-/* ── MENU PAGE ── */
-.menu-header{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-.menu-resto-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1rem}
-.menu-resto-sub{font-size:.72rem;color:var(--muted)}
-.menu-hero{position:relative;height:160px;overflow:hidden}
-.menu-hero img{width:100%;height:100%;object-fit:cover}
-.menu-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8),transparent)}
-.menu-hero-info{position:absolute;bottom:12px;left:16px;right:16px}
-.menu-hero-name{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;color:#fff}
-.menu-hero-meta{display:flex;gap:10px;margin-top:4px}
-.menu-hero-badge{background:rgba(0,0,0,.5);backdrop-filter:blur(4px);color:#fff;padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:600}
-
-.menu-cats{display:flex;gap:8px;padding:12px 16px;overflow-x:auto;border-bottom:1px solid var(--border);background:var(--dark);position:sticky;top:57px;z-index:9}
-.menu-cats::-webkit-scrollbar{display:none}
-.mcat{padding:6px 14px;border-radius:100px;border:1px solid var(--border);font-size:.78rem;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--muted);flex-shrink:0;transition:all .2s}
-.mcat.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
-
-.menu-section{padding:16px 16px 0}
-.menu-section-title{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.menu-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
-
-.menu-item{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative}
-.menu-item:active{transform:scale(.97)}
-.menu-item.in-cart{border-color:var(--yellow)}
-.mi-img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;background:var(--border)}
-.mi-info{flex:1}
-.mi-name{font-size:.9rem;font-weight:700;margin-bottom:3px}
-.mi-desc{font-size:.74rem;color:var(--muted);line-height:1.4;margin-bottom:6px}
-.mi-footer{display:flex;align-items:center;justify-content:space-between}
-.mi-price{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:900;color:var(--yellow)}
-.mi-qty{display:flex;align-items:center;gap:8px}
-.mi-btn{width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s}
-.mi-btn:active{transform:scale(.88)}
-.mi-btn.minus{background:var(--card2);color:var(--text)}
-.mi-btn.plus{background:var(--yellow);color:var(--black)}
-.mi-qty-num{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;min-width:16px;text-align:center}
-.mi-badge{position:absolute;top:8px;right:8px;background:var(--green);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:100px}
-
-/* CART BAR */
-.cart-bar{
-  position:fixed;bottom:calc(64px + var(--safe-bottom));left:16px;right:16px;
-  background:var(--yellow);color:var(--black);border-radius:14px;
-  padding:14px 18px;display:flex;align-items:center;justify-content:space-between;
-  z-index:50;animation:cartslide .3s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 8px 32px rgba(245,200,0,.3);
-}
-@keyframes cartslide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.cart-bar.hide{display:none}
-.cb-left{display:flex;align-items:center;gap:10px}
-.cb-count{background:var(--black);color:var(--yellow);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:900;font-size:.8rem}
-.cb-text{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem}
-.cb-total{font-family:'Syne',sans-serif;font-weight:900;font-size:.88rem}
-.cb-btn{background:var(--black);color:var(--yellow);border:none;padding:8px 16px;border-radius:9px;font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;cursor:pointer}
-
-/* LOADING */
-.loading-overlay{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center}
-.loading-overlay.show{display:flex}
-.spinner{width:44px;height:44px;border:3px solid var(--border);border-top-color:var(--yellow);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div class="splash" id="splash">
-  <div class="splash-logo">🛵 TROPRAPIDE</div>
-  <div class="splash-sub">Livraison express Abidjan</div>
-  <div>
-    <span class="splash-dot"></span>
-    <span class="splash-dot"></span>
-    <span class="splash-dot"></span>
+<!-- HEADER -->
+<div class="header">
+  <div class="brand">
+    <span class="brand-logo">🍗</span>
+    <div>
+      <div class="brand-name">Meme Choco</div>
+      <div class="brand-sub">Livraison Abidjan • 30-45 min</div>
+    </div>
+  </div>
+  <button class="cart-btn" onclick="toggleCartMobile()">
+    🛒 Panier <span class="cart-count" id="cart-count">0</span>
+  </button>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-title">Cuisine Africaine Authentique 🌍</div>
+  <div class="hero-sub">Livraison rapide à Cocody, Koumassi, Treichville et plus</div>
+  <div class="hero-tags">
+    <span class="hero-tag">🕐 30-45 min</span>
+    <span class="hero-tag">🛵 Livraison 500 FCFA</span>
+    <span class="hero-tag">⭐ 4.8/5</span>
+    <span class="hero-tag">✅ Ouvert</span>
   </div>
 </div>
 
-<!-- LOADING -->
-<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+<!-- MAIN LAYOUT -->
+<div class="layout">
 
-<!-- TOAST -->
-<div class="toast-wrap" id="toastWrap"></div>
-
-<!-- INSTALL PROMPT -->
-<div class="install-bar" id="installBar" style="display:none">
-  <div class="ib-ico">📱</div>
-  <div class="ib-text">
-    <div class="ib-title">Installer TropRapide</div>
-    <div class="ib-sub">Ajoutez l'app sur votre écran d'accueil</div>
+  <!-- MENU -->
+  <div class="menu-section">
+    <div class="section-title">🍽️ Notre Menu</div>
+    <div class="menu-grid" id="menu-grid"></div>
   </div>
-  <button class="ib-btn" onclick="installPWA()">Installer</button>
-  <span class="ib-close" onclick="hideInstall()">✕</span>
+
+  <!-- CART & FORM -->
+  <div class="cart-panel" id="cart-panel">
+    <div class="section-title">🛒 Votre Commande</div>
+
+    <div id="cart-empty" class="cart-empty">
+      <div style="font-size:2rem;margin-bottom:8px;">🛒</div>
+      <div>Votre panier est vide</div>
+      <div style="font-size:.8rem;margin-top:4px;">Ajoutez des plats depuis le menu</div>
+    </div>
+
+    <div id="cart-items" class="cart-items" style="display:none;"></div>
+
+    <div id="order-form-section" style="display:none;">
+      <div class="order-form">
+        <div class="form-title">📋 Vos Informations</div>
+        <div class="form-group">
+          <label>Votre Nom *</label>
+          <input type="text" id="f-name" placeholder="Ex: Koffi Mensah">
+        </div>
+        <div class="form-group">
+          <label>Téléphone *</label>
+          <input type="tel" id="f-phone" placeholder="07 XX XX XX XX">
+        </div>
+        <div class="form-group">
+          <label>Zone de livraison *</label>
+          <select id="f-zone">
+            <option value="">-- Choisir --</option>
+            <option>Cocody</option>
+            <option>Koumassi</option>
+            <option>Treichville</option>
+            <option>Plateau</option>
+            <option>Yopougon</option>
+            <option>Adjamé</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Adresse précise</label>
+          <input type="text" id="f-address" placeholder="Ex: Rue des jardins, Cocody Danga">
+        </div>
+      </div>
+
+      <div class="cart-total">
+        <div class="total-row"><span>Sous-total</span><span id="subtotal">0 FCFA</span></div>
+        <div class="total-row"><span>Livraison</span><span>500 FCFA</span></div>
+        <div class="total-row grand"><span>TOTAL</span><span id="grand-total">0 FCFA</span></div>
+        <button class="submit-btn" id="submit-btn" onclick="placeOrder()">
+          ✅ Confirmer la Commande
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- APP SHELL -->
-<div class="app-shell" id="appShell" style="display:none">
-
-  <!-- HEADER -->
-  <div class="app-header">
-    <div class="header-logo">
-      <div class="header-logo-dot"></div>
-      TROPRAPIDE
-    </div>
-    <div class="header-right">
-      <div class="header-badge"><div class="hbadge-dot"></div>En ligne</div>
-      <div class="cart-btn" onclick="goToCart()">
-        🛒
-        <div class="cart-count" id="cartCount">0</div>
-      </div>
-    </div>
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="success-modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <h2>Commande Confirmée !</h2>
+    <p>Votre commande a été transmise à la cuisine. Vous pouvez suivre votre livreur en temps réel.</p>
+    <div class="modal-id" id="modal-order-id"></div>
+    <a class="modal-btn modal-btn-yellow" id="track-link" href="tracking.html">📍 Suivre ma commande</a>
+    <button class="modal-btn modal-btn-ghost" onclick="closeModal()" style="margin-top:8px;">Commander à nouveau</button>
   </div>
-
-  <!-- SCROLL AREA -->
-  <div class="scroll-area" id="scrollArea">
-
-    <!-- HOME PAGE -->
-    <div class="page active" id="page-home">
-
-      <!-- HERO -->
-      <div class="hero-banner">
-        <div class="hero-tag">⚡ Livraison express Abidjan</div>
-        <div class="hero-title">Livré chez vous<br><em>en 25 min</em></div>
-        <div class="hero-sub">Repas, colis, médicaments — commandez sans app à télécharger</div>
-        <div class="hero-stats">
-          <div class="hstat"><div class="hstat-n">25 min</div><div class="hstat-l">Délai moyen</div></div>
-          <div class="hstat"><div class="hstat-n">7j/7</div><div class="hstat-l">7h–22h</div></div>
-          <div class="hstat"><div class="hstat-n">⭐4.9</div><div class="hstat-l">Note clients</div></div>
-          <div class="hstat"><div class="hstat-n">12</div><div class="hstat-l">Quartiers</div></div>
-        </div>
-      </div>
-
-      <!-- PROMO -->
-      <div class="promo-banner">
-        <div class="promo-ico">🎁</div>
-        <div class="promo-text">
-          <div class="pt-title">Première commande offerte !</div>
-          <div class="pt-sub">Livraison gratuite sur votre 1ère commande. Code : BIENVENUE</div>
-        </div>
-      </div>
-
-      <!-- TYPE SELECTOR -->
-      <div class="section-title">Que souhaitez-vous ?</div>
-      <div class="type-scroll">
-        <div class="type-chip active" onclick="selectType('repas',this)"><div class="tc-ico">🍽</div><div class="tc-lbl">Repas</div></div>
-        <div class="type-chip" onclick="selectType('colis',this)"><div class="tc-ico">📦</div><div class="tc-lbl">Colis</div></div>
-        <div class="type-chip" onclick="selectType('courses',this)"><div class="tc-ico">🛒</div><div class="tc-lbl">Courses</div></div>
-        <div class="type-chip" onclick="selectType('medicaments',this)"><div class="tc-ico">💊</div><div class="tc-lbl">Médic.</div></div>
-        <div class="type-chip" onclick="selectType('documents',this)"><div class="tc-ico">📄</div><div class="tc-lbl">Docs</div></div>
-        <div class="type-chip" onclick="selectType('entreprise',this)"><div class="tc-ico">🏢</div><div class="tc-lbl">Pro</div></div>
-      </div>
-
-      <!-- RESTAURANTS -->
-      <div id="restoSection">
-        <div class="section-title">Restaurants partenaires</div>
-        <div class="resto-list" id="restoList">
-          <div class="resto-card" onclick="openMenu('Mémé Choco')">
-            <img class="resto-img" src="https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60'" alt="Mémé Choco">
-            <div class="resto-info">
-              <div class="resto-name">Mémé Choco</div>
-              <div class="resto-type">Cuisine ivoirienne</div>
-              <div class="resto-meta">
-                <span class="resto-time">⏱ 20-25 min</span>
-                <span class="resto-rating">⭐ 4.9</span>
-              </div>
-              <div class="resto-tags">
-                <span class="resto-tag">🍗 Poulet</span>
-                <span class="resto-tag">🍚 Attiéké</span>
-                <span class="resto-tag">🌶 Sauce</span>
-              </div>
-            </div>
-          </div>
-          <div class="resto-card" onclick="openMenu('Le Palais du Poulet')">
-            <img class="resto-img" src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60" alt="Le Palais du Poulet">
-            <div class="resto-info">
-              <div class="resto-name">Le Palais du Poulet</div>
-              <div class="resto-type">Spécialités ivoiriennes</div>
-              <div class="resto-meta">
-                <span class="resto-time">⏱ 20-25 min</span>
-                <span class="resto-rating">⭐ 4.8</span>
-              </div>
-              <div class="resto-tags">
-                <span class="resto-tag">🍗 Braisé</span>
-                <span class="resto-tag">🥗 Salade</span>
-              </div>
-            </div>
-          </div>
-          <div class="resto-card" onclick="openMenu('Saveurs du Soleil')">
-            <img class="resto-img" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60" alt="Saveurs du Soleil">
-            <div class="resto-info">
-              <div class="resto-name">Saveurs du Soleil</div>
-              <div class="resto-type">Fusion africaine</div>
-              <div class="resto-meta">
-                <span class="resto-time">⏱ 25-30 min</span>
-                <span class="resto-rating">⭐ 4.8</span>
-              </div>
-              <div class="resto-tags">
-                <span class="resto-tag">🍲 Kedjenou</span>
-                <span class="resto-tag">🥘 Alloco</span>
-              </div>
-            </div>
-          </div>
-          <div class="resto-card" onclick="openMenu('Pizza House Abidjan')">
-            <img class="resto-img" src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60" alt="Pizza House">
-            <div class="resto-info">
-              <div class="resto-name">Pizza House Abidjan</div>
-              <div class="resto-type">Pizzeria italienne</div>
-              <div class="resto-meta">
-                <span class="resto-time">⏱ 18-22 min</span>
-                <span class="resto-rating">⭐ 4.7</span>
-              </div>
-              <div class="resto-tags">
-                <span class="resto-tag">🍕 Pizza</span>
-                <span class="resto-tag">🍝 Pâtes</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PLATS POPULAIRES -->
-      <div class="section-title">Plats populaires</div>
-      <div class="plat-grid">
-        <div class="plat-card" onclick="openMenu('Mémé Choco')">
-          <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/poulet-braisé.jpg" onerror="this.src='https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&q=60'" alt="Poulet braisé">
-          <div class="plat-body">
-            <div class="plat-name">Poulet braisé</div>
-            <div class="plat-resto">Mémé Choco</div>
-            <div class="plat-footer">
-              <div class="plat-price">3 000 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();openMenu('Mémé Choco')">+</button>
-            </div>
-          </div>
-        </div>
-        <div class="plat-card" onclick="openMenu('Saveurs du Soleil')">
-          <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/attieke-poisson.png" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=60'" alt="Attiéké poisson">
-          <div class="plat-body">
-            <div class="plat-name">Attiéké poisson</div>
-            <div class="plat-resto">Saveurs du Soleil</div>
-            <div class="plat-footer">
-              <div class="plat-price">2 500 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();openMenu('Saveurs du Soleil')">+</button>
-            </div>
-          </div>
-        </div>
-        <div class="plat-card" onclick="openMenu('Saveurs du Soleil')">
-          <img class="plat-img" src="https://www.troprapide.com/images/restauration/foody/garba.jpg" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&q=60'" alt="Garba complet">
-          <div class="plat-body">
-            <div class="plat-name">Garba complet</div>
-            <div class="plat-resto">Saveurs du Soleil</div>
-            <div class="plat-footer">
-              <div class="plat-price">1 500 F</div>
-              <button class="plat-add" onclick="event.stopPropagation();openMenu('Saveurs du Soleil')">+</button>
-            </div>
-          </div>
-        </div>
-        <div class="plat-card" onclick="goToOrder('repas','')">
-          <div class="plat-img" style="display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--card2)">🍽</div>
-          <div class="plat-body">
-            <div class="plat-name">Autre plat ?</div>
-            <div class="plat-resto">Sur demande</div>
-            <div class="plat-footer">
-              <div class="plat-price" style="color:var(--muted)">Nous contacter</div>
-              <button class="plat-add" style="background:var(--border);color:var(--muted)">→</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ORDER FORM PAGE -->
-    <div class="page" id="page-order">
-      <div class="form-header">
-        <div class="back-btn" onclick="goHome()">←</div>
-        <div class="form-header-title" id="orderFormTitle">Commander</div>
-      </div>
-
-      <!-- STEP INDICATOR -->
-      <div class="step-indicator">
-        <div class="si-step">
-          <div class="si-dot active" id="sd1">1</div>
-          <div class="si-lbl active" id="sl1">Détails</div>
-        </div>
-        <div class="si-line" id="sline1"></div>
-        <div class="si-step">
-          <div class="si-dot" id="sd2">2</div>
-          <div class="si-lbl" id="sl2">Contact</div>
-        </div>
-        <div class="si-line" id="sline2"></div>
-        <div class="si-step">
-          <div class="si-dot" id="sd3">3</div>
-          <div class="si-lbl" id="sl3">Paiement</div>
-        </div>
-        <div class="si-line" id="sline3"></div>
-        <div class="si-step">
-          <div class="si-dot" id="sd4">4</div>
-          <div class="si-lbl" id="sl4">Confirmer</div>
-        </div>
-      </div>
-
-      <!-- STEP 1 -->
-      <div id="ostep1" class="form-body">
-        <div class="fg" id="fg-resto-select">
-          <label>Restaurant</label>
-          <select id="f_resto">
-            <option>Mémé Choco</option>
-            <option>Le Palais du Poulet</option>
-            <option>Saveurs du Soleil</option>
-            <option>Pizza House Abidjan</option>
-            <option>Street Burger Corner</option>
-            <option>Délices Asiatiques</option>
-            <option>Juice & Smoothies Bar</option>
-          </select>
-        </div>
-        <div class="fg" id="fg-retrait" style="display:none">
-          <label>Adresse de retrait</label>
-          <input type="text" id="f_retrait" placeholder="Quartier / Adresse de départ">
-        </div>
-        <div class="fg">
-          <label id="items-lbl">Articles commandés</label>
-          <textarea id="f_items" placeholder="Ex: 1x Poulet braisé + Attiéké, 2x Jus"></textarea>
-        </div>
-        <div class="fg" id="fg-notes" style="display:none">
-          <label>Instructions spéciales</label>
-          <input type="text" id="f_notes" placeholder="Fragile, urgent, réfrigéré...">
-        </div>
-        <div class="fg">
-          <label>Montant estimé (FCFA)</label>
-          <input type="number" id="f_amount" placeholder="3500" inputmode="numeric">
-        </div>
-        <button class="btn-next" onclick="nextStep(2)">Continuer →</button>
-      </div>
-
-      <!-- STEP 2 -->
-      <div id="ostep2" class="form-body" style="display:none">
-        <div class="fg">
-          <label>Votre nom</label>
-          <input type="text" id="f_client" placeholder="Nom complet" autocomplete="name">
-        </div>
-        <div class="fg">
-          <label>Téléphone</label>
-          <input type="tel" id="f_phone" placeholder="+225 07 ..." autocomplete="tel" inputmode="tel">
-        </div>
-        <div class="fg">
-          <label>Zone de livraison</label>
-          <select id="f_zone">
-            <option value="">-- Choisir votre quartier --</option>
-            <option>Cocody</option><option>Plateau</option><option>Yopougon</option>
-            <option>Marcory</option><option>Treichville</option><option>Adjamé</option>
-            <option>Abobo</option><option>Koumassi</option><option>Port-Bouët</option>
-            <option>Bingerville</option><option>Attécoubé</option><option>Songon</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Adresse précise (optionnel)</label>
-          <input type="text" id="f_adresse" placeholder="Rue, immeuble, repère...">
-        </div>
-        <button class="btn-next" onclick="nextStep(3)">Continuer →</button>
-        <button class="btn-back-step" onclick="nextStep(1)">← Retour</button>
-      </div>
-
-      <!-- STEP 3 -->
-      <div id="ostep3" class="form-body" style="display:none">
-        <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px">Choisissez votre mode de paiement</div>
-        <div class="pay-grid">
-          <div class="pay-opt active" onclick="selectPay('cash',this)"><div class="pay-ico">💵</div><div class="pay-lbl">Cash livraison</div></div>
-          <div class="pay-opt" onclick="selectPay('momo',this)"><div class="pay-ico">📱</div><div class="pay-lbl">Mobile Money</div></div>
-          <div class="pay-opt" onclick="selectPay('wave',this)"><div class="pay-ico">🌊</div><div class="pay-lbl">Wave</div></div>
-          <div class="pay-opt" onclick="selectPay('prepaye',this)"><div class="pay-ico">✅</div><div class="pay-lbl">Prépayé</div></div>
-        </div>
-        <div class="fg">
-          <label>Priorité</label>
-          <select id="f_priority"><option value="normale">🟢 Normale</option><option value="urgente">🔴 Urgente (+frais)</option></select>
-        </div>
-        <button class="btn-next" onclick="nextStep(4)">Vérifier →</button>
-        <button class="btn-back-step" onclick="nextStep(2)">← Retour</button>
-      </div>
-
-      <!-- STEP 4 -->
-      <div id="ostep4" class="form-body" style="display:none">
-        <div class="summary-box" id="summaryBox"></div>
-        <button class="btn-next" id="submitBtn" onclick="submitOrder()">⚡ Envoyer la commande</button>
-        <button class="btn-back-step" onclick="nextStep(3)">← Modifier</button>
-        <div style="text-align:center;margin-top:12px;font-size:.72rem;color:var(--muted);line-height:1.7">
-          🔒 Paiement sécurisé à la livraison<br>
-          En commandant vous acceptez nos <a href="https://www.troprapide.com/conditions" style="color:var(--yellow)">conditions</a>
-        </div>
-      </div>
-
-      <!-- SUCCESS -->
-      <div id="ostep5" class="success-page" style="display:none">
-        <div class="success-emoji">🛵</div>
-        <div class="success-title">Commande envoyée !</div>
-        <div class="success-sub" id="successMsg">Votre commande a été reçue. Nous vous contactons dans 2 minutes.</div>
-        <div class="success-id">
-          <div class="success-id-lbl">Numéro de commande</div>
-          <div class="success-id-val" id="successId">#CMD-XXXX</div>
-        </div>
-        <div class="success-btns">
-          <button class="btn-wa" onclick="confirmWA()">💬 WhatsApp</button>
-          <button class="btn-new" onclick="goHome()">Nouvelle commande</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- SUIVI PAGE -->
-    <div class="page" id="page-suivi">
-      <div class="suivi-header">
-        <div class="suivi-title">📍 Suivre ma commande</div>
-        <div class="suivi-sub">Statut en temps réel de votre livraison</div>
-      </div>
-      <div class="tracking-box">
-        <div class="tracking-steps">
-          <div class="ts">
-            <div class="ts-ico done">✅</div>
-            <div class="ts-info"><div class="ts-title">Commande reçue</div><div class="ts-desc">Votre commande a bien été enregistrée</div></div>
-            <div class="ts-time" id="t-time1"></div>
-          </div>
-          <div class="ts">
-            <div class="ts-ico" id="t-ico2">⏳</div>
-            <div class="ts-info"><div class="ts-title">Restaurant notifié</div><div class="ts-desc">Le restaurant prépare votre commande</div></div>
-            <div class="ts-time" id="t-time2"></div>
-          </div>
-          <div class="ts">
-            <div class="ts-ico pending" id="t-ico3">🛵</div>
-            <div class="ts-info"><div class="ts-title">Livreur en route</div><div class="ts-desc">Votre livreur a pris la commande</div></div>
-            <div class="ts-time" id="t-time3"></div>
-          </div>
-          <div class="ts">
-            <div class="ts-ico pending" id="t-ico4">🏠</div>
-            <div class="ts-info"><div class="ts-title">Livré !</div><div class="ts-desc">Commande livrée à votre porte</div></div>
-            <div class="ts-time" id="t-time4"></div>
-          </div>
-        </div>
-      </div>
-      <div style="margin:0 20px">
-        <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-          <div style="font-size:.82rem;color:var(--muted);margin-bottom:10px">Un problème avec votre commande ?</div>
-          <a href="tel:+2250140503030" style="display:inline-flex;align-items:center;gap:6px;background:var(--yellow);color:var(--black);padding:10px 20px;border-radius:10px;font-weight:800;font-size:.85rem;text-decoration:none">
-            📞 Appeler TropRapide
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- PROFIL PAGE -->
-    <div class="page" id="page-profil">
-      <div class="profil-header">
-        <div class="profil-avatar">👤</div>
-        <div class="profil-name" id="profilName">Mon profil</div>
-        <div class="profil-sub">Client TropRapide</div>
-      </div>
-      <div class="profil-menu">
-        <div class="pm-item" onclick="showPage('suivi')">
-          <div class="pm-ico">📦</div>
-          <div class="pm-info"><div class="pm-title">Mes commandes</div><div class="pm-sub">Suivre mes livraisons</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-        <div class="pm-item" onclick="toast('Bientôt disponible !','w')">
-          <div class="pm-ico">⭐</div>
-          <div class="pm-info"><div class="pm-title">Mes avis</div><div class="pm-sub">Notez vos livraisons</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-        <div class="pm-item" onclick="toast('Bientôt disponible !','w')">
-          <div class="pm-ico">💰</div>
-          <div class="pm-info"><div class="pm-title">Programme fidélité</div><div class="pm-sub">10ème livraison offerte</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-        <div class="pm-item" onclick="window.open('https://www.troprapide.com','_blank')">
-          <div class="pm-ico">🌐</div>
-          <div class="pm-info"><div class="pm-title">Site web</div><div class="pm-sub">troprapide.com</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-        <div class="pm-item" onclick="window.open('https://wa.me/2250140503030','_blank')">
-          <div class="pm-ico">💬</div>
-          <div class="pm-info"><div class="pm-title">Support WhatsApp</div><div class="pm-sub">+225 01 40 50 30 30</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-        <div class="pm-item" onclick="window.open('tel:+2250140503030','_self')">
-          <div class="pm-ico">📞</div>
-          <div class="pm-info"><div class="pm-title">Nous appeler</div><div class="pm-sub">+225 01 40 50 30 30</div></div>
-          <div class="pm-arrow">›</div>
-        </div>
-      </div>
-      <div style="padding:0 20px 20px;text-align:center">
-        <div style="font-size:.72rem;color:var(--muted)">TropRapide v1.0 · By Oppin SARL<br>© 2026 · Abidjan, Côte d'Ivoire</div>
-      </div>
-    </div>
-
-
-    <!-- MENU RESTAURANT PAGE -->
-    <div class="page" id="page-menu">
-      <div class="menu-header">
-        <div class="back-btn" onclick="closeMenu()">←</div>
-        <div>
-          <div class="menu-resto-name" id="menuRestoName">Restaurant</div>
-          <div class="menu-resto-sub" id="menuRestoSub">Menu complet</div>
-        </div>
-      </div>
-      <div id="menuContent"></div>
-    </div>
-
-    <!-- CART BAR -->
-    <div class="cart-bar hide" id="cartBar">
-      <div class="cb-left">
-        <div class="cb-count" id="cbCount">0</div>
-        <div class="cb-text" id="cbText">articles</div>
-      </div>
-      <div class="cb-total" id="cbTotal">0 FCFA</div>
-      <button class="cb-btn" onclick="goToCheckout()">Commander →</button>
-    </div>
-
-  </div><!-- end scroll-area -->
-
-  <!-- BOTTOM NAV -->
-  <div class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
-      <div class="nav-ico">🏠</div><div class="nav-lbl">Accueil</div>
-    </div>
-    <div class="nav-item" id="nav-order" onclick="goToOrder('repas','')">
-      <div class="nav-ico">⚡</div><div class="nav-lbl">Commander</div>
-    </div>
-    <div class="nav-item" id="nav-suivi" onclick="showPage('suivi')">
-      <div class="nav-ico">📍</div><div class="nav-lbl">Suivi</div>
-      <div class="nav-badge" id="suiviBadge">1</div>
-    </div>
-    <div class="nav-item" id="nav-profil" onclick="showPage('profil')">
-      <div class="nav-ico">👤</div><div class="nav-lbl">Profil</div>
-    </div>
-  </div>
-
-</div><!-- end app-shell -->
-
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</div>
 
 <script>
-// ── CONFIG ──
-const FIREBASE_CFG = {
-  apiKey: "AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkinbBZnU",
-  databaseURL: "https://troprapide-821a7-default-rtdb.firebaseio.com",
-  projectId: "troprapide-821a7"
+/* ============================================================
+   SHARED DB
+   ============================================================ */
+const DB_KEY = 'meme_choco_delivery';
+const ZONES_COORDS = {
+  'Cocody':     { lat:5.370, lng:-3.980 },
+  'Koumassi':   { lat:5.290, lng:-4.010 },
+  'Treichville':{ lat:5.300, lng:-4.005 },
+  'Plateau':    { lat:5.320, lng:-4.020 },
+  'Yopougon':   { lat:5.350, lng:-4.070 },
+  'Adjamé':     { lat:5.360, lng:-4.025 }
 };
 
-let db = null;
-let currentPage = 'home';
-let orderType = 'repas';
-let selectedPay = 'cash';
-let currentStep = 1;
-let lastOrderId = null;
-let cart = [];
-let deferredPrompt = null;
+function getDB(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || {orders:{},drivers:{},log:[],revenue:0}; }
+  catch(e){ return {orders:{},drivers:{},log:[],revenue:0}; }
+}
+function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
 
-const TYPES = {
-  repas:       {e:'🍽',l:'Repas restaurant',   il:'Articles commandés'},
-  colis:       {e:'📦',l:'Envoi de colis',      il:'Description du colis'},
-  courses:     {e:'🛒',l:'Courses / Achats',    il:'Liste des articles'},
-  medicaments: {e:'💊',l:'Médicaments',         il:'Médicaments / ordonnance'},
-  documents:   {e:'📄',l:'Documents urgents',   il:'Type de documents'},
-  entreprise:  {e:'🏢',l:'Livraison entreprise',il:'Description / référence'},
-};
-const PAYLBL = {cash:'💵 Cash livraison',momo:'📱 Mobile Money',wave:'🌊 Wave',prepaye:'✅ Prépayé'};
+/* ============================================================
+   MENU DATA
+   ============================================================ */
+const MENU = [
+  { id:'m1', emoji:'🍗', name:'Poulet braisé + Attiéké',     desc:'Notre spécialité maison. Poulet grillé feu de bois.',  price:3500 },
+  { id:'m2', emoji:'🍚', name:'Riz + Sauce graine',           desc:'Riz blanc avec sauce graine traditionnelle.',          price:2500 },
+  { id:'m3', emoji:'🫕', name:'Foutou + Sauce arachide',      desc:'Foutou banane avec sauce arachide crémeuse.',          price:2000 },
+  { id:'m4', emoji:'🐟', name:'Poisson braisé + Alloco',     desc:'Tilapia grillé avec bananes plantains frites.',        price:4000 },
+  { id:'m5', emoji:'🍲', name:'Kedjenou de poulet',           desc:'Poulet mijoté aux épices dans une canari.',            price:3000 },
+  { id:'m6', emoji:'🥤', name:'Jus de gingembre',             desc:'Fait maison, frais et naturel.',                       price:500  }
+];
 
-// ── INIT ──
-window.addEventListener('load', () => {
-  // Splash screen
-  setTimeout(() => {
-    document.getElementById('splash').classList.add('hide');
-    setTimeout(() => {
-      document.getElementById('splash').style.display = 'none';
-      document.getElementById('appShell').style.display = 'flex';
-    }, 500);
-  }, 1800);
+/* ============================================================
+   CART STATE
+   ============================================================ */
+let cart = {}; // { id: quantity }
 
-  // Firebase
-  try {
-    const app = firebase.initializeApp(FIREBASE_CFG);
-    db = app.database();
-  } catch(e) { console.log('Firebase:', e.message); }
+function addToCart(id){ cart[id] = (cart[id]||0)+1; renderCart(); }
+function removeFromCart(id){ cart[id] = Math.max(0,(cart[id]||1)-1); if(!cart[id]) delete cart[id]; renderCart(); }
+function removeItem(id){ delete cart[id]; renderCart(); }
 
-  // Service Worker
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/troprapide-alertes/sw-pwa.js').catch(()=>{});
-  }
-
-  // Push permission
-  setTimeout(requestNotifPermission, 3000);
-
-  // URL params
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('type')) {
-    const t = params.get('type');
-    if (TYPES[t]) { orderType = t; goToOrder(t, ''); }
-  }
-});
-
-// ── PWA INSTALL ──
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  setTimeout(() => {
-    document.getElementById('installBar').style.display = 'flex';
-  }, 3000);
-});
-
-window.installPWA = function() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(r => {
-      if (r.outcome === 'accepted') toast('✅ TropRapide installé !','s');
-      hideInstall();
-    });
-  }
-};
-window.hideInstall = function() {
-  document.getElementById('installBar').style.display = 'none';
-};
-
-// ── NAVIGATION ──
-window.showPage = function(page) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page)?.classList.add('active');
-  document.getElementById('nav-'+page)?.classList.add('active');
-  document.getElementById('scrollArea').scrollTo(0,0);
-  currentPage = page;
-};
-
-window.goHome = function() {
-  showPage('home');
-  resetOrderForm();
-};
-
-window.goToCart = function() {
-  goToOrder(orderType, '');
-};
-
-// ── TYPE SELECT ──
-window.selectType = function(type, el) {
-  orderType = type;
-  document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  const isRepas = type === 'repas';
-  document.getElementById('restoSection').style.display = isRepas ? 'block' : 'none';
-  if (!isRepas) goToOrder(type, '');
-};
-
-window.goToOrder = function(type, resto) {
-  orderType = type || orderType;
-  const cfg = TYPES[orderType];
-  document.getElementById('orderFormTitle').textContent = cfg.e + ' ' + cfg.l;
-  document.getElementById('fg-resto-select').style.display = orderType==='repas' ? '' : 'none';
-  document.getElementById('fg-retrait').style.display = orderType!=='repas' ? '' : 'none';
-  document.getElementById('fg-notes').style.display = (orderType==='colis'||orderType==='medicaments') ? '' : 'none';
-  document.getElementById('items-lbl').textContent = cfg.il;
-  document.getElementById('f_items').placeholder = cfg.il + '...';
-  if (resto) {
-    const sel = document.getElementById('f_resto');
-    for (let o of sel.options) { if (o.value === resto) { sel.value = resto; break; } }
-  }
-  showPage('order');
-  document.getElementById('nav-order').classList.add('active');
-  document.getElementById('nav-home').classList.remove('active');
-};
-
-window.quickOrder = function(plat, resto, prix) {
-  goToOrder('repas', resto);
-  document.getElementById('f_items').value = '1x ' + plat;
-  document.getElementById('f_amount').value = prix;
-};
-
-// ── ORDER STEPS ──
-window.nextStep = function(n) {
-  // Validate
-  if (n === 2 && !document.getElementById('f_items').value.trim()) { toast('Décrivez votre commande','e'); return; }
-  if (n === 3 && !document.getElementById('f_client').value.trim()) { toast('Entrez votre nom','e'); return; }
-  if (n === 3 && !document.getElementById('f_phone').value.trim())  { toast('Entrez votre téléphone','e'); return; }
-  if (n === 3 && !document.getElementById('f_zone').value)          { toast('Choisissez votre quartier','e'); return; }
-  if (n === 4) buildSummary();
-
-  for (let i=1;i<=4;i++) {
-    document.getElementById('ostep'+i).style.display = (i===n) ? 'block' : 'none';
-  }
-  document.getElementById('ostep5').style.display = 'none';
-  currentStep = n;
-  updateStepIndicator(n);
-  document.getElementById('scrollArea').scrollTo(0,0);
-};
-
-function updateStepIndicator(n) {
-  for (let i=1;i<=4;i++) {
-    const dot = document.getElementById('sd'+i);
-    const lbl = document.getElementById('sl'+i);
-    if (i < n)       { dot.className='si-dot done'; dot.textContent='✓'; lbl.className='si-lbl'; }
-    else if (i === n) { dot.className='si-dot active'; dot.textContent=i; lbl.className='si-lbl active'; }
-    else              { dot.className='si-dot'; dot.textContent=i; lbl.className='si-lbl'; }
-    if (i < 4) {
-      document.getElementById('sline'+i).className = 'si-line' + (i < n ? ' done' : '');
-    }
-  }
+function getCartTotal(){
+  return Object.entries(cart).reduce((s,[id,qty])=>{
+    const item = MENU.find(m=>m.id===id);
+    return s + (item ? item.price*qty : 0);
+  }, 0);
 }
 
-function buildSummary() {
-  const cfg = TYPES[orderType];
-  const items   = document.getElementById('f_items').value;
-  const client  = document.getElementById('f_client').value;
-  const phone   = document.getElementById('f_phone').value;
-  const zone    = document.getElementById('f_zone').value;
-  const adresse = document.getElementById('f_adresse').value;
-  const amount  = document.getElementById('f_amount').value || '0';
-  const priority= document.getElementById('f_priority').value;
-  const retrait = document.getElementById('f_retrait').value;
-  const restaurant = orderType==='repas' ? document.getElementById('f_resto').value : (retrait||'À définir');
-
-  document.getElementById('summaryBox').innerHTML = `
-    <div class="sum-row"><span class="sl">Type</span><span class="sv">${cfg.e} ${cfg.l}</span></div>
-    ${orderType==='repas'?`<div class="sum-row"><span class="sl">Restaurant</span><span class="sv">${restaurant}</span></div>`:''}
-    ${retrait&&orderType!=='repas'?`<div class="sum-row"><span class="sl">Retrait</span><span class="sv">${retrait}</span></div>`:''}
-    <div class="sum-row"><span class="sl">Commande</span><span class="sv">${items}</span></div>
-    <div class="sum-row"><span class="sl">Livraison</span><span class="sv">📍 ${zone}${adresse?' · '+adresse:''}</span></div>
-    <div class="sum-row"><span class="sl">Client</span><span class="sv">${client} · ${phone}</span></div>
-    <div class="sum-row"><span class="sl">Paiement</span><span class="sv">${PAYLBL[selectedPay]}</span></div>
-    <div class="sum-row"><span class="sl">Priorité</span><span class="sv">${priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
-    <div class="sum-total">
-      <span class="sum-total-lbl">Montant</span>
-      <span class="sum-total-val">${Number(amount).toLocaleString()} FCFA</span>
-    </div>
-  `;
-}
-
-// ── SUBMIT ──
-window.submitOrder = async function() {
-  if (!db) { toast('Connexion Firebase requise','e'); return; }
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  document.getElementById('loadingOverlay').classList.add('show');
-
-  const items    = document.getElementById('f_items').value;
-  const client   = document.getElementById('f_client').value;
-  const phone    = document.getElementById('f_phone').value;
-  const zone     = document.getElementById('f_zone').value;
-  const adresse  = document.getElementById('f_adresse').value;
-  const amount   = document.getElementById('f_amount').value||'0';
-  const priority = document.getElementById('f_priority').value;
-  const retrait  = document.getElementById('f_retrait').value;
-  const notes    = document.getElementById('f_notes')?.value||'';
-  const restaurant = orderType==='repas' ? document.getElementById('f_resto').value : (retrait||'À définir');
-
-  try {
-    const ref = await db.ref('orders').push({
-      client, phone, zone, adresse, items, amount,
-      restaurant, notes, priority,
-      paiement: selectedPay,
-      type: orderType,
-      status: 'nouvelle',
-      source: 'pwa',
-      createdAt: Date.now(),
-      isNew: true,
-    });
-    lastOrderId = ref.key;
-    const shortId = '#' + ref.key.slice(-6).toUpperCase();
-
-    // Save to localStorage for tracking
-    localStorage.setItem('troprapide_last_order', JSON.stringify({
-      id: ref.key, shortId, items, restaurant, zone, status:'nouvelle', createdAt:Date.now()
-    }));
-
-    document.getElementById('loadingOverlay').classList.remove('show');
-    document.getElementById('successId').textContent = shortId;
-    document.getElementById('successMsg').textContent = `Commande ${shortId} reçue ! Nous vous rappelons au ${phone} dans 2 minutes.`;
-
-    // Show success
-    for (let i=1;i<=4;i++) document.getElementById('ostep'+i).style.display='none';
-    document.getElementById('ostep5').style.display='flex';
-    document.getElementById('suiviBadge').style.display='flex';
-
-    // Start tracking
-    startTracking(ref.key);
-    setTimeout(() => { db.ref('orders/'+ref.key).update({isNew:false}); }, 6000);
-
-  } catch(e) {
-    document.getElementById('loadingOverlay').classList.remove('show');
-    btn.disabled = false;
-    toast('Erreur: ' + e.message, 'e');
-  }
-};
-
-// ── TRACKING ──
-function startTracking(key) {
-  if (!db) return;
-  db.ref('orders/'+key).on('value', snap => {
-    const o = snap.val();
-    if (!o) return;
-    updateTrackingUI(o);
-  });
-}
-
-function updateTrackingUI(o) {
-  const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const statuses = ['nouvelle','acceptee','en-route','livree'];
-  const statusIdx = statuses.indexOf(o.status);
-
-  const icons = ['✅','🍽','🛵','🏠'];
-  for (let i=2;i<=4;i++) {
-    const ico = document.getElementById('t-ico'+i);
-    const idx = i-1;
-    if (idx <= statusIdx) {
-      ico.className = 'ts-ico done';
-      ico.textContent = icons[idx];
-    } else if (idx === statusIdx+1) {
-      ico.className = 'ts-ico active';
-      ico.textContent = icons[idx];
-    } else {
-      ico.className = 'ts-ico pending';
-      ico.textContent = icons[idx];
-    }
-  }
-  document.getElementById('t-time1').textContent = now;
-}
-
-window.confirmWA = function() {
-  const o = JSON.parse(localStorage.getItem('troprapide_last_order')||'{}');
-  const msg = encodeURIComponent(
-    `Bonjour TropRapide 👋\n\n` +
-    `Je viens de passer une commande via votre app.\n\n` +
-    `📋 ${o.shortId||''}\n` +
-    `📦 ${o.items||''}\n` +
-    `🍽 ${o.restaurant||''}\n` +
-    `📍 ${o.zone||''}\n\n` +
-    `Merci de confirmer !`
-  );
-  window.open('https://wa.me/2250140503030?text='+msg, '_blank');
-};
-
-function resetOrderForm() {
-  currentStep = 1;
-  ['f_items','f_client','f_phone','f_amount','f_retrait','f_notes','f_adresse'].forEach(id=>{
-    const el=document.getElementById(id); if(el)el.value='';
-  });
-  document.getElementById('f_zone').value='';
-  for(let i=1;i<=4;i++) document.getElementById('ostep'+i).style.display=i===1?'block':'none';
-  document.getElementById('ostep5').style.display='none';
-  document.getElementById('submitBtn').disabled=false;
-  updateStepIndicator(1);
-}
-
-window.selectPay = function(pay, el) {
-  selectedPay = pay;
-  document.querySelectorAll('.pay-opt').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-};
-
-// ── CART (simple) ──
-window.addToCart = function(name, price) {
-  cart.push({name, price});
-  const count = document.getElementById('cartCount');
-  count.textContent = cart.length;
-  count.style.display = 'flex';
-  toast('🛒 ' + name + ' ajouté', 's');
-};
-
-// ── NOTIFICATIONS ──
-function requestNotifPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
-
-// ── TOAST ──
-function toast(msg, type='s') {
-  const w=document.getElementById('toastWrap'), el=document.createElement('div');
-  el.className=`toast ${type}`;
-  el.innerHTML=`<span style="font-size:1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]||'📢'}</span><span style="font-size:.82rem;font-weight:600">${msg}</span>`;
-  w.prepend(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
-  setTimeout(()=>el.remove(),3200);
-}
-window.toast = toast;
-
-// ── MENUS DATA ──
-const MENUS = {
-  "Meme_Choco": {
-    restoName: "Mémé Choco",
-    img: "https://www.troprapide.com/images/restauration/foody/meme-choco.jpeg",
-    type: "Cuisine ivoirienne", time: "20-25 min", rating: "4.9",
-    categories: ["Populaires","Plats","Boissons"],
-    items: [
-      {id:"mc1",cat:"Populaires",name:"Poulet braise + Attieke",desc:"Poulet braise au charbon avec attieke et sauce tomate",price:3500,img:"https://www.troprapide.com/images/restauration/foody/poulet-br%C3%A9.jpg",popular:true},
-      {id:"mc2",cat:"Populaires",name:"Riz Soumara",desc:"Riz gras avec legumes et viande de boeuf",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"mc3",cat:"Plats",name:"Garba complet",desc:"Thon grille avec attieke et sauce piquante",price:1500,img:"https://www.troprapide.com/images/restauration/foody/garba.jpg"},
-      {id:"mc4",cat:"Plats",name:"Kedjenou de poulet",desc:"Poulet mijote aux epices ivoiriennes",price:4000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"mc5",cat:"Plats",name:"Alloco + poisson",desc:"Bananes plantains frites avec poisson braise",price:2000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"mc6",cat:"Plats",name:"Sauce graine + fufu",desc:"Sauce graine de palme avec fufu de manioc",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"mc7",cat:"Boissons",name:"Jus de gingembre",desc:"Jus de gingembre frais naturel",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"mc8",cat:"Boissons",name:"Bissap frais",desc:"Jus de fleurs hibiscus sucre",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Le_Palais_du_Poulet": {
-    restoName: "Le Palais du Poulet",
-    img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500&q=70",
-    type: "Specialites ivoiriennes", time: "20-25 min", rating: "4.8",
-    categories: ["Populaires","Poulet","Accompagnements","Boissons"],
-    items: [
-      {id:"pp1",cat:"Populaires",name:"Poulet braise entier",desc:"Poulet entier braise au charbon de bois",price:8000,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60",popular:true},
-      {id:"pp2",cat:"Populaires",name:"Demi-poulet + Attieke",desc:"Demi-poulet braise avec attieke et sauce piment",price:4500,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60",popular:true},
-      {id:"pp3",cat:"Poulet",name:"Cuisse de poulet x2",desc:"2 cuisses de poulet braisees",price:3000,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60"},
-      {id:"pp4",cat:"Poulet",name:"Ailes de poulet x4",desc:"4 ailes de poulet croustillantes",price:2500,img:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=60"},
-      {id:"pp5",cat:"Accompagnements",name:"Attieke seul",desc:"Portion attieke avec sauce tomate",price:500,img:"https://www.troprapide.com/images/restauration/foody/attieke-poisson.png"},
-      {id:"pp6",cat:"Accompagnements",name:"Salade fraiche",desc:"Salade de crudites avec vinaigrette",price:800,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"pp7",cat:"Boissons",name:"Eau minerale",desc:"Bouteille eau 50cl",price:300,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"pp8",cat:"Boissons",name:"Boisson sucree",desc:"Coca, Fanta, Sprite 33cl",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Saveurs_du_Soleil": {
-    restoName: "Saveurs du Soleil",
-    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=70",
-    type: "Fusion africaine", time: "25-30 min", rating: "4.8",
-    categories: ["Populaires","Plats africains","Grillades","Boissons"],
-    items: [
-      {id:"ss1",cat:"Populaires",name:"Attieke poisson braise",desc:"Attieke avec poisson braise et sauce tomate",price:2500,img:"https://www.troprapide.com/images/restauration/foody/attieke-poisson.png",popular:true},
-      {id:"ss2",cat:"Populaires",name:"Garba complet",desc:"Attieke avec thon grille special",price:1500,img:"https://www.troprapide.com/images/restauration/foody/garba.jpg",popular:true},
-      {id:"ss3",cat:"Plats africains",name:"Riz gras au poulet",desc:"Riz jollof avec poulet et legumes",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"ss4",cat:"Plats africains",name:"Alloco complet",desc:"Alloco frit avec oeuf et poisson",price:1500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"ss5",cat:"Plats africains",name:"Accra de haricots",desc:"Beignets de haricots croustillants",price:1000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"ss6",cat:"Grillades",name:"Brochettes boeuf x5",desc:"5 brochettes de boeuf marinees et grillees",price:2500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"ss7",cat:"Grillades",name:"Thieboudienne",desc:"Riz au poisson senegalais aux legumes",price:3500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"ss8",cat:"Boissons",name:"Jus naturel",desc:"Jus de fruits frais orange citron ananas",price:600,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Pizza_House_Abidjan": {
-    restoName: "Pizza House Abidjan",
-    img: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500&q=70",
-    type: "Pizzeria italienne", time: "18-22 min", rating: "4.7",
-    categories: ["Populaires","Pizzas","Pates","Desserts","Boissons"],
-    items: [
-      {id:"ph1",cat:"Populaires",name:"Pizza Margherita",desc:"Sauce tomate, mozzarella, basilic frais",price:5000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60",popular:true},
-      {id:"ph2",cat:"Populaires",name:"Pizza Reine",desc:"Jambon, champignons, mozzarella, olives",price:6500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60",popular:true},
-      {id:"ph3",cat:"Pizzas",name:"Pizza 4 Fromages",desc:"Mozzarella, emmental, gorgonzola, parmesan",price:7000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"ph4",cat:"Pizzas",name:"Pizza Poulet BBQ",desc:"Poulet grille, sauce BBQ, oignons, poivrons",price:7500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"ph5",cat:"Pates",name:"Spaghetti Bolognaise",desc:"Pates fraiches sauce bolognaise maison",price:4500,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"ph6",cat:"Pates",name:"Penne Arrabiata",desc:"Pates au piment fort et sauce tomate",price:4000,img:"https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&q=60"},
-      {id:"ph7",cat:"Desserts",name:"Tiramisu",desc:"Tiramisu maison au mascarpone",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"ph8",cat:"Boissons",name:"Limonade maison",desc:"Limonade fraiche avec citron et menthe",price:800,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Street_Burger_Corner": {
-    restoName: "Street Burger Corner",
-    img: "https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=500&q=70",
-    type: "Fast food gourmand", time: "15-20 min", rating: "4.6",
-    categories: ["Populaires","Burgers","Accompagnements","Boissons"],
-    items: [
-      {id:"sb1",cat:"Populaires",name:"Classic Burger",desc:"Steak boeuf, salade, tomate, sauce maison",price:3500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60",popular:true},
-      {id:"sb2",cat:"Populaires",name:"Double Cheese Burger",desc:"Double steak, double fromage fondu, cornichons",price:5000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60",popular:true},
-      {id:"sb3",cat:"Burgers",name:"Chicken Burger",desc:"Poulet croustillant, coleslaw, sauce ranch",price:4000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
-      {id:"sb4",cat:"Burgers",name:"Burger Vegetarien",desc:"Galette de legumes, avocat, roquette",price:3500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
-      {id:"sb5",cat:"Accompagnements",name:"Frites maison",desc:"Frites fraiches croustillantes avec sauce",price:1000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
-      {id:"sb6",cat:"Accompagnements",name:"Hot Dog",desc:"Saucisse grillee, moutarde, ketchup, oignons",price:2000,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"},
-      {id:"sb7",cat:"Boissons",name:"Milkshake",desc:"Milkshake vanille chocolat ou fraise",price:1500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"sb8",cat:"Boissons",name:"Soda 33cl",desc:"Coca, Fanta, Sprite",price:500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Delices_Asiatiques": {
-    restoName: "Délices Asiatiques",
-    img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500&q=70",
-    type: "Cuisine asiatique", time: "22-28 min", rating: "4.9",
-    categories: ["Populaires","Nouilles","Riz","Entrees","Boissons"],
-    items: [
-      {id:"da1",cat:"Populaires",name:"Pho au boeuf",desc:"Soupe de nouilles au boeuf et herbes fraiches",price:4500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60",popular:true},
-      {id:"da2",cat:"Populaires",name:"Riz saute poulet",desc:"Riz saute oeuf avec poulet et legumes wok",price:3500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60",popular:true},
-      {id:"da3",cat:"Nouilles",name:"Nouilles sautees crevettes",desc:"Nouilles de riz sautees aux crevettes",price:5000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"da4",cat:"Nouilles",name:"Ramen epice",desc:"Ramen japonais au bouillon epice et oeuf",price:4500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"da5",cat:"Riz",name:"Riz cantonais",desc:"Riz saute aux oeufs jambon et petits pois",price:3000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"da6",cat:"Entrees",name:"Nems x4",desc:"4 nems frits avec sauce nuoc-mam",price:2000,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"da7",cat:"Entrees",name:"Rouleaux printemps x3",desc:"3 rouleaux frais avec sauce cacahuete",price:2500,img:"https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&q=60"},
-      {id:"da8",cat:"Boissons",name:"The vert froid",desc:"The vert japonais servi froid",price:700,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"}
-    ]
-  },
-  "Juice_Smoothies_Bar": {
-    restoName: "Juice & Smoothies Bar",
-    img: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=500&q=70",
-    type: "Boissons saines", time: "10-15 min", rating: "4.8",
-    categories: ["Populaires","Smoothies","Jus frais","Cafes","Snacks"],
-    items: [
-      {id:"js1",cat:"Populaires",name:"Smoothie Tropical",desc:"Mangue ananas banane lait de coco",price:2000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60",popular:true},
-      {id:"js2",cat:"Populaires",name:"Jus ananas frais",desc:"Ananas presse frais sans sucre ajoute",price:1200,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60",popular:true},
-      {id:"js3",cat:"Smoothies",name:"Smoothie Detox Vert",desc:"Epinards concombre pomme verte gingembre",price:2500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"js4",cat:"Smoothies",name:"Smoothie Fraise Banane",desc:"Fraises banane yaourt nature miel",price:2000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"js5",cat:"Jus frais",name:"Jus gingembre citron",desc:"Gingembre frais citron miel",price:1000,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"js6",cat:"Jus frais",name:"Jus de papaye",desc:"Papaye fraiche mixee avec citron",price:1200,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"js7",cat:"Cafes",name:"Cafe latte",desc:"Espresso double avec lait vapeur",price:1500,img:"https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=200&q=60"},
-      {id:"js8",cat:"Snacks",name:"Sandwich club",desc:"Poulet salade tomate mayo sur pain de mie",price:2500,img:"https://images.unsplash.com/photo-1585238341710-4b4e6f289635?w=200&q=60"}
-    ]
-  }
-};
-
-// Lookup by display name
-function normalize(s) {
-  return s.toLowerCase()
-    .replace(/[éèê]/g,'e').replace(/[àâ]/g,'a').replace(/[ô]/g,'o')
-    .replace(/[îï]/g,'i').replace(/[&]/g,'and')
-    .replace(/[^a-z0-9]/g,' ').trim();
-}
-function findMenu(restoName) {
-  // Exact match first
-  const exact = Object.values(MENUS).find(m => m.restoName === restoName);
-  if (exact) return exact;
-  // Normalized match
-  const normSearch = normalize(restoName);
-  return Object.values(MENUS).find(m => normalize(m.restoName) === normSearch) ||
-         Object.values(MENUS).find(m => normSearch.startsWith(normalize(m.restoName).split(' ')[0]));
-}
-
-
-
-// ── CART (simple) ──
-window.addToCart = function(name, price) {
-  cart.push({name, price});
-  const count = document.getElementById('cartCount');
-  count.textContent = cart.length;
-  count.style.display = 'flex';
-  toast('🛒 ' + name + ' ajouté', 's');
-};
-
-// ── NOTIFICATIONS ──
-function requestNotifPermission() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
-
-// ── TOAST ──
-function toast(msg, type='s') {
-  const w=document.getElementById('toastWrap'), el=document.createElement('div');
-  el.className=`toast ${type}`;
-  el.innerHTML=`<span style="font-size:1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]||'📢'}</span><span style="font-size:.82rem;font-weight:600">${msg}</span>`;
-  w.prepend(el);
-  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},2800);
-  setTimeout(()=>el.remove(),3200);
-}
-window.toast = toast;
-
-// ── MENU STATE ──
-let menuCart = {};
-let currentResto = '';
-let currentMenuCat = '';
-
-// ── OPEN MENU ──
-window.openMenu = function(restoName) {
-  const menu = findMenu(restoName);
-  if (!menu) { console.log('Menu non trouve:', restoName); goToOrder('repas', restoName); return; }
-  currentResto = restoName;
-  menuCart = {};
-  currentMenuCat = menu.categories[0];
-  document.getElementById('menuRestoName').textContent = restoName;
-  document.getElementById('menuRestoSub').textContent = menu.type + ' · ⏱ ' + menu.time + ' · ⭐ ' + menu.rating;
-  renderMenu(menu);
-  showPage('menu');
-  document.getElementById('cartBar').classList.add('hide');
-};
-
-window.closeMenu = function() {
-  showPage('home');
-  menuCart = {};
-  document.getElementById('cartBar').classList.add('hide');
-};
-
-function renderMenu(menu) {
-  const catsHtml = menu.categories.map(c =>
-    `<div class="mcat ${c===currentMenuCat?'active':''}" onclick="filterMenuCat('${c}',this)">${c}</div>`
-  ).join('');
-  let itemsHtml = '';
-  menu.categories.forEach(cat => {
-    const catItems = menu.items.filter(i => i.cat === cat);
-    if (!catItems.length) return;
-    const catId = cat.replace(/\s+/g,'_');
-    itemsHtml += `<div class="menu-section" id="mcat-${catId}">
-      <div class="menu-section-title">${cat}</div>
-      ${catItems.map(item => renderMenuItem(item)).join('')}
+/* ============================================================
+   RENDER MENU
+   ============================================================ */
+function renderMenu(){
+  document.getElementById('menu-grid').innerHTML = MENU.map(item=>{
+    const qty = cart[item.id]||0;
+    return `
+    <div class="menu-card ${qty>0?'in-cart':''}" id="card-${item.id}">
+      <div class="menu-emoji">${item.emoji}</div>
+      <div class="menu-name">${item.name}</div>
+      <div class="menu-desc">${item.desc}</div>
+      <div class="menu-footer">
+        <span class="menu-price">${item.price.toLocaleString('fr')} FCFA</span>
+        ${qty === 0
+          ? `<button class="add-btn" onclick="addToCart('${item.id}')">+ Ajouter</button>`
+          : `<div class="qty-ctrl">
+               <button class="qty-btn" onclick="removeFromCart('${item.id}')">−</button>
+               <span class="qty-val">${qty}</span>
+               <button class="qty-btn" style="background:var(--yellow);color:#000;" onclick="addToCart('${item.id}')">+</button>
+             </div>`
+        }
+      </div>
     </div>`;
-  });
-  document.getElementById('menuContent').innerHTML = `
-    <div class="menu-hero">
-      <img src="${menu.img}" onerror="this.style.background='#1a1a1a'" alt="">
-      <div class="menu-hero-overlay"></div>
-      <div class="menu-hero-info">
-        <div class="menu-hero-name">${currentResto}</div>
-        <div class="menu-hero-meta">
-          <span class="menu-hero-badge">⏱ ${menu.time}</span>
-          <span class="menu-hero-badge">⭐ ${menu.rating}</span>
-        </div>
+  }).join('');
+}
+
+/* ============================================================
+   RENDER CART
+   ============================================================ */
+function renderCart(){
+  renderMenu();
+  const count = Object.values(cart).reduce((s,v)=>s+v,0);
+  document.getElementById('cart-count').textContent = count;
+
+  const cartItemsEl = document.getElementById('cart-items');
+  const cartEmptyEl = document.getElementById('cart-empty');
+  const formSection = document.getElementById('order-form-section');
+
+  if(count === 0){
+    cartEmptyEl.style.display = '';
+    cartItemsEl.style.display = 'none';
+    formSection.style.display = 'none';
+    return;
+  }
+
+  cartEmptyEl.style.display = 'none';
+  cartItemsEl.style.display = '';
+  formSection.style.display = '';
+
+  const subtotal = getCartTotal();
+  cartItemsEl.innerHTML = Object.entries(cart).map(([id,qty])=>{
+    const item = MENU.find(m=>m.id===id);
+    if(!item) return '';
+    return `
+    <div class="cart-item">
+      <div>
+        <div class="cart-item-name">${item.emoji} ${item.name}</div>
+        <div class="cart-item-sub">x${qty} × ${item.price.toLocaleString('fr')} FCFA</div>
       </div>
-    </div>
-    <div class="menu-cats">${catsHtml}</div>
-    <div style="padding-bottom:100px">${itemsHtml}</div>`;
-}
-
-window.filterMenuCat = function(cat, el) {
-  document.querySelectorAll('.mcat').forEach(c=>c.classList.remove('active'));
-  el.classList.add('active');
-  const catId = cat.replace(/\s+/g,'_');
-  const section = document.getElementById('mcat-'+catId);
-  if (section) section.scrollIntoView({behavior:'smooth',block:'start'});
-};
-
-window.changeQty = function(itemId, delta) {
-  const menu = findMenu(currentResto);
-  if (!menu) return;
-  const item = menu.items.find(i => i.id === itemId);
-  if (!item) return;
-  menuCart[itemId] = Math.max(0, (menuCart[itemId]||0) + delta);
-  if (menuCart[itemId] === 0) delete menuCart[itemId];
-  const el = document.getElementById('mi-'+itemId);
-  if (el) el.outerHTML = renderMenuItem(item);
-  updateCartBar();
-};
-
-function updateCartBar() {
-  const items = Object.entries(menuCart);
-  const totalQty = items.reduce((s,[,q])=>s+q, 0);
-  const menu = findMenu(currentResto);
-  if (!totalQty || !menu) { document.getElementById('cartBar').classList.add('hide'); return; }
-  const totalPrice = items.reduce((s,[id,q]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return s + (item ? item.price*q : 0);
-  }, 0);
-  document.getElementById('cbCount').textContent = totalQty;
-  document.getElementById('cbText').textContent = totalQty>1?'articles':'article';
-  document.getElementById('cbTotal').textContent = totalPrice.toLocaleString('fr-FR')+' FCFA';
-  document.getElementById('cartBar').classList.remove('hide');
-}
-
-window.goToCheckout = function() {
-  const menu = findMenu(currentResto);
-  if (!menu) return;
-  const itemsList = Object.entries(menuCart).map(([id,qty]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return item ? qty+'x '+item.name : '';
-  }).filter(Boolean).join(', ');
-  const totalPrice = Object.entries(menuCart).reduce((s,[id,q]) => {
-    const item = menu.items.find(i=>i.id===id);
-    return s + (item ? item.price*q : 0);
-  }, 0);
-  const sel = document.getElementById('f_resto');
-  let found = false;
-  for (let o of sel.options) { if (o.value===currentResto||o.text===currentResto){sel.value=o.value;found=true;break;} }
-  if (!found) { const opt=new Option(currentResto,currentResto); sel.add(opt); sel.value=currentResto; }
-  document.getElementById('f_items').value = itemsList;
-  document.getElementById('f_amount').value = totalPrice;
-  document.getElementById('cartBar').classList.add('hide');
-  goToOrder('repas', currentResto);
-  setTimeout(() => nextStep(2), 100);
-};
-
-// ── MENUS DATA ──
-
-function renderMenuItem(item) {
-  const qty = menuCart[item.id] || 0;
-  return `<div class="menu-item ${qty>0?'in-cart':''}" id="mi-${item.id}">
-    <img class="mi-img" src="${item.img}" onerror="this.style.background='#2a2a2a'" alt="${item.name}">
-    <div class="mi-info">
-      <div class="mi-name">${item.name}${item.popular?'<span style="margin-left:5px;font-size:.65rem;background:rgba(245,200,0,.15);color:var(--yellow);padding:1px 6px;border-radius:4px">⭐ Populaire</span>':''}</div>
-      <div class="mi-desc">${item.desc}</div>
-      <div class="mi-footer">
-        <div class="mi-price">${item.price.toLocaleString('fr-FR')} FCFA</div>
-        <div class="mi-qty">
-          ${qty > 0 ? `
-            <button class="mi-btn minus" onclick="event.stopPropagation();changeQty('${item.id}',-1)">−</button>
-            <span class="mi-qty-num">${qty}</span>
-          ` : ''}
-          <button class="mi-btn plus" onclick="event.stopPropagation();changeQty('${item.id}',1)">+</button>
-        </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="cart-item-price">${(item.price*qty).toLocaleString('fr')}</span>
+        <button class="remove-btn" onclick="removeItem('${id}')">✕</button>
       </div>
-    </div>
-    ${qty>0?'<div class="mi-badge">✓ '+qty+'</div>':''}
-  </div>`;
+    </div>`;
+  }).join('');
+
+  document.getElementById('subtotal').textContent = subtotal.toLocaleString('fr') + ' FCFA';
+  document.getElementById('grand-total').textContent = (subtotal+500).toLocaleString('fr') + ' FCFA';
 }
 
+/* ============================================================
+   PLACE ORDER
+   ============================================================ */
+function placeOrder(){
+  const name = document.getElementById('f-name').value.trim();
+  const phone = document.getElementById('f-phone').value.trim();
+  const zone = document.getElementById('f-zone').value;
+  const address = document.getElementById('f-address').value.trim();
+
+  if(!name){ alert('Veuillez entrer votre nom'); return; }
+  if(!phone){ alert('Veuillez entrer votre numéro'); return; }
+  if(!zone){ alert('Veuillez choisir votre zone'); return; }
+
+  const z = ZONES_COORDS[zone] || { lat:5.34, lng:-4.01 };
+  const orderId = 'cmd' + Date.now();
+  const items = Object.entries(cart).map(([id,qty])=>{
+    const item = MENU.find(m=>m.id===id);
+    return `${qty}x ${item.name}`;
+  }).join(', ');
+
+  const db = getDB();
+  db.orders[orderId] = {
+    client: name,
+    phone,
+    zone,
+    address,
+    items,
+    total: getCartTotal() + 500,
+    lat: z.lat + (Math.random()*.01-.005),
+    lng: z.lng + (Math.random()*.01-.005),
+    status: 'nouvelle',
+    restaurant: 'Meme Choco',
+    restaurantLat: 5.340,
+    restaurantLng: -4.010,
+    assignedTo: null,
+    assignedName: null,
+    createdAt: Date.now()
+  };
+  db.log = db.log || [];
+  db.log.unshift({ time: Date.now(), msg:`📱 Nouvelle commande de ${name} — ${zone}` });
+  saveDB(db);
+
+  // Show confirmation
+  document.getElementById('modal-order-id').textContent = orderId.slice(-8).toUpperCase();
+  document.getElementById('track-link').href = `tracking.html?order=${orderId}`;
+  document.getElementById('success-modal').style.display = 'flex';
+
+  // Reset cart
+  cart = {};
+  renderCart();
+}
+
+function closeModal(){
+  document.getElementById('success-modal').style.display = 'none';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-phone').value = '';
+  document.getElementById('f-zone').value = '';
+  document.getElementById('f-address').value = '';
+}
+
+function toggleCartMobile(){
+  const panel = document.getElementById('cart-panel');
+  panel.scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderMenu();
+renderCart();
 </script>
 </body>
+</html>
