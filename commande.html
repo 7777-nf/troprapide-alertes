@@ -696,11 +696,14 @@ window.submitOrder = async function() {
   const priority = document.getElementById('f_priority').value;
   const retrait  = document.getElementById('f_retrait').value;
   const notes    = document.getElementById('f_notes').value;
-  const restaurant = orderType === 'repas' ? selectedResto : (retrait || 'À définir');
+  // ✅ CORRIGÉ : les commandes non-repas sont taguées 'TropRapide'
+  // pour être visibles dans le dashboard dispatcher
+  const restaurant = orderType === 'repas' ? selectedResto : 'TropRapide';
 
   const order = {
     client, phone, zone, adresse, items, amount,
     restaurant, notes, priority,
+    retrait: orderType !== 'repas' ? (retrait || '') : '',  // ✅ adresse retrait sauvegardée
     paiement: selectedPay,
     type: orderType,
     status: 'nouvelle',
