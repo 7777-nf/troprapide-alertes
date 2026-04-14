@@ -3,431 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KDS — Cuisine Meme Choco</title>
+<title>KDS Cuisine — TropRapide</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#000;--card:#111;--border:#222;
-  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
-  --muted:#888;
-}
+:root{--bg:#0A0A0A;--card:#161616;--border:#242424;--yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;--text:#F5F5F0;--muted:#666;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{margin:0;background:var(--bg);color:#fff;font-family:Arial,sans-serif;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+/* CONFIG */
+.cfg{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;}
+.cfg-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:420px;}
+.cfg-logo{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;color:var(--yellow);text-align:center;margin-bottom:4px;}
+.cfg-sub{text-align:center;color:var(--muted);font-size:.82rem;margin-bottom:22px;}
+.fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.fg label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+.fg input{background:#1a1a1a;border:1.5px solid var(--border);border-radius:10px;color:var(--text);padding:11px 13px;font-size:.9rem;outline:none;transition:border-color .2s;width:100%;}
+.fg input:focus{border-color:var(--yellow);}
+.btn-cfg{width:100%;padding:13px;background:var(--yellow);color:#000;border:none;border-radius:10px;font-size:.95rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px;}
 
 /* HEADER */
-.header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);
-}
-.header-left{display:flex;align-items:center;gap:16px;}
-.status{font-weight:900;color:var(--green);}
-.header-stats{display:flex;gap:12px;}
-.hstat{font-size:.8rem;color:var(--muted);}
-.hstat span{color:#fff;font-weight:700;}
+.header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#0a0a0a;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.kds-title{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:900;color:var(--yellow);}
+.header-stats{display:flex;gap:20px;align-items:center;}
+.hstat{text-align:center;}
+.hstat-val{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900;}
+.hstat-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;}
+.clock{color:var(--muted);font-size:.88rem;}
+.logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:.78rem;}
 
-/* NOTIFICATION TOAST */
-.toast{
-  position:fixed;bottom:20px;right:20px;background:var(--yellow);color:#000;
-  padding:12px 18px;border-radius:12px;font-weight:900;font-size:.9rem;
-  z-index:999;transform:translateY(100px);transition:transform .3s;max-width:320px;
-  box-shadow:0 4px 20px rgba(245,200,0,.3);
-}
-.toast.show{transform:translateY(0);}
+/* 3 COLONNES KDS */
+.kds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;height:calc(100vh - 70px);}
+@media(max-width:900px){.kds-grid{grid-template-columns:1fr;height:auto;}}
 
-/* GRID */
-.kds-container{
-  display:grid;grid-template-columns:1fr 1fr 1fr;
-  height:calc(100vh - 52px);
-}
-.kds-column{
-  border-right:2px solid #111;padding:10px;overflow-y:auto;
-}
-.kds-column:last-child{border-right:none;}
+.kds-col{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+.kds-col:last-child{border-right:none;}
+.col-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#080808;flex-shrink:0;}
+.col-title{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;}
+.col-count{background:var(--border);padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
 
-/* COLUMN TITLE */
-.kds-title{
-  font-size:1rem;font-weight:900;margin-bottom:10px;padding:6px 8px;
-  border-radius:8px;display:flex;justify-content:space-between;align-items:center;
-}
-.col-count{font-size:.75rem;font-weight:400;color:var(--muted);}
+.col-nouvelle .col-title{color:var(--orange);}
+.col-nouvelle .col-count{background:rgba(249,115,22,.15);color:var(--orange);}
+.col-acceptee .col-title{color:var(--blue);}
+.col-acceptee .col-count{background:rgba(59,130,246,.15);color:var(--blue);}
+.col-prete .col-title{color:var(--yellow);}
+.col-prete .col-count{background:rgba(245,200,0,.15);color:var(--yellow);}
 
-/* CARD */
-.kds-card{
-  background:var(--card);border-radius:12px;padding:14px;margin-bottom:10px;
-  border-left:6px solid var(--yellow);transition:border-color .3s;
-}
-.kds-card.urgente{
-  border-left:6px solid var(--red);background:#1a0f0f;
-  animation:blink 1s infinite;
-}
-.kds-card.dispatch-done{border-left:6px solid var(--blue);}
+.col-body{flex:1;overflow-y:auto;padding:10px;}
 
-@keyframes blink{
-  0%{background:#1a0f0f;}50%{background:#2a0000;}100%{background:#1a0f0f;}
-}
+/* TICKET */
+.ticket{background:var(--card);border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;}
+.ticket.urgent{border-color:var(--red);animation:pulse-border 1s infinite;}
+@keyframes pulse-border{0%,100%{border-color:var(--red)}50%{border-color:#5a0000;}}
+.ticket.new-a{animation:pop .4s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
 
-.kds-header{display:flex;justify-content:space-between;align-items:flex-start;font-weight:900;margin-bottom:8px;}
-.kds-id{color:var(--yellow);font-size:.9rem;}
-.kds-time{font-size:.85rem;color:var(--muted);}
-.kds-time.urgent{color:var(--red);animation:blink-text 1s infinite;}
-@keyframes blink-text{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ticket-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ticket-id{font-family:'Syne',sans-serif;font-weight:900;font-size:1rem;color:var(--yellow);}
+.ticket-timer{font-size:.78rem;font-weight:700;padding:3px 9px;border-radius:20px;}
+.timer-ok{background:#001a0a;color:var(--green);}
+.timer-warn{background:#1a1000;color:var(--orange);}
+.timer-late{background:#1a0000;color:var(--red);}
 
-.kds-items{font-size:1.1rem;font-weight:800;margin:8px 0;line-height:1.3;}
+.ticket-client{font-size:.82rem;color:var(--muted);margin-bottom:8px;}
+.ticket-items{font-size:.92rem;font-weight:600;line-height:1.6;padding:10px;background:#0a0a0a;border-radius:8px;margin-bottom:10px;}
+.ticket-zone{font-size:.78rem;color:var(--muted);margin-bottom:10px;}
+.ticket-notes{font-size:.78rem;color:var(--orange);background:#1a0a00;padding:6px 10px;border-radius:6px;margin-bottom:10px;}
 
-.kds-meta{font-size:.8rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
-.kds-meta span{white-space:nowrap;}
+.ticket-btn{width:100%;padding:11px;border:none;border-radius:10px;font-weight:800;cursor:pointer;font-size:.88rem;font-family:'Syne',sans-serif;transition:all .15s;}
+.ticket-btn:active{transform:scale(.97);}
+.btn-accept-kds{background:var(--orange);color:#fff;}
+.btn-ready-kds{background:var(--yellow);color:#000;}
 
-/* DRIVER BADGE on card */
-.driver-tag{
-  background:#00001a;border:1px solid var(--blue);color:var(--blue);
-  padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;
-  display:inline-block;margin-bottom:8px;
-}
+.empty-col{text-align:center;padding:40px 16px;color:var(--muted);}
+.empty-col .ico{font-size:2rem;margin-bottom:8px;}
 
-/* ACTIONS */
-.kds-actions{display:flex;gap:8px;margin-top:4px;}
-.kds-btn{
-  flex:1;padding:11px;font-weight:900;border-radius:8px;border:none;cursor:pointer;
-  font-size:.85rem;transition:transform .1s;
-}
-.kds-btn:active{transform:scale(.96);}
-.btn-accept{background:var(--yellow);color:#000;}
-.btn-ready{background:var(--green);color:#fff;}
-.btn-cancel{background:#1a1a1a;color:var(--muted);border:1px solid var(--border);}
+/* TOAST */
+.toast-wrap{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:400;width:calc(100%-32px);max-width:400px;display:flex;flex-direction:column;gap:8px;}
+.toast{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px 16px;display:flex;align-items:center;gap:10px;animation:tup .3s;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.toast.s{border-left:3px solid var(--green)}.toast.e{border-left:3px solid var(--red)}.toast.w{border-left:3px solid var(--yellow)}
+@keyframes tup{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border);}
 </style>
 </head>
 <body>
 
+<!-- CONFIG -->
+<div class="cfg" id="cfgOverlay">
+  <div class="cfg-card">
+    <div class="cfg-logo">🍳 KDS CUISINE</div>
+    <div class="cfg-sub">Écran de cuisine — TropRapide</div>
+    <div class="fg"><label>Firebase Database URL</label>
+      <input type="text" id="cfg_db" placeholder="https://troprapide-xxx.firebaseio.com"></div>
+    <div class="fg"><label>API Key</label>
+      <input type="text" id="cfg_key" placeholder="AIzaSy..."></div>
+    <div class="fg"><label>Project ID</label>
+      <input type="text" id="cfg_pid" placeholder="troprapide-xxxxx"></div>
+    <button class="btn-cfg" onclick="connect()">🔥 CONNECTER</button>
+  </div>
+</div>
+
 <!-- HEADER -->
 <div class="header">
-  <div class="header-left">
-    <div class="status">🟢 CUISINE OUVERTE</div>
-    <div class="header-stats">
-      <span class="hstat">Nouvelles: <span id="h-new">0</span></span>
-      <span class="hstat">Cuisine: <span id="h-prep">0</span></span>
-      <span class="hstat">Prêtes: <span id="h-ready">0</span></span>
-    </div>
+  <div class="kds-title">🍳 CUISINE — KDS</div>
+  <div class="header-stats">
+    <div class="hstat"><div class="hstat-val" id="h-new" style="color:var(--orange)">0</div><div class="hstat-lbl">En attente</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-kitch" style="color:var(--blue)">0</div><div class="hstat-lbl">En cuisine</div></div>
+    <div class="hstat"><div class="hstat-val" id="h-ready" style="color:var(--yellow)">0</div><div class="hstat-lbl">Prêtes</div></div>
   </div>
-  <div id="time" style="color:var(--muted);font-size:.9rem;"></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span class="clock" id="clock"></span>
+    <button class="logout-btn" onclick="logout()">⚙️</button>
+  </div>
 </div>
 
-<!-- KDS COLUMNS -->
-<div class="kds-container">
-
-  <div class="kds-column">
-    <div class="kds-title" style="background:#1a0000;">
-      🔴 NOUVELLES
-      <span class="col-count" id="count-new"></span>
+<!-- KDS GRID -->
+<div class="kds-grid">
+  <!-- COL 1: NOUVELLES -->
+  <div class="kds-col col-nouvelle">
+    <div class="col-header">
+      <span class="col-title">🔴 NOUVELLES COMMANDES</span>
+      <span class="col-count" id="cnt-new">0</span>
     </div>
-    <div id="col-new"></div>
+    <div class="col-body" id="col-nouvelle"></div>
   </div>
-
-  <div class="kds-column">
-    <div class="kds-title" style="background:#0f0800;">
-      🟠 EN PRÉPARATION
-      <span class="col-count" id="count-prep"></span>
+  <!-- COL 2: EN CUISINE -->
+  <div class="kds-col col-acceptee">
+    <div class="col-header">
+      <span class="col-title">🍳 EN PRÉPARATION</span>
+      <span class="col-count" id="cnt-acceptee">0</span>
     </div>
-    <div id="col-prep"></div>
+    <div class="col-body" id="col-acceptee"></div>
   </div>
-
-  <div class="kds-column">
-    <div class="kds-title" style="background:#001a00;">
-      🟢 PRÊTES — DISPATCH AUTO
-      <span class="col-count" id="count-ready"></span>
+  <!-- COL 3: PRÊTES -->
+  <div class="kds-col col-prete">
+    <div class="col-header">
+      <span class="col-title">🟡 PRÊTES À LIVRER</span>
+      <span class="col-count" id="cnt-prete">0</span>
     </div>
-    <div id="col-ready"></div>
+    <div class="col-body" id="col-prete"></div>
   </div>
-
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast-wrap" id="toastWrap"></div>
 
-<script>
-/* ============================================================
-   SHARED DB
-   ============================================================ */
-const DB_KEY = 'meme_choco_delivery';
-const SEED_DRIVERS = {
-  'd1':{ name:'Ali Koné',   avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
-  'd2':{ name:'Brice Yao',  avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
-  'd3':{ name:'Cédric Ama', avatar:'🏍️', lat:5.352, lng:-4.020, status:'available', speed:1.5, activeOrders:0 }
+<script type="module">
+import { initializeApp }             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
+
+const CFG_KEY = 'troprapide_firebase_cfg'; // même clé que commande.html
+let db = null, allOrders = {};
+let _knownIds = new Set(), _firstLoad = true;
+
+/* ── CONNECT ── */
+window.connect = function(){
+  const dburl = document.getElementById('cfg_db').value.trim();
+  const apiKey = document.getElementById('cfg_key').value.trim();
+  const pid    = document.getElementById('cfg_pid').value.trim();
+  if(!dburl||!apiKey||!pid){ toast('Remplissez tous les champs','e'); return; }
+  try{
+    const app = initializeApp({apiKey, databaseURL:dburl, projectId:pid}, 'kds-'+Date.now());
+    db = getDatabase(app);
+    localStorage.setItem(CFG_KEY, JSON.stringify({dburl, apiKey, pid}));
+    document.getElementById('cfgOverlay').style.display = 'none';
+    startListener();
+  }catch(e){ toast('Erreur: '+e.message,'e'); }
 };
 
-function getDB(){
-  try{
-    const d = JSON.parse(localStorage.getItem(DB_KEY));
-    if(!d) return { orders:{}, drivers:structuredClone(SEED_DRIVERS), log:[], revenue:0 };
-    if(!d.drivers || Object.keys(d.drivers).length===0) d.drivers = structuredClone(SEED_DRIVERS);
-    return d;
-  }catch(e){ return { orders:{}, drivers:structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
-}
-function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-function addLog(msg){
-  const db=getDB(); db.log=db.log||[];
-  db.log.unshift({time:Date.now(),msg}); if(db.log.length>80) db.log=db.log.slice(0,80);
-  saveDB(db);
-}
+const saved = localStorage.getItem(CFG_KEY);
+if(saved){ try{
+  const c = JSON.parse(saved);
+  const app = initializeApp({apiKey:c.apiKey, databaseURL:c.dburl, projectId:c.pid}, 'kds-'+Date.now());
+  db = getDatabase(app);
+  document.getElementById('cfgOverlay').style.display = 'none';
+  startListener();
+}catch(e){} }
 
-/* ============================================================
-   MOTEUR DISPATCH (intégré dans KDS)
-   Déclenché automatiquement quand une commande passe en "prete"
-   ============================================================ */
-function getDistance(lat1,lng1,lat2,lng2){
-  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-function findBestDriver(order, drivers){
-  let best=null, bestScore=Infinity;
-  Object.entries(drivers).forEach(([id,d])=>{
-    if(d.status !== 'available') return;
-    const dist = getDistance(order.lat, order.lng, d.lat, d.lng);
-    const load = d.activeOrders || 0;
-    const perf = d.speed || 1;
-    // ALGORITHME CORE: score = distance + (charge × 2) − performance
-    const score = dist + (load * 2) - perf;
-    if(score < bestScore){ bestScore=score; best={id,...d,_dist:dist.toFixed(1),_score:bestScore}; }
+function startListener(){
+  onValue(ref(db,'orders'), snap => {
+    allOrders = snap.val() || {};
+    render();
+    if(!_firstLoad) checkNew();
+    _firstLoad = false;
+    Object.keys(allOrders).forEach(id => _knownIds.add(id));
   });
-  return best;
 }
 
-function autoDispatch(orderId){
-  const db = getDB();
-  const order = db.orders[orderId];
-  if(!order || order.assignedTo || order.status !== 'prete') return;
+function checkNew(){
+  const newOnes = Object.keys(allOrders).filter(id =>
+    !_knownIds.has(id) && ['nouvelle','acceptee'].includes(allOrders[id].status) && allOrders[id].type === 'repas'
+  );
+  if(newOnes.length > 0){
+    playBeep();
+    newOnes.forEach(id => toast(`🔔 Nouvelle commande cuisine #${id.slice(-4).toUpperCase()}`,'w'));
+    newOnes.forEach(id => _knownIds.add(id));
+  } else {
+    Object.keys(allOrders).forEach(id => _knownIds.add(id));
+  }
+}
 
-  const best = findBestDriver(order, db.drivers);
-  if(!best){
-    showToast(`❌ Aucun livreur dispo pour #${orderId.slice(-4)}`,'#EF4444');
-    addLog(`❌ Aucun livreur disponible — commande #${orderId.slice(-4)} en attente`);
+/* ── RENDER ── */
+function render(){
+  // Seulement les commandes repas (type = repas ou pas de type)
+  const repasOrders = Object.entries(allOrders)
+    .filter(([,o]) => !o.type || o.type === 'repas')
+    .sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+
+  const nouvelles = repasOrders.filter(([,o])=>o.status==='nouvelle');
+  const acceptees = repasOrders.filter(([,o])=>o.status==='acceptee');
+  const pretes    = repasOrders.filter(([,o])=>o.status==='prete');
+
+  // Stats header
+  document.getElementById('h-new').textContent   = nouvelles.length;
+  document.getElementById('h-kitch').textContent = acceptees.length;
+  document.getElementById('h-ready').textContent = pretes.length;
+  document.getElementById('cnt-new').textContent     = nouvelles.length;
+  document.getElementById('cnt-acceptee').textContent = acceptees.length;
+  document.getElementById('cnt-prete').textContent    = pretes.length;
+
+  // Render colonnes
+  renderCol('col-nouvelle', nouvelles, 'nouvelle');
+  renderCol('col-acceptee', acceptees, 'acceptee');
+  renderCol('col-prete',    pretes,    'prete');
+}
+
+function renderCol(colId, orders, status){
+  const col = document.getElementById(colId);
+  if(orders.length === 0){
+    const msgs = {
+      nouvelle:'<div class="empty-col"><div class="ico">✅</div>Aucune nouvelle commande</div>',
+      acceptee:'<div class="empty-col"><div class="ico">🍳</div>Rien en préparation</div>',
+      prete:'<div class="empty-col"><div class="ico">🟡</div>Aucune commande prête</div>',
+    };
+    col.innerHTML = msgs[status]||'';
     return;
   }
+  col.innerHTML = orders.map(([id,o])=>{
+    const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
+    const isUrgent = elapsed > 15;
+    const timerClass = elapsed < 8 ? 'timer-ok' : elapsed < 15 ? 'timer-warn' : 'timer-late';
+    let btn = '';
+    if(status==='nouvelle')
+      btn = `<button class="ticket-btn btn-accept-kds" onclick="acceptOrder('${id}')">🍳 Prendre en cuisine</button>`;
+    else if(status==='acceptee')
+      btn = `<button class="ticket-btn btn-ready-kds" onclick="readyOrder('${id}')">🟡 PRÊTE !</button>`;
 
-  db.orders[orderId] = {
-    ...order,
-    assignedTo: best.id,
-    assignedName: best.name,
-    status: 'en-route',
-    dispatchedAt: Date.now()
-  };
-  db.drivers[best.id] = {
-    ...db.drivers[best.id],
-    status: 'busy',
-    activeOrders: (best.activeOrders||0) + 1,
-    currentOrder: orderId
-  };
-  addLog(`⚡ AUTO-DISPATCH: #${orderId.slice(-4)} → ${best.name} (${best._dist} km | score ${best._score.toFixed(2)})`);
-  saveDB(db);
-  showToast(`⚡ Dispatch: #${orderId.slice(-4)} → ${best.name} (${best._dist}km)`, '#F5C800');
-  renderKDS();
+    return `
+    <div class="ticket ${isUrgent&&status!=='prete'?'urgent':''}" id="tkt-${id}">
+      <div class="ticket-head">
+        <div class="ticket-id">#${id.slice(-6).toUpperCase()}</div>
+        <span class="ticket-timer ${timerClass}">${elapsed}min</span>
+      </div>
+      <div class="ticket-client">👤 ${o.client||'—'} · 📍 ${o.zone||'—'} · 📞 ${o.phone||'—'}</div>
+      <div class="ticket-items">${o.items||'—'}</div>
+      ${o.notes?`<div class="ticket-notes">📝 ${o.notes}</div>`:''}
+      <div class="ticket-zone">💰 ${o.amount?Number(o.amount).toLocaleString():'—'} FCFA · ${o.paiement||''}</div>
+      ${btn}
+    </div>`;
+  }).join('');
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
-let toastTimer = null;
-function showToast(msg, color='#F5C800'){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = color;
-  t.style.color = color==='#F5C800' ? '#000' : '#fff';
-  t.classList.add('show');
-  if(toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> t.classList.remove('show'), 4000);
-}
-
-/* ============================================================
-   RENDER KDS
-   ============================================================ */
-function renderKDS(){
-  const db = getDB();
-  const orders = db.orders || {};
-
-  const newCol   = document.getElementById('col-new');
-  const prepCol  = document.getElementById('col-prep');
-  const readyCol = document.getElementById('col-ready');
-
-  newCol.innerHTML = '';
-  prepCol.innerHTML = '';
-  readyCol.innerHTML = '';
-
-  let cntNew=0, cntPrep=0, cntReady=0;
-
-  // Only show kitchen-relevant statuses (not en-route/livree)
-  const kitchenOrders = Object.entries(orders)
-    .filter(([,o]) => ['nouvelle','acceptee','prete'].includes(o.status))
-    .sort((a,b) => (a[1].createdAt||0) - (b[1].createdAt||0));
-
-  if(kitchenOrders.length === 0){
-    newCol.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px 10px;font-size:.85rem;">Aucune commande</p>';
-  }
-
-  kitchenOrders.forEach(([key,o])=>{
-    const elapsed = Math.floor((Date.now() - (o.createdAt||Date.now())) / 60000);
-    const isUrgent = elapsed > 15 && o.status !== 'prete';
-
-    const card = `
-      <div class="kds-card ${isUrgent?'urgente':''} ${o.status==='prete'&&o.assignedTo?'dispatch-done':''}">
-
-        <div class="kds-header">
-          <span class="kds-id">#${key.slice(-6).toUpperCase()}</span>
-          <span class="kds-time ${isUrgent?'urgent':''}">${elapsed} min</span>
-        </div>
-
-        <div class="kds-items">${o.items || '—'}</div>
-
-        <div class="kds-meta">
-          <span>👤 ${o.client||'—'}</span>
-          <span>📍 ${o.zone||'—'}</span>
-          <span>💰 ${o.total ? o.total.toLocaleString('fr')+' FCFA' : ''}</span>
-        </div>
-
-        ${o.assignedTo ? `<div class="driver-tag">🏍️ ${o.assignedName||o.assignedTo} — En route</div>` : ''}
-
-        <div class="kds-actions">
-          ${o.status === 'nouvelle'
-            ? `<button class="kds-btn btn-cancel" onclick="updateStatus('${key}','annulee')">✕</button>
-               <button class="kds-btn btn-accept" onclick="updateStatus('${key}','acceptee')">✅ ACCEPTER</button>`
-            : ''
-          }
-          ${o.status === 'acceptee'
-            ? `<button class="kds-btn btn-ready" onclick="markReady('${key}')">🟢 COMMANDE PRÊTE</button>`
-            : ''
-          }
-          ${o.status === 'prete' && !o.assignedTo
-            ? `<button class="kds-btn btn-ready" style="background:var(--orange);" onclick="autoDispatch('${key}')">⚡ DISPATCH MANUELLEMENT</button>`
-            : ''
-          }
-          ${o.status === 'prete' && o.assignedTo
-            ? `<div style="text-align:center;width:100%;color:var(--blue);font-weight:700;font-size:.85rem;">
-                 ✅ Livreur assigné — En route
-               </div>`
-            : ''
-          }
-        </div>
-      </div>`;
-
-    if(o.status === 'nouvelle'){ newCol.innerHTML += card; cntNew++; }
-    if(o.status === 'acceptee'){ prepCol.innerHTML += card; cntPrep++; }
-    if(o.status === 'prete')   { readyCol.innerHTML += card; cntReady++; }
-  });
-
-  // Column counts
-  document.getElementById('count-new').textContent   = cntNew > 0 ? cntNew : '';
-  document.getElementById('count-prep').textContent  = cntPrep > 0 ? cntPrep : '';
-  document.getElementById('count-ready').textContent = cntReady > 0 ? cntReady : '';
-
-  // Header stats
-  document.getElementById('h-new').textContent   = cntNew;
-  document.getElementById('h-prep').textContent  = cntPrep;
-  document.getElementById('h-ready').textContent = cntReady;
-
-  // Show en-route/delivered count in ready column
-  const enRoute = Object.values(orders).filter(o=>o.status==='en-route').length;
-  if(enRoute > 0){
-    readyCol.innerHTML += `
-      <div style="text-align:center;color:var(--muted);font-size:.8rem;padding:10px;border-top:1px solid var(--border);margin-top:4px;">
-        🔵 ${enRoute} commande(s) en route
-      </div>`;
-  }
-}
-
-/* ============================================================
-   STATUS UPDATES
-   ============================================================ */
-function updateStatus(id, status){
-  const db = getDB();
-  if(!db.orders[id]) return;
-  db.orders[id].status = status;
-  db.orders[id].updatedAt = Date.now();
-  if(status === 'annulee'){
-    addLog(`❌ Commande #${id.slice(-4)} annulée par la cuisine`);
-  } else if(status === 'acceptee'){
-    addLog(`🍳 #${id.slice(-4)} acceptée — Préparation en cours`);
-  }
-  saveDB(db);
-  renderKDS();
-}
-
-// Mark ready + auto-dispatch
-function markReady(id){
-  const db = getDB();
-  if(!db.orders[id]) return;
-  db.orders[id].status = 'prete';
-  db.orders[id].readyAt = Date.now();
-  addLog(`🟢 #${id.slice(-4)} prête — Dispatch automatique lancé`);
-  saveDB(db);
-  renderKDS();
-  // Auto-dispatch with small delay (kitchen confirmation feel)
-  setTimeout(()=> autoDispatch(id), 800);
-}
-
-/* ============================================================
-   SIMULATE NEW ORDER (for demo — every 30s)
-   ============================================================ */
-const DEMO_CLIENTS = ['Kouamé','Fatou','Pierre','Aminata','Roland','Sylvie'];
-const DEMO_ITEMS = [
-  'Poulet braisé + Attiéké','Riz + Sauce graine','Foutou + Sauce arachide',
-  'Poisson braisé + Alloco','Kedjenou de poulet'
-];
-const DEMO_ZONES = ['Cocody','Koumassi','Treichville','Plateau','Yopougon'];
-const ZONE_COORDS = {
-  'Cocody':    {lat:5.370,lng:-3.980},'Koumassi': {lat:5.290,lng:-4.010},
-  'Treichville':{lat:5.300,lng:-4.005},'Plateau':  {lat:5.320,lng:-4.020},
-  'Yopougon':  {lat:5.350,lng:-4.070}
+/* ── ACTIONS ── */
+window.acceptOrder = async function(id){
+  await update(ref(db,'orders/'+id),{status:'acceptee', acceptedAt:Date.now()});
+  toast(`🍳 #${id.slice(-4).toUpperCase()} en préparation`,'s');
+};
+window.readyOrder = async function(id){
+  await update(ref(db,'orders/'+id),{status:'prete', readyAt:Date.now()});
+  playBeepReady();
+  toast(`🟡 #${id.slice(-4).toUpperCase()} PRÊTE — livreur alerté !`,'s');
 };
 
-let demoTimer = null;
-function startDemoMode(){
-  if(demoTimer) return;
-  demoTimer = setInterval(()=>{
-    const db = getDB();
-    // Only inject if less than 5 pending orders
-    const pending = Object.values(db.orders||{}).filter(o=>['nouvelle','acceptee'].includes(o.status)).length;
-    if(pending >= 5) return;
-    const zone = DEMO_ZONES[Math.floor(Math.random()*DEMO_ZONES.length)];
-    const z = ZONE_COORDS[zone];
-    const id = 'cmd' + Date.now();
-    db.orders[id] = {
-      client: DEMO_CLIENTS[Math.floor(Math.random()*DEMO_CLIENTS.length)],
-      items: DEMO_ITEMS[Math.floor(Math.random()*DEMO_ITEMS.length)],
-      total: 3000 + Math.floor(Math.random()*2000),
-      zone, lat: z.lat+(Math.random()*.01-.005), lng: z.lng+(Math.random()*.01-.005),
-      status: 'nouvelle', restaurant:'Meme Choco',
-      restaurantLat:5.340, restaurantLng:-4.010,
-      assignedTo:null, assignedName:null,
-      createdAt: Date.now()
-    };
-    db.log = db.log||[];
-    db.log.unshift({time:Date.now(), msg:`📱 Nouvelle commande simulée — ${zone}`});
-    saveDB(db);
-    renderKDS();
-    showToast('📱 Nouvelle commande reçue !','#F97316');
-  }, 45000); // new order every 45s in demo mode
+window.logout = function(){
+  if(!confirm('Déconnecter ?')) return;
+  localStorage.removeItem(CFG_KEY);
+  location.reload();
+};
+
+/* ── BIP ── */
+function playBeep(){
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    [[660,0],[880,.2],[1100,.4]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(.5,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.18);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.19);
+    });
+    if(navigator.vibrate) navigator.vibrate([300,100,300]);
+  }catch(e){}
+}
+function playBeepReady(){
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    [[1100,0],[880,.2],[660,.4]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(.4,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.15);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.16);
+    });
+  }catch(e){}
 }
 
-/* ============================================================
-   CLOCK + INIT
-   ============================================================ */
-setInterval(()=>{
-  document.getElementById('time').textContent = new Date().toLocaleTimeString('fr');
-}, 1000);
+/* ── UPDATE TIMERS toutes les 30s ── */
+setInterval(render, 30000);
 
-// Listen for cross-tab updates
-window.addEventListener('storage', e=>{ if(e.key===DB_KEY) renderKDS(); });
+/* ── CLOCK ── */
+setInterval(()=>{ document.getElementById('clock').textContent=new Date().toLocaleTimeString('fr'); },1000);
 
-// Poll every 3s
-setInterval(renderKDS, 3000);
-
-// Initial render
-renderKDS();
-
-// Start demo mode after 5s if no orders
-setTimeout(()=>{
-  const db = getDB();
-  if(Object.keys(db.orders||{}).length === 0) startDemoMode();
-}, 5000);
+/* ── TOAST ── */
+function toast(msg,type='s'){
+  const w=document.getElementById('toastWrap'),el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.innerHTML=`<span>${{s:'✅',e:'❌',w:'🔔'}[type]}</span><span style="font-size:.83rem;font-weight:600">${msg}</span>`;
+  w.prepend(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},4000);
+  setTimeout(()=>el.remove(),4400);
+}
 </script>
 </body>
 </html>
