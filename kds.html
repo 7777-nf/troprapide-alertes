@@ -297,7 +297,8 @@ window.readyOrder = async function(id){
 };
 
 window.logout = function(){
-  if(!confirm('Déconnecter ?')) return;
+  if(!confirm('Réinitialiser la configuration Firebase ?')) return;
+  // ✅ Ne supprimer que si l'utilisateur confirme explicitement
   localStorage.removeItem(CFG_KEY);
   location.reload();
 };

@@ -345,11 +345,28 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 <script>
 
 const CFG_KEY = 'troprapide_livreur_cfg';
+const FIREBASE_KEY = 'troprapide_firebase_cfg'; // clé partagée
 const GAINS_KEY = 'troprapide_gains_';
 let db=null, myName='', myZone='', isDispo=true;
 let orders={}, alertPending=null;
 let prevAvailCount=0, prevAvailKeys=new Map(), currentPeriod='today';
 let gainsHistory=[];
+
+// ✅ Pré-remplir les champs Firebase si déjà configuré ailleurs
+(function prefillFirebase(){
+  const shared = localStorage.getItem(FIREBASE_KEY);
+  if(shared){
+    try{
+      const c = JSON.parse(shared);
+      const dbEl = document.getElementById('c_dburl');
+      const keyEl = document.getElementById('c_apikey');
+      const pidEl = document.getElementById('c_projectid');
+      if(dbEl && !dbEl.value) dbEl.value = c.dburl || '';
+      if(keyEl && !keyEl.value) keyEl.value = c.apiKey || '';
+      if(pidEl && !pidEl.value) pidEl.value = c.pid || '';
+    }catch(e){}
+  }
+})()
 
 window.connectFirebase = function() {
   const dburl=document.getElementById('c_dburl').value.trim();

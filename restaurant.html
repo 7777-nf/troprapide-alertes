@@ -190,7 +190,9 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;fon
 import { initializeApp }             from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, onValue, update } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-const CFG_KEY = 'troprapide_resto_cfg';
+// ✅ FIX : même clé que commande.html, kds.html, dispatcher.html
+const CFG_KEY   = 'troprapide_firebase_cfg';
+const RESTO_KEY = 'troprapide_resto_name';
 let db = null, myResto = '', allOrders = {}, currentTab = 'active', isOpen = true;
 let _knownIds = new Set(), _firstLoad = true;
 
@@ -202,25 +204,41 @@ window.connect = function(){
   const pid    = document.getElementById('cfg_pid').value.trim();
   if(!dburl||!apiKey||!pid){ toast('Remplissez tous les champs','e'); return; }
   try{
-    const app = initializeApp({apiKey, databaseURL:dburl, projectId:pid}, 'resto-'+Date.now());
+    const appName = 'resto-app';
+    let app;
+    try{ app = initializeApp({apiKey, databaseURL:dburl, projectId:pid}, appName); }
+    catch(ex){ app = ex.app || initializeApp({apiKey, databaseURL:dburl, projectId:pid}); }
     db = getDatabase(app);
     myResto = resto;
-    const cfg = {dburl, apiKey, pid, resto};
-    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    // Sauvegarder Firebase config (partagée) + nom restaurant (séparé)
+    localStorage.setItem(CFG_KEY,   JSON.stringify({dburl, apiKey, pid}));
+    localStorage.setItem(RESTO_KEY, resto);
     document.getElementById('cfgOverlay').style.display = 'none';
     init();
-  }catch(e){ toast('Erreur: '+e.message,'e'); }
+  }catch(e){ toast('Erreur connexion: '+e.message,'e'); console.error(e); }
 };
 
-const saved = localStorage.getItem(CFG_KEY);
-if(saved){ try{
-  const c = JSON.parse(saved);
-  const app = initializeApp({apiKey:c.apiKey, databaseURL:c.dburl, projectId:c.pid}, 'resto-'+Date.now());
-  db = getDatabase(app);
-  myResto = c.resto || 'Mémé Choco';
-  document.getElementById('cfgOverlay').style.display = 'none';
-  init();
-}catch(e){} }
+// ✅ Auto-connexion : utilise les mêmes credentials que commande.html
+(function autoConnect(){
+  const savedCfg   = localStorage.getItem(CFG_KEY);
+  const savedResto = localStorage.getItem(RESTO_KEY);
+  if(savedCfg){
+    try{
+      const c = JSON.parse(savedCfg);
+      const appName = 'resto-app';
+      let app;
+      try{ app = initializeApp({apiKey:c.apiKey, databaseURL:c.dburl, projectId:c.pid}, appName); }
+      catch(ex){ app = ex.app; }
+      db = getDatabase(app);
+      myResto = savedResto || 'Mémé Choco';
+      // Pré-remplir le sélecteur de restaurant
+      const sel = document.getElementById('cfg_resto');
+      if(sel) sel.value = myResto;
+      document.getElementById('cfgOverlay').style.display = 'none';
+      init();
+    }catch(e){ console.error('Auto-connect error:', e); }
+  }
+})()
 
 function init(){
   document.getElementById('restoName').textContent = myResto;
@@ -360,8 +378,8 @@ window.toggleOpen = function(){
 };
 
 window.logout = function(){
-  if(!confirm('Déconnecter ce restaurant ?')) return;
-  localStorage.removeItem(CFG_KEY);
+  if(!confirm('Changer de restaurant ?')) return;
+  localStorage.removeItem(RESTO_KEY);
   location.reload();
 };
 
