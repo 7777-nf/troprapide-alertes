@@ -559,17 +559,34 @@ nav{
 
 <!-- Firebase SDK -->
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { initializeApp, getApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
 // ── STATE ──
 const CFG_KEY = 'troprapide_firebase_cfg';
+// Credentials Firebase pré-configurés
+const FIREBASE_CONFIG = {
+  dburl: 'https://troprapide-821a7-default-rtdb.firebaseio.com',
+  apiKey: 'AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkiNbBZnU',
+  pid: 'troprapide-821a7'
+};
+if(!localStorage.getItem(CFG_KEY)){
+  localStorage.setItem(CFG_KEY, JSON.stringify(FIREBASE_CONFIG));
+}
 let db = null;
 let currentStep = 1;
 let orderType = 'repas';
 let selectedResto = 'Mémé Choco';
 let selectedPay = 'cash';
 let lastOrderRef = null;
+
+/* XSS sanitization */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+/* Safe Firebase init — évite la race condition de double-init */
+function safeInit(config, name){
+  try{ return getApp(name); } catch(e){ return initializeApp(config, name); }
+}
 
 const TYPES = {
   repas:       {e:'🍽',l:'Repas restaurant',   il:'Articles commandés'},
@@ -588,7 +605,7 @@ window.initFirebase = function() {
   const pid    = document.getElementById('cfg_pid').value.trim();
   if (!dburl||!apiKey||!pid) { toast('Remplissez tous les champs','e'); return; }
   try {
-    const app = initializeApp({apiKey,databaseURL:dburl,projectId:pid});
+    const app = safeInit({apiKey,databaseURL:dburl,projectId:pid}, 'commande');
     db = getDatabase(app);
     localStorage.setItem(CFG_KEY, JSON.stringify({dburl,apiKey,pid}));
     document.getElementById('cfgOverlay').style.display = 'none';
@@ -601,7 +618,7 @@ const saved = localStorage.getItem(CFG_KEY);
 if (saved) {
   try {
     const c = JSON.parse(saved);
-    const app = initializeApp({apiKey:c.apiKey,databaseURL:c.dburl,projectId:c.pid});
+    const app = safeInit({apiKey:c.apiKey,databaseURL:c.dburl,projectId:c.pid}, 'commande');
     db = getDatabase(app);
     document.getElementById('cfgOverlay').style.display = 'none';
   } catch(e) {}
@@ -685,15 +702,15 @@ function buildSummary() {
   const notes   = document.getElementById('f_notes').value;
 
   document.getElementById('summaryBox').innerHTML = `
-    <div class="summary-row"><span class="sl">Type</span><span class="sv">${cfg.e} ${cfg.l}</span></div>
-    ${orderType==='repas'?`<div class="summary-row"><span class="sl">Restaurant</span><span class="sv">${selectedResto}</span></div>`:''}
-    ${retrait?`<div class="summary-row"><span class="sl">Retrait</span><span class="sv">${retrait}</span></div>`:''}
-    <div class="summary-row"><span class="sl">Commande</span><span class="sv">${items}</span></div>
-    ${notes?`<div class="summary-row"><span class="sl">Notes</span><span class="sv">${notes}</span></div>`:''}
-    <div class="summary-row"><span class="sl">Livraison</span><span class="sv">📍 ${zone}${adresse?' · '+adresse:''}</span></div>
-    <div class="summary-row"><span class="sl">Client</span><span class="sv">${client}</span></div>
-    <div class="summary-row"><span class="sl">Téléphone</span><span class="sv">${phone}</span></div>
-    <div class="summary-row"><span class="sl">Paiement</span><span class="sv">${PAYLBL[selectedPay]}</span></div>
+    <div class="summary-row"><span class="sl">Type</span><span class="sv">${esc(cfg.e)} ${esc(cfg.l)}</span></div>
+    ${orderType==='repas'?`<div class="summary-row"><span class="sl">Restaurant</span><span class="sv">${esc(selectedResto)}</span></div>`:''}
+    ${retrait?`<div class="summary-row"><span class="sl">Retrait</span><span class="sv">${esc(retrait)}</span></div>`:''}
+    <div class="summary-row"><span class="sl">Commande</span><span class="sv">${esc(items)}</span></div>
+    ${notes?`<div class="summary-row"><span class="sl">Notes</span><span class="sv">${esc(notes)}</span></div>`:''}
+    <div class="summary-row"><span class="sl">Livraison</span><span class="sv">📍 ${esc(zone)}${adresse?' · '+esc(adresse):''}</span></div>
+    <div class="summary-row"><span class="sl">Client</span><span class="sv">${esc(client)}</span></div>
+    <div class="summary-row"><span class="sl">Téléphone</span><span class="sv">${esc(phone)}</span></div>
+    <div class="summary-row"><span class="sl">Paiement</span><span class="sv">${esc(PAYLBL[selectedPay])}</span></div>
     <div class="summary-row"><span class="sl">Priorité</span><span class="sv">${priority==='urgente'?'🔴 URGENTE':'🟢 Normale'}</span></div>
     <div class="summary-total">
       <span class="summary-total-lbl">Montant total</span>
@@ -797,7 +814,7 @@ window.newOrder = function() {
 function toast(msg, type='s') {
   const w=document.getElementById('toastWrap'),el=document.createElement('div');
   el.className=`toast ${type}`;
-  el.innerHTML=`<span style="font-size:1.1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]}</span><span style="font-size:.83rem;font-weight:600">${msg}</span>`;
+  el.innerHTML=`<span style="font-size:1.1rem">${{s:'✅',e:'❌',w:'⚠️'}[type]}</span><span style="font-size:.83rem;font-weight:600">${esc(msg)}</span>`;
   w.prepend(el);
   setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';},3000);
   setTimeout(()=>el.remove(),3400);

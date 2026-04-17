@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>App Livreur — Meme Choco</title>
+<title>App Livreur — TropRapide</title>
 <style>
 :root{
   --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
@@ -196,7 +196,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 /* ============================================================
    SHARED DB
    ============================================================ */
-const DB_KEY = 'meme_choco_delivery';
+const DB_KEY = 'troprapide_delivery';
 const SEED_DRIVERS = {
   'd1':{ name:'Ali Koné',   avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
   'd2':{ name:'Brice Yao',  avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
@@ -212,51 +212,12 @@ function getDB(){
   }catch(e){ return { orders:{}, drivers: structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
 }
 function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
+/* XSS sanitization */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function addLog(msg){
   const db=getDB(); db.log=db.log||[];
   db.log.unshift({time:Date.now(),msg}); if(db.log.length>80) db.log=db.log.slice(0,80);
   saveDB(db);
-}
-
-/* ============================================================
-   BEEP SONORE — notification nouvelle commande
-   ============================================================ */
-let _knownOrderIds = new Set();
-let _initialLoadDone = false;
-
-function playBeep(){
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.35, 0.70].forEach(offset => {
-      const osc  = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0.5, ctx.currentTime + offset);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + offset + 0.25);
-      osc.start(ctx.currentTime + offset);
-      osc.stop(ctx.currentTime + offset + 0.25);
-    });
-    if(navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 300]);
-  } catch(e){ console.log('Audio non supporté', e); }
-}
-
-function checkNewOrders(myOrders){
-  const newOnes = myOrders.filter(([id]) => !_knownOrderIds.has(id));
-  if(_initialLoadDone && newOnes.length > 0){
-    playBeep();
-    document.body.style.background = '#1a1400';
-    setTimeout(()=> document.body.style.background = 'var(--bg)', 600);
-    const alertBanner = document.createElement('div');
-    alertBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--yellow);color:#000;font-weight:900;text-align:center;padding:14px;z-index:9999;font-size:1rem;border-radius:0 0 12px 12px;';
-    alertBanner.textContent = `🔔 ${newOnes.length} nouvelle(s) commande(s) !`;
-    document.body.appendChild(alertBanner);
-    setTimeout(()=> alertBanner.remove(), 4000);
-  }
-  newOnes.forEach(([id]) => _knownOrderIds.add(id));
-  _initialLoadDone = true;
 }
 
 /* ============================================================
@@ -277,7 +238,7 @@ function renderDriverOptions(){
     <div class="driver-option" id="opt-${id}" onclick="selectDriver('${id}')">
       <span class="driver-avatar">${d.avatar||'🏍️'}</span>
       <div class="driver-detail">
-        <div class="driver-name">${d.name}</div>
+        <div class="driver-name">${esc(d.name)}</div>
         <div class="driver-status ${d.status==='available'?'ds-available':'ds-busy'}">
           ${d.status==='available'?'🟢 Disponible':'🟠 En mission'}
         </div>
@@ -304,6 +265,12 @@ function login(){
   const d = db.drivers[myDriverId];
   document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
   document.getElementById('driver-name-bar').textContent = d.name;
+
+  // Mémoriser les commandes déjà existantes pour ne pas bipper au démarrage
+  const dbInit = getDB();
+  Object.entries(dbInit.orders||{}).forEach(([id,o])=>{
+    if(o.assignedTo === myDriverId) _knownAssignedIds.add(id);
+  });
 
   updateGPS();
   startGPSInterval();
@@ -384,9 +351,6 @@ function renderApp(){
     .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
     .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
 
-  // 🔔 Détecter nouvelles commandes → bip
-  checkNewOrders(myOrders);
-
   // Stats
   const delivered = Object.values(db.orders||{}).filter(o=>o.assignedTo===myDriverId && o.status==='livree').length;
   const earnings = delivered * 500; // 500 FCFA per delivery
@@ -422,7 +386,7 @@ function renderApp(){
         <span class="info-icon">👤</span>
         <div class="info-content">
           <div class="info-label">Client</div>
-          <div class="info-value">${o.client||'—'} ${o.phone?`• ${o.phone}`:''}</div>
+          <div class="info-value">${esc(o.client)||'—'} ${o.phone?`• ${esc(o.phone)}`:''}</div>
         </div>
       </div>
 
@@ -430,7 +394,7 @@ function renderApp(){
         <span class="info-icon">🍗</span>
         <div class="info-content">
           <div class="info-label">Commande</div>
-          <div class="info-value" style="font-size:.85rem;">${o.items||'—'}</div>
+          <div class="info-value" style="font-size:.85rem;">${esc(o.items)||'—'}</div>
         </div>
       </div>
 
@@ -438,7 +402,7 @@ function renderApp(){
         <span class="info-icon">📍</span>
         <div class="info-content">
           <div class="info-label">Adresse de livraison</div>
-          <div class="info-value">${o.zone||''} ${o.address?`— ${o.address}`:''}</div>
+          <div class="info-value">${esc(o.zone)} ${o.address?`— ${esc(o.address)}`:''}</div>
         </div>
       </div>
 
@@ -455,9 +419,9 @@ function renderApp(){
         </div>
         <div class="distance-bar"><div class="distance-fill" style="width:${progress}%;"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;">
-          <span>Meme Choco</span>
+          <span>TropRapide</span>
           <span style="color:var(--yellow);font-weight:700;">${Math.round(progress)}% — ~${Math.max(1,Math.round((100-progress)/15))} min</span>
-          <span>${o.zone}</span>
+          <span>${esc(o.zone)}</span>
         </div>
       </div>` : ''}
 
@@ -554,11 +518,44 @@ if(savedSession){
   }
 }
 
+/* ── BIP SONORE ── */
+let _knownAssignedIds = new Set();
+function playBeep(){
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    [[880,0],[1100,.2],[1320,.4]].forEach(([f,t])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g);g.connect(ctx.destination);
+      o.frequency.value=f;
+      g.gain.setValueAtTime(.5,ctx.currentTime+t);
+      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+t+.18);
+      o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.19);
+    });
+    setTimeout(()=>ctx.close(),800);
+    if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
+  }catch(e){}
+}
+function checkNewAssignments(){
+  if(!myDriverId) return;
+  const db = getDB();
+  const orders = db.orders || {};
+  let hasNew = false;
+  Object.entries(orders).forEach(([id,o])=>{
+    if(o.assignedTo === myDriverId){
+      if(!_knownAssignedIds.has(id)){
+        hasNew = true;
+      }
+      _knownAssignedIds.add(id); // on n'ajoute que les commandes de CE livreur
+    }
+  });
+  if(hasNew) playBeep();
+}
+
 // Cross-tab sync
-window.addEventListener('storage', e=>{ if(e.key===DB_KEY && myDriverId) renderApp(); });
+window.addEventListener('storage', e=>{ if(e.key===DB_KEY && myDriverId){ checkNewAssignments(); renderApp(); } });
 
 // Poll every 5s
-setInterval(()=>{ if(myDriverId) renderApp(); }, 5000);
+setInterval(()=>{ if(myDriverId){ checkNewAssignments(); renderApp(); } }, 5000);
 </script>
 </body>
 </html>

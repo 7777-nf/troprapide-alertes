@@ -1,21 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#F5C800">
-<link rel="manifest" href="./manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script src="./text-fix.js"></script>
-<title>TropRapide Â· Statistiques</title>
+<title>TropRapide · Statistiques</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script src="./firebase-compat-shared.js"></script>
 <style>
 :root{
   --yellow:#F5C800;--yellow-dark:#D4AA00;--black:#0A0A0A;--dark:#0F0F0F;
@@ -95,14 +92,6 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 .rank-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
 .rank-bar{height:3px;border-radius:2px;background:var(--yellow);transition:width .6s ease}
 
-/* HEATMAP */
-.heatmap-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
-.heatmap-grid{display:grid;grid-template-columns:40px repeat(16,1fr);gap:3px;margin-top:14px}
-.hm-label{font-size:.65rem;color:var(--muted);display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
-.hm-cell{height:22px;border-radius:3px;background:var(--border);transition:all .3s;cursor:default}
-.hm-cell:hover{transform:scale(1.1)}
-.hm-header{font-size:.62rem;color:var(--muted);text-align:center}
-
 /* TYPE CHART */
 .type-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
 .type-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
@@ -124,7 +113,6 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 /* LOADING */
 .loading{text-align:center;padding:40px;color:var(--muted);font-size:.88rem}
 
-
 /* TOP PLATS & ZONES KPI */
 .kpi2-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
 .kpi2{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden}
@@ -140,29 +128,22 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 .top-item-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:3px}
 .top-item-bar{height:3px;border-radius:2px;transition:width .6s ease}
 .top-item-count{font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;white-space:nowrap;flex-shrink:0}
+
 @media(max-width:900px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .kpi2-grid{grid-template-columns:1fr}
   .charts-row{grid-template-columns:1fr}
   .row2{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(3,1fr)}
-  .heatmap-card{padding:14px;overflow-x:auto;}
-  .heatmap-grid{grid-template-columns:30px repeat(12,1fr);gap:2px;}
 }
 @media(max-width:500px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .kpi2-grid{grid-template-columns:1fr}
   .type-row{grid-template-columns:repeat(2,1fr)}
-  .main{padding:12px;}
-  /* âœ… FIX heatmap overflow mobile */
-  .heatmap-card{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-  .heatmap-grid{min-width:340px;grid-template-columns:28px repeat(8,1fr);gap:2px;font-size:.65rem;}
-  .nav-btn{padding:8px 12px;min-height:44px;font-size:.78rem;}
-  .period-btn{padding:8px 12px;min-height:44px;}
-  .export-btn{padding:10px 14px;min-height:44px;}
-  .chart-wrap{height:180px;}
-  .kpi{padding:12px 10px;}
-  .kpi-val{font-size:1.4rem;}
+  .main{padding:12px}
+  .chart-wrap{height:180px}
+  .kpi{padding:12px 10px}
+  .kpi-val{font-size:1.4rem}
 }
 </style>
 </head>
@@ -171,26 +152,26 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 <!-- CONFIG -->
 <div class="cfg" id="cfgScreen">
   <div class="cfg-card">
-    <div class="cfg-logo">ðŸ“Š TROPRAPIDE</div>
-    <div class="cfg-sub">Statistiques â€” connexion Firebase</div>
+    <div class="cfg-logo">📊 TROPRAPIDE</div>
+    <div class="cfg-sub">Statistiques — connexion Firebase</div>
     <div class="fg"><label>Database URL</label>
       <input id="c_db" placeholder="https://troprapide-xxx.firebaseio.com"></div>
     <div class="fg"><label>API Key</label>
       <input id="c_key" placeholder="AIzaSy..."></div>
     <div class="fg"><label>Project ID</label>
       <input id="c_pid" placeholder="troprapide-xxxxx"></div>
-    <button class="btn-cfg" onclick="connectDB()">ðŸ“Š ACCÃ‰DER AUX STATS</button>
+    <button class="btn-cfg" onclick="connectDB()">📊 ACCÉDER AUX STATS</button>
   </div>
 </div>
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><div class="nav-dot"></div>TROPRAPIDE Â· Stats</div>
+  <div class="nav-logo"><div class="nav-dot"></div>TROPRAPIDE · Stats</div>
   <div class="nav-actions">
-    <a href="admin.html" class="nbtn">â† Admin</a>
-    <button class="nbtn" onclick="refreshData()">ðŸ”„ Actualiser</button>
-    <button class="btn-pdf" id="pdfBtn" onclick="exportPDF()">â¬‡ï¸ PDF</button>
-    <button class="nbtn" onclick="resetCfg()" style="color:var(--red)">âš™ï¸</button>
+    <a href="admin.html" class="nbtn">← Admin</a>
+    <button class="nbtn" onclick="refreshData()">🔄 Actualiser</button>
+    <button class="btn-pdf" id="pdfBtn" onclick="exportPDF()">⬇️ PDF</button>
+    <button class="nbtn" onclick="resetCfg()" style="color:var(--red)">⚙️</button>
   </div>
 </nav>
 
@@ -209,25 +190,25 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <!-- KPI -->
   <div class="kpi-grid">
     <div class="kpi y">
-      <div class="kpi-icon">ðŸ“¦</div>
+      <div class="kpi-icon">📦</div>
       <div class="kpi-val y" id="kpi-total">0</div>
       <div class="kpi-lbl">Commandes totales</div>
       <div class="kpi-trend up" id="kpi-total-trend"></div>
     </div>
     <div class="kpi g">
-      <div class="kpi-icon">âœ…</div>
+      <div class="kpi-icon">✅</div>
       <div class="kpi-val g" id="kpi-livrees">0</div>
-      <div class="kpi-lbl">LivrÃ©es</div>
+      <div class="kpi-lbl">Livrées</div>
       <div class="kpi-trend" id="kpi-taux"></div>
     </div>
     <div class="kpi b">
-      <div class="kpi-icon">ðŸ’°</div>
+      <div class="kpi-icon">💰</div>
       <div class="kpi-val b" id="kpi-revenu">0</div>
-      <div class="kpi-lbl">FCFA collectÃ©s</div>
+      <div class="kpi-lbl">FCFA collectés</div>
       <div class="kpi-trend up" id="kpi-moy"></div>
     </div>
     <div class="kpi o">
-      <div class="kpi-icon">â±</div>
+      <div class="kpi-icon">⏱</div>
       <div class="kpi-val o" id="kpi-enroute">0</div>
       <div class="kpi-lbl">En cours</div>
       <div class="kpi-trend" id="kpi-attente"></div>
@@ -237,11 +218,11 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <!-- TOP PLATS & ZONES -->
   <div class="kpi2-grid">
     <div class="kpi2 g">
-      <div class="kpi2-title">ðŸ½ Plats les plus commandÃ©s</div>
+      <div class="kpi2-title">🍽 Plats les plus commandés</div>
       <div id="topPlats"><div class="loading">Chargement...</div></div>
     </div>
     <div class="kpi2 p">
-      <div class="kpi2-title">ðŸ“ Zones les plus actives</div>
+      <div class="kpi2-title">📍 Zones les plus actives</div>
       <div id="topZonesKpi"><div class="loading">Chargement...</div></div>
     </div>
   </div>
@@ -249,11 +230,11 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <!-- CHARTS ROW 1 -->
   <div class="charts-row">
     <div class="chart-card">
-      <div class="chart-title">ðŸ“ˆ Commandes par jour <span id="chartPeriodLabel"></span></div>
+      <div class="chart-title">📈 Commandes par jour <span id="chartPeriodLabel"></span></div>
       <div class="chart-wrap"><canvas id="chartCommandes"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">ðŸ• Par type</div>
+      <div class="chart-title">📋 Par type</div>
       <div class="chart-wrap"><canvas id="chartTypes"></canvas></div>
     </div>
   </div>
@@ -264,54 +245,80 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <!-- CHARTS ROW 2 -->
   <div class="row2">
     <div class="table-card">
-      <div class="table-title">ðŸ½ Top Restaurants</div>
+      <div class="table-title">🍽 Top Restaurants</div>
       <div id="topRestos"><div class="loading">Chargement...</div></div>
     </div>
     <div class="table-card">
-      <div class="table-title">ðŸ›µ Top Livreurs</div>
+      <div class="table-title">🛵 Top Livreurs</div>
       <div id="topLivreurs"><div class="loading">Chargement...</div></div>
     </div>
   </div>
 
   <!-- ZONE CHART -->
   <div class="chart-card" style="margin-bottom:24px">
-    <div class="chart-title">ðŸ“ Commandes par zone</div>
+    <div class="chart-title">📍 Commandes par zone</div>
     <div class="chart-wrap" style="height:180px"><canvas id="chartZones"></canvas></div>
   </div>
 
   <!-- PAIEMENT CHART -->
   <div class="charts-row" style="margin-bottom:24px">
     <div class="chart-card">
-      <div class="chart-title">ðŸ’³ Mode de paiement</div>
+      <div class="chart-title">💳 Mode de paiement</div>
       <div class="chart-wrap"><canvas id="chartPaiement"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">â° Commandes par heure</div>
+      <div class="chart-title">⏰ Commandes par heure</div>
       <div class="chart-wrap"><canvas id="chartHeures"></canvas></div>
     </div>
   </div>
 
   <!-- RECENT ORDERS -->
   <div class="recent-card">
-    <div class="table-title">ðŸ• DerniÃ¨res commandes</div>
+    <div class="table-title">🕐 Dernières commandes</div>
     <div id="recentOrders"><div class="loading">Chargement...</div></div>
   </div>
 
 </div>
 
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw-pwa.js').catch(() => {});
-  });
+// ── FIREBASE CONFIG ──
+const CFG_KEY = 'troprapide_firebase_cfg';
+
+// Credentials pré-configurés
+const FIREBASE_CONFIG = {
+  dburl: 'https://troprapide-821a7-default-rtdb.firebaseio.com',
+  apiKey: 'AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkiNbBZnU',
+  pid: 'troprapide-821a7'
+};
+if (!localStorage.getItem(CFG_KEY)) {
+  localStorage.setItem(CFG_KEY, JSON.stringify(FIREBASE_CONFIG));
 }
-</script>
-<script>
-const { CFG_KEY, readFirebaseConfig, connectRealtimeDB } = window.TropRapideFirebaseCompat;
+
+function readFirebaseConfig() {
+  try { return JSON.parse(localStorage.getItem(CFG_KEY)); } catch(e) { return null; }
+}
+
+function connectRealtimeDB(cfg, appName) {
+  let app;
+  try { app = firebase.app(appName); }
+  catch(e) {
+    app = firebase.initializeApp({
+      apiKey: cfg.apiKey,
+      databaseURL: cfg.dburl,
+      projectId: cfg.pid
+    }, appName);
+  }
+  return firebase.database(app);
+}
+
+// ── XSS PROTECTION ──
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+// ── STATE ──
 let db = null, allOrders = [], currentPeriod = 'today';
 let chartCmds = null, chartTypes = null, chartZones = null, chartPay = null, chartH = null;
 
-// â”€â”€ CONNECT â”€â”€
+// ── CONNECT ──
 function connectDB() {
   const dburl = document.getElementById('c_db').value.trim();
   const apiKey = document.getElementById('c_key').value.trim();
@@ -323,20 +330,24 @@ function connectDB() {
 function initDB(cfg) {
   try {
     db = connectRealtimeDB(cfg, 'stats-app');
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
     document.getElementById('cfgScreen').style.display = 'none';
     loadData();
-  } catch(e) { alert('Erreur: '+e.message); }
+  } catch(e) { alert('Erreur: ' + e.message); }
 }
 
 function resetCfg() {
-  if(confirm('RÃ©initialiser ?')) { localStorage.removeItem(CFG_KEY); location.reload(); }
+  if (confirm('Réinitialiser la connexion Firebase ?')) {
+    localStorage.removeItem(CFG_KEY);
+    location.reload();
+  }
 }
 
 // Auto-connect
 const saved = readFirebaseConfig();
 if (saved) { try { initDB(saved); } catch(e) {} }
 
-// â”€â”€ LOAD DATA â”€â”€
+// ── LOAD DATA ──
 function loadData() {
   if (!db) return;
   db.ref('orders').on('value', snap => {
@@ -350,12 +361,12 @@ function refreshData() { render(); }
 
 function setPeriod(p, el) {
   currentPeriod = p;
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   render();
 }
 
-// â”€â”€ FILTER BY PERIOD â”€â”€
+// ── FILTER BY PERIOD ──
 function filterByPeriod(orders) {
   const now = Date.now();
   const DAY = 86400000;
@@ -368,28 +379,26 @@ function filterByPeriod(orders) {
   return orders;
 }
 
-// â”€â”€ MAIN RENDER â”€â”€
+// ── MAIN RENDER ──
 function render() {
   const filtered = filterByPeriod(allOrders);
   const livrees  = filtered.filter(o => o.status === 'livree');
   const enRoute  = filtered.filter(o => o.status === 'en-route');
   const attente  = filtered.filter(o => o.status === 'nouvelle' || o.status === 'acceptee');
-  const revenu   = livrees.reduce((s,o) => s+Number(o.amount||0), 0);
-  const taux     = filtered.length ? Math.round(livrees.length/filtered.length*100) : 0;
-  const moy      = livrees.length ? Math.round(revenu/livrees.length) : 0;
+  const revenu   = livrees.reduce((s,o) => s + Number(o.amount||0), 0);
+  const taux     = filtered.length ? Math.round(livrees.length / filtered.length * 100) : 0;
+  const moy      = livrees.length ? Math.round(revenu / livrees.length) : 0;
 
-  // Period info
-  const pLabels = {today:"Aujourd'hui",week:"7 derniers jours",month:"30 derniers jours",all:"Toutes les donnÃ©es"};
-  document.getElementById('periodInfo').textContent = `${pLabels[currentPeriod]} Â· ${filtered.length} commandes`;
+  const pLabels = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les données"};
+  document.getElementById('periodInfo').textContent = `${pLabels[currentPeriod]} · ${filtered.length} commandes`;
 
-  // KPIs
-  document.getElementById('kpi-total').textContent = filtered.length;
+  document.getElementById('kpi-total').textContent   = filtered.length;
   document.getElementById('kpi-livrees').textContent = livrees.length;
-  document.getElementById('kpi-revenu').textContent = revenu.toLocaleString('fr-FR');
+  document.getElementById('kpi-revenu').textContent  = revenu.toLocaleString('fr-FR');
   document.getElementById('kpi-enroute').textContent = enRoute.length;
-  document.getElementById('kpi-taux').className = 'kpi-trend ' + (taux >= 80 ? 'up' : 'down');
-  document.getElementById('kpi-taux').textContent = `${taux}% taux de livraison`;
-  document.getElementById('kpi-moy').textContent = `Moy: ${moy.toLocaleString()} FCFA/commande`;
+  document.getElementById('kpi-taux').className      = 'kpi-trend ' + (taux >= 80 ? 'up' : 'down');
+  document.getElementById('kpi-taux').textContent    = `${taux}% taux de livraison`;
+  document.getElementById('kpi-moy').textContent     = `Moy: ${moy.toLocaleString()} FCFA/commande`;
   document.getElementById('kpi-attente').textContent = `${attente.length} en attente`;
 
   renderChartCommandes(filtered);
@@ -405,14 +414,14 @@ function render() {
   renderRecent(filtered);
 }
 
-// â”€â”€ CHART COMMANDES PAR JOUR â”€â”€
+// ── CHART COMMANDES PAR JOUR ──
 function renderChartCommandes(orders) {
   const isToday = currentPeriod === 'today';
   const days = isToday ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
   const labels = [], data = [], dataLivrees = [];
 
   if (isToday) {
-    // âœ… FIX : afficher les heures de la journÃ©e (0h â†’ 23h)
+    // Afficher les heures de la journée (0h → 23h)
     for (let h = 0; h < 24; h++) {
       labels.push(h + 'h');
       const hourOrders = orders.filter(o => {
@@ -426,13 +435,13 @@ function renderChartCommandes(orders) {
     for (let i = days-1; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0);
       const next = new Date(d); next.setDate(next.getDate()+1);
-      labels.push(d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}));
+      labels.push(d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}));
       const dayOrders = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
       data.push(dayOrders.length);
-      dataLivrees.push(dayOrders.filter(o=>o.status==='livree').length);
+      dataLivrees.push(dayOrders.filter(o => o.status === 'livree').length);
     }
   }
-  document.getElementById('chartPeriodLabel').textContent = `(${days === 1 ? "aujourd'hui" : days+' jours'})`;
+  document.getElementById('chartPeriodLabel').textContent = `(${days === 1 ? "aujourd'hui" : days + ' jours'})`;
 
   if (chartCmds) chartCmds.destroy();
   chartCmds = new Chart(document.getElementById('chartCommandes'), {
@@ -441,7 +450,7 @@ function renderChartCommandes(orders) {
       labels,
       datasets: [
         { label:'Commandes', data, backgroundColor:'rgba(245,200,0,.3)', borderColor:'#F5C800', borderWidth:2, borderRadius:4 },
-        { label:'LivrÃ©es', data:dataLivrees, backgroundColor:'rgba(34,197,94,.2)', borderColor:'#22C55E', borderWidth:2, borderRadius:4 }
+        { label:'Livrées',   data:dataLivrees, backgroundColor:'rgba(34,197,94,.2)', borderColor:'#22C55E', borderWidth:2, borderRadius:4 }
       ]
     },
     options: {
@@ -455,18 +464,18 @@ function renderChartCommandes(orders) {
   });
 }
 
-// â”€â”€ CHART TYPES â”€â”€
+// ── CHART TYPES ──
 function renderChartTypes(orders) {
-  const types = {repas:0,colis:0,courses:0,medicaments:0,documents:0,entreprise:0};
-  orders.forEach(o => { if(types[o.type]!==undefined) types[o.type]++; else types.repas++; });
-  const labels = ['ðŸ½ Repas','ðŸ“¦ Colis','ðŸ›’ Courses','ðŸ’Š MÃ©dic.','ðŸ“„ Docs','ðŸ¢ Pro'];
-  const data = Object.values(types);
+  const types = {repas:0, colis:0, courses:0, medicaments:0, documents:0, entreprise:0};
+  orders.forEach(o => { if (types[o.type] !== undefined) types[o.type]++; else types.repas++; });
+  const labels = ['🍽 Repas', '📦 Colis', '🛒 Courses', '💊 Médic.', '📄 Docs', '🏢 Pro'];
+  const data   = Object.values(types);
   const colors = ['#F5C800','#F97316','#22C55E','#EF4444','#3B82F6','#A855F7'];
 
   if (chartTypes) chartTypes.destroy();
   chartTypes = new Chart(document.getElementById('chartTypes'), {
     type: 'doughnut',
-    data: { labels, datasets:[{ data, backgroundColor:colors.map(c=>c+'88'), borderColor:colors, borderWidth:2 }] },
+    data: { labels, datasets:[{ data, backgroundColor:colors.map(c => c+'88'), borderColor:colors, borderWidth:2 }] },
     options: {
       responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
@@ -474,18 +483,18 @@ function renderChartTypes(orders) {
   });
 }
 
-// â”€â”€ CHART ZONES â”€â”€
+// ── CHART ZONES ──
 function renderChartZones(orders) {
   const zones = {};
-  orders.forEach(o => { zones[o.zone] = (zones[o.zone]||0)+1; });
-  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  orders.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
+  const sorted = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,10);
 
   if (chartZones) chartZones.destroy();
   chartZones = new Chart(document.getElementById('chartZones'), {
     type: 'bar',
     data: {
-      labels: sorted.map(([z])=>z),
-      datasets:[{ label:'Commandes', data:sorted.map(([,n])=>n), backgroundColor:'rgba(59,130,246,.3)', borderColor:'#3B82F6', borderWidth:2, borderRadius:4 }]
+      labels: sorted.map(([z]) => z),
+      datasets:[{ label:'Commandes', data:sorted.map(([,n]) => n), backgroundColor:'rgba(59,130,246,.3)', borderColor:'#3B82F6', borderWidth:2, borderRadius:4 }]
     },
     options: {
       indexAxis:'y', responsive:true, maintainAspectRatio:false,
@@ -495,18 +504,18 @@ function renderChartZones(orders) {
   });
 }
 
-// â”€â”€ CHART PAIEMENT â”€â”€
+// ── CHART PAIEMENT ──
 function renderChartPaiement(orders) {
-  const pays = {cash:0,momo:0,wave:0,prepaye:0};
-  orders.forEach(o => { if(pays[o.paiement]!==undefined) pays[o.paiement]++; else pays.cash++; });
-  const labels = ['ðŸ’µ Cash','ðŸ“± Mobile Money','ðŸŒŠ Wave','âœ… PrÃ©payÃ©'];
-  const data = Object.values(pays);
+  const pays = {cash:0, momo:0, wave:0, prepaye:0};
+  orders.forEach(o => { if (pays[o.paiement] !== undefined) pays[o.paiement]++; else pays.cash++; });
+  const labels = ['💵 Cash', '📱 Mobile Money', '🌊 Wave', '✅ Prépayé'];
+  const data   = Object.values(pays);
   const colors = ['#F5C800','#3B82F6','#22C55E','#A855F7'];
 
   if (chartPay) chartPay.destroy();
   chartPay = new Chart(document.getElementById('chartPaiement'), {
     type: 'pie',
-    data: { labels, datasets:[{ data, backgroundColor:colors.map(c=>c+'99'), borderColor:colors, borderWidth:2 }] },
+    data: { labels, datasets:[{ data, backgroundColor:colors.map(c => c+'99'), borderColor:colors, borderWidth:2 }] },
     options: {
       responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
@@ -514,11 +523,11 @@ function renderChartPaiement(orders) {
   });
 }
 
-// â”€â”€ CHART HEURES â”€â”€
+// ── CHART HEURES ──
 function renderChartHeures(orders) {
   const hours = Array(24).fill(0);
   orders.forEach(o => { const h = new Date(o.createdAt).getHours(); hours[h]++; });
-  const labels = Array.from({length:24},(_,i)=>i+'h');
+  const labels = Array.from({length:24}, (_,i) => i + 'h');
 
   if (chartH) chartH.destroy();
   chartH = new Chart(document.getElementById('chartHeures'), {
@@ -530,69 +539,76 @@ function renderChartHeures(orders) {
     options: {
       responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false} },
-      scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#555',maxRotation:0,font:{size:9}}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#555'},beginAtZero:true} }
+      scales:{
+        x:{grid:{color:'#1a1a1a'}, ticks:{color:'#555', maxRotation:0, font:{size:9}}},
+        y:{grid:{color:'#1a1a1a'}, ticks:{color:'#555'}, beginAtZero:true}
+      }
     }
   });
 }
 
-// â”€â”€ TOP RESTOS â”€â”€
+// ── TOP RESTOS ──
 function renderTopRestos(orders) {
   const restos = {};
-  // âœ… FIX : exclure 'TropRapide' (tag des commandes non-repas)
   orders.filter(o => o.type === 'repas' || !o.type).forEach(o => {
-    if (!restos[o.restaurant]) restos[o.restaurant] = {count:0,revenu:0};
-    restos[o.restaurant].count++;
-    if(o.status==='livree') restos[o.restaurant].revenu += Number(o.amount||0);
+    const name = o.restaurant || 'Inconnu';
+    if (!restos[name]) restos[name] = {count:0, revenu:0};
+    restos[name].count++;
+    if (o.status === 'livree') restos[name].revenu += Number(o.amount||0);
   });
-  const sorted = Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,6);
-  const max = sorted[0]?.[1].count || 1;
+  const sorted = Object.entries(restos).sort((a,b) => b[1].count - a[1].count).slice(0,6);
+  const max    = sorted[0]?.[1].count || 1;
 
   document.getElementById('topRestos').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
     <div class="rank-item">
       <div class="rank-num ${i<3?'top':''}">${i+1}</div>
       <div class="rank-info">
-        <div class="rank-name">${name}</div>
-        <div class="rank-sub">${d.revenu.toLocaleString()} FCFA gÃ©nÃ©rÃ©s</div>
+        <div class="rank-name">${esc(name)}</div>
+        <div class="rank-sub">${d.revenu.toLocaleString()} FCFA générés</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(d.count/max*100)}%"></div></div>
       </div>
       <div class="rank-val" style="color:var(--yellow)">${d.count} cmd</div>
-    </div>`).join('') : '<div class="loading">Aucune donnÃ©e</div>';
+    </div>`).join('') : '<div class="loading">Aucune donnée</div>';
 }
 
-// â”€â”€ TOP LIVREURS â”€â”€
+// ── TOP LIVREURS ──
 function renderTopLivreurs(orders) {
   const livreurs = {};
-  orders.filter(o=>o.livreur).forEach(o => {
-    if (!livreurs[o.livreur]) livreurs[o.livreur] = {count:0,livrees:0};
-    livreurs[o.livreur].count++;
-    if(o.status==='livree') livreurs[o.livreur].livrees++;
+  orders.filter(o => o.livreur).forEach(o => {
+    const name = o.livreur;
+    if (!livreurs[name]) livreurs[name] = {count:0, livrees:0};
+    livreurs[name].count++;
+    if (o.status === 'livree') livreurs[name].livrees++;
   });
-  const sorted = Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,6);
-  const max = sorted[0]?.[1].livrees || 1;
+  const sorted = Object.entries(livreurs).sort((a,b) => b[1].livrees - a[1].livrees).slice(0,6);
+  const max    = sorted[0]?.[1].livrees || 1;
 
   document.getElementById('topLivreurs').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
     <div class="rank-item">
       <div class="rank-num ${i<3?'top':''}">${i+1}</div>
       <div class="rank-info">
-        <div class="rank-name">ðŸ›µ ${name}</div>
+        <div class="rank-name">🛵 ${esc(name)}</div>
         <div class="rank-sub">${d.count} courses prises</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(d.livrees/max*100)}%;background:var(--green)"></div></div>
       </div>
-      <div class="rank-val" style="color:var(--green)">${d.livrees} livrÃ©es</div>
-    </div>`).join('') : '<div class="loading">Aucun livreur assignÃ©</div>';
+      <div class="rank-val" style="color:var(--green)">${d.livrees} livrées</div>
+    </div>`).join('') : '<div class="loading">Aucun livreur assigné</div>';
 }
 
-// â”€â”€ TYPE ROW â”€â”€
+// ── TYPE ROW ──
 function renderTypeRow(orders) {
   const TYPES = {
-    repas:{e:'ðŸ½',l:'Repas'},colis:{e:'ðŸ“¦',l:'Colis'},
-    courses:{e:'ðŸ›’',l:'Courses'},medicaments:{e:'ðŸ’Š',l:'MÃ©dic.'},
-    documents:{e:'ðŸ“„',l:'Docs'},entreprise:{e:'ðŸ¢',l:'Pro'}
+    repas:      {e:'🍽', l:'Repas'},
+    colis:      {e:'📦', l:'Colis'},
+    courses:    {e:'🛒', l:'Courses'},
+    medicaments:{e:'💊', l:'Médic.'},
+    documents:  {e:'📄', l:'Docs'},
+    entreprise: {e:'🏢', l:'Pro'}
   };
   const total = orders.length || 1;
   document.getElementById('typeRow').innerHTML = Object.entries(TYPES).map(([k,v]) => {
-    const count = orders.filter(o=>(o.type||'repas')===k).length;
-    const pct = Math.round(count/total*100);
+    const count = orders.filter(o => (o.type||'repas') === k).length;
+    const pct   = Math.round(count / total * 100);
     return `<div class="type-stat">
       <div class="type-ico">${v.e}</div>
       <div class="type-count" style="color:var(--yellow)">${count}</div>
@@ -602,326 +618,305 @@ function renderTypeRow(orders) {
   }).join('');
 }
 
-// â”€â”€ RECENT â”€â”€
+// ── RECENT ──
 function renderRecent(orders) {
-  const recent = [...orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,10);
-  const TYPES = {repas:'ðŸ½',colis:'ðŸ“¦',courses:'ðŸ›’',medicaments:'ðŸ’Š',documents:'ðŸ“„',entreprise:'ðŸ¢'};
-  const SL = {nouvelle:'nouvelle',acceptee:'acceptee','en-route':'en-route',livree:'livree'};
+  const recent = [...orders].sort((a,b) => b.createdAt - a.createdAt).slice(0,10);
+  const TYPES  = {repas:'🍽', colis:'📦', courses:'🛒', medicaments:'💊', documents:'📄', entreprise:'🏢'};
+  const SL     = {nouvelle:'nouvelle', acceptee:'acceptee', 'en-route':'en-route', livree:'livree'};
+  const SLabel = {nouvelle:'🔴 Nouvelle', acceptee:'🟠 Acceptée', 'en-route':'🔵 En route', livree:'✅ Livrée'};
 
   document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => {
-    const d = new Date(o.createdAt);
+    const d       = new Date(o.createdAt);
     const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    const ico = TYPES[o.type||'repas']||'ðŸ½';
+    const ico     = TYPES[o.type||'repas'] || '🍽';
+    const items   = esc(o.items||'Commande');
+    const short   = items.length > 35 ? items.substring(0,35) + '...' : items;
     return `<div class="recent-row">
       <span>${ico}</span>
-      <span style="flex:1;font-weight:600">${o.items?o.items.substring(0,35):'Commande'}${o.items&&o.items.length>35?'...':''}</span>
-      <span style="color:var(--muted);font-size:.75rem">${o.restaurant||''}</span>
-      <span style="color:var(--muted);font-size:.75rem">ðŸ“${o.zone||''}</span>
+      <span style="flex:1;font-weight:600">${short}</span>
+      <span style="color:var(--muted);font-size:.75rem">${esc(o.restaurant||'')}</span>
+      <span style="color:var(--muted);font-size:.75rem">📍 ${esc(o.zone||'')}</span>
       <span style="font-weight:700;color:var(--yellow)">${Number(o.amount||0).toLocaleString()} F</span>
-      <span class="r-badge ${SL[o.status]||'nouvelle'}">${{nouvelle:'ðŸ”´ Nouvelle',acceptee:'ðŸŸ  AcceptÃ©e','en-route':'ðŸ”µ En route',livree:'âœ… LivrÃ©e'}[o.status]||o.status}</span>
+      <span class="r-badge ${SL[o.status]||'nouvelle'}">${SLabel[o.status]||esc(o.status)}</span>
       <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">${dateStr}</span>
     </div>`;
   }).join('') : '<div class="loading">Aucune commande</div>';
 }
 
-// â”€â”€ TOP PLATS â”€â”€
+// ── TOP PLATS ──
 function renderTopPlats(orders) {
-  // Extract individual items from orders
   const plats = {};
   orders.forEach(o => {
     if (!o.items) return;
-    // Split by comma or + to get individual items
     const items = o.items.split(/[,+\n]/).map(s => s.trim()).filter(s => s.length > 2);
     items.forEach(item => {
-      // Clean quantity prefix like "1x", "2x", etc.
       const clean = item.replace(/^\d+[xX]\s*/, '').trim();
-      if (clean.length > 2) {
-        plats[clean] = (plats[clean] || 0) + 1;
-      }
+      if (clean.length > 2) plats[clean] = (plats[clean]||0) + 1;
     });
   });
 
-  const sorted = Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  const max = sorted[0]?.[1] || 1;
+  const sorted     = Object.entries(plats).sort((a,b) => b[1]-a[1]).slice(0,7);
+  const max        = sorted[0]?.[1] || 1;
   const rankColors = ['gold','silver','bronze','','','',''];
 
   document.getElementById('topPlats').innerHTML = sorted.length ? sorted.map(([name,count],i) => `
     <div class="top-item">
       <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
       <div class="top-item-info">
-        <div class="top-item-name">${name}</div>
+        <div class="top-item-name">${esc(name)}</div>
         <div class="top-item-bar-wrap">
           <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--green)"></div>
         </div>
       </div>
       <div class="top-item-count" style="color:var(--green)">${count}x</div>
-    </div>`).join('') 
-  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucun plat enregistrÃ©</div>';
+    </div>`).join('')
+  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucun plat enregistré</div>';
 }
 
-// â”€â”€ TOP ZONES KPI â”€â”€
+// ── TOP ZONES KPI ──
 function renderTopZonesKpi(orders) {
   const zones = {};
-  orders.forEach(o => { if(o.zone) zones[o.zone] = (zones[o.zone]||0)+1; });
-  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,7);
-  const max = sorted[0]?.[1] || 1;
-  const total = orders.length || 1;
+  orders.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
+  const sorted     = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,7);
+  const max        = sorted[0]?.[1] || 1;
+  const total      = orders.length || 1;
   const rankColors = ['gold','silver','bronze','','','',''];
   const zoneEmojis = {
-    'Cocody':'ðŸ˜','Plateau':'ðŸ™','Yopougon':'ðŸ—','Marcory':'ðŸŒ†',
-    'Treichville':'ðŸŒƒ','AdjamÃ©':'ðŸª','Abobo':'ðŸ ','Koumassi':'ðŸ­',
-    'Port-BouÃ«t':'âœˆï¸','Bingerville':'ðŸŒ¿','AttÃ©coubÃ©':'ðŸ˜','Songon':'ðŸŒ¾'
+    'Cocody':'🏘','Plateau':'🏙','Yopougon':'🏗','Marcory':'🌆',
+    'Treichville':'🌃','Adjamé':'🏪','Abobo':'🏠','Koumassi':'🏭',
+    'Port-Bouët':'✈️','Bingerville':'🌿','Attécoubé':'🏠','Songon':'🌾'
   };
 
   document.getElementById('topZonesKpi').innerHTML = sorted.length ? sorted.map(([zone,count],i) => `
     <div class="top-item">
       <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
       <div class="top-item-info">
-        <div class="top-item-name">${zoneEmojis[zone]||'ðŸ“'} ${zone}</div>
+        <div class="top-item-name">${zoneEmojis[zone]||'📍'} ${esc(zone)}</div>
         <div class="top-item-bar-wrap">
           <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--purple)"></div>
         </div>
       </div>
       <div class="top-item-count" style="color:var(--purple)">${count} <span style="font-size:.65rem;color:var(--muted)">(${Math.round(count/total*100)}%)</span></div>
     </div>`).join('')
-  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucune zone enregistrÃ©e</div>';
+  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucune zone enregistrée</div>';
 }
 
-// â”€â”€ EXPORT PDF â”€â”€
+// ── EXPORT PDF ──
 async function exportPDF() {
   const btn = document.getElementById('pdfBtn');
   btn.disabled = true;
-  btn.textContent = 'â³ GÃ©nÃ©ration...';
+  btn.textContent = '⏳ Génération...';
 
   try {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const filtered = filterByPeriod(allOrders);
-    const livrees  = filtered.filter(o => o.status === 'livree');
-    const enRoute  = filtered.filter(o => o.status === 'en-route');
-    const revenu   = livrees.reduce((s,o) => s+Number(o.amount||0), 0);
-    const taux     = filtered.length ? Math.round(livrees.length/filtered.length*100) : 0;
-    const moy      = livrees.length ? Math.round(revenu/livrees.length) : 0;
-    const pLabels  = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les donnÃ©es"};
-    const now      = new Date().toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric'});
+    const doc       = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const filtered  = filterByPeriod(allOrders);
+    const livrees   = filtered.filter(o => o.status === 'livree');
+    const enRoute   = filtered.filter(o => o.status === 'en-route');
+    const revenu    = livrees.reduce((s,o) => s + Number(o.amount||0), 0);
+    const taux      = filtered.length ? Math.round(livrees.length / filtered.length * 100) : 0;
+    const moy       = livrees.length ? Math.round(revenu / livrees.length) : 0;
+    const pLabels   = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les donnees"};
+    const now       = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
     const W = 210, margin = 14;
 
-    // â”€â”€ HEADER â”€â”€
-    doc.setFillColor(15, 15, 15);
-    doc.rect(0, 0, W, 32, 'F');
-    doc.setFillColor(245, 200, 0);
-    doc.rect(0, 0, W, 3, 'F');
-    doc.setFont('helvetica', 'bold');
+    // ── HEADER ──
+    doc.setFillColor(15,15,15);
+    doc.rect(0,0,W,32,'F');
+    doc.setFillColor(245,200,0);
+    doc.rect(0,0,W,3,'F');
+    doc.setFont('helvetica','bold');
     doc.setFontSize(18);
-    doc.setTextColor(245, 200, 0);
+    doc.setTextColor(245,200,0);
     doc.text('TROPRAPIDE', margin, 14);
     doc.setFontSize(9);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Rapport Statistiques Â· ' + pLabels[currentPeriod], margin, 21);
-    doc.text('GÃ©nÃ©rÃ© le ' + now, W - margin, 21, { align: 'right' });
+    doc.setTextColor(150,150,150);
+    doc.text('Rapport Statistiques - ' + pLabels[currentPeriod], margin, 21);
+    doc.text('Genere le ' + now, W - margin, 21, {align:'right'});
     doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text(filtered.length + ' commandes analysÃ©es', margin, 28);
+    doc.setTextColor(100,100,100);
+    doc.text(filtered.length + ' commandes analysees', margin, 28);
 
     let y = 40;
 
-    // â”€â”€ KPI BOXES â”€â”€
+    // ── KPI BOXES ──
     const kpis = [
-      { label: 'Commandes totales', val: filtered.length, color: [245, 200, 0] },
-      { label: 'LivrÃ©es', val: livrees.length + ' (' + taux + '%)', color: [34, 197, 94] },
-      { label: 'FCFA collectÃ©s', val: revenu.toLocaleString('fr-FR'), color: [59, 130, 246] },
-      { label: 'En cours', val: enRoute.length, color: [249, 115, 22] },
+      { label:'Commandes totales', val:filtered.length,                      color:[245,200,0]   },
+      { label:'Livrees',           val:livrees.length + ' (' + taux + '%)',  color:[34,197,94]   },
+      { label:'FCFA collectes',    val:revenu.toLocaleString('fr-FR'),       color:[59,130,246]  },
+      { label:'En cours',          val:enRoute.length,                       color:[249,115,22]  },
     ];
     const boxW = (W - 2*margin - 9) / 4;
     kpis.forEach((k, i) => {
-      const x = margin + i * (boxW + 3);
-      doc.setFillColor(22, 22, 22);
+      const x = margin + i*(boxW+3);
+      doc.setFillColor(22,22,22);
       doc.roundedRect(x, y, boxW, 20, 2, 2, 'F');
       doc.setFillColor(...k.color);
       doc.rect(x, y, boxW, 1.5, 'F');
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('helvetica','bold');
       doc.setFontSize(14);
       doc.setTextColor(...k.color);
-      doc.text(String(k.val), x + boxW/2, y + 11, { align: 'center' });
-      doc.setFont('helvetica', 'normal');
+      doc.text(String(k.val), x+boxW/2, y+11, {align:'center'});
+      doc.setFont('helvetica','normal');
       doc.setFontSize(7);
-      doc.setTextColor(120, 120, 120);
-      doc.text(k.label, x + boxW/2, y + 17, { align: 'center' });
+      doc.setTextColor(120,120,120);
+      doc.text(k.label, x+boxW/2, y+17, {align:'center'});
     });
     y += 28;
 
-    // â”€â”€ TOP PLATS â”€â”€
+    // ── TOP PLATS & ZONES ──
     const plats = {};
     filtered.forEach(o => {
       if (!o.items) return;
-      o.items.split(/[,+\n]/).map(s=>s.trim()).filter(s=>s.length>2).forEach(item => {
+      o.items.split(/[,+\n]/).map(s => s.trim()).filter(s => s.length>2).forEach(item => {
         const clean = item.replace(/^\d+[xX]\s*/,'').trim();
-        if (clean.length > 2) plats[clean] = (plats[clean]||0)+1;
+        if (clean.length > 2) plats[clean] = (plats[clean]||0) + 1;
       });
     });
-    const topPlats = Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const topPlats = Object.entries(plats).sort((a,b) => b[1]-a[1]).slice(0,8);
 
-    // â”€â”€ TOP ZONES â”€â”€
-    const zones = {};
-    filtered.forEach(o => { if(o.zone) zones[o.zone] = (zones[o.zone]||0)+1; });
-    const topZones = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const zones    = {};
+    filtered.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
+    const topZones = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,8);
 
-    // TWO COLUMNS
     const colW = (W - 2*margin - 6) / 2;
 
-    // Plats table
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('helvetica','bold');
     doc.setFontSize(9);
-    doc.setTextColor(245, 200, 0);
-    doc.text('ðŸ½ Plats les plus commandÃ©s', margin, y);
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(168, 85, 247);
-    doc.text('ðŸ“ Zones les plus actives', margin + colW + 6, y);
+    doc.setTextColor(245,200,0);
+    doc.text('Top Plats commandes', margin, y);
+    doc.setTextColor(168,85,247);
+    doc.text('Zones les plus actives', margin + colW + 6, y);
     y += 4;
 
     doc.autoTable({
-      startY: y,
-      margin: { left: margin },
-      tableWidth: colW,
-      head: [['#', 'Plat', 'QtÃ©']],
+      startY: y, margin:{left:margin}, tableWidth:colW,
+      head: [['#','Plat','Qte']],
       body: topPlats.map(([name,cnt],i) => [i+1, name.length>28?name.substring(0,28)+'...':name, cnt+'x']),
-      theme: 'grid',
-      headStyles: { fillColor: [30,30,30], textColor: [245,200,0], fontStyle:'bold', fontSize:8 },
-      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
-      alternateRowStyles: { fillColor: [22,22,22] },
-      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14, halign:'center'} },
+      theme:'grid',
+      headStyles:{ fillColor:[30,30,30], textColor:[245,200,0], fontStyle:'bold', fontSize:8 },
+      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
+      alternateRowStyles:{ fillColor:[22,22,22] },
+      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'} },
     });
-
     const afterPlats = doc.lastAutoTable.finalY;
 
     doc.autoTable({
-      startY: y,
-      margin: { left: margin + colW + 6 },
-      tableWidth: colW,
-      head: [['#', 'Zone', 'Cmds', '%']],
+      startY: y, margin:{left:margin+colW+6}, tableWidth:colW,
+      head: [['#','Zone','Cmds','%']],
       body: topZones.map(([zone,cnt],i) => {
         const pct = Math.round(cnt/(filtered.length||1)*100);
         return [i+1, zone, cnt, pct+'%'];
       }),
-      theme: 'grid',
-      headStyles: { fillColor: [30,30,30], textColor: [168,85,247], fontStyle:'bold', fontSize:8 },
-      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
-      alternateRowStyles: { fillColor: [22,22,22] },
-      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
+      theme:'grid',
+      headStyles:{ fillColor:[30,30,30], textColor:[168,85,247], fontStyle:'bold', fontSize:8 },
+      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
+      alternateRowStyles:{ fillColor:[22,22,22] },
+      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
     });
-
     y = Math.max(afterPlats, doc.lastAutoTable.finalY) + 8;
 
-    // â”€â”€ TOP RESTOS â”€â”€
+    // ── TOP RESTOS & LIVREURS ──
     const restos = {};
     filtered.forEach(o => {
-      if (!restos[o.restaurant]) restos[o.restaurant] = {count:0, revenu:0};
-      restos[o.restaurant].count++;
-      if(o.status==='livree') restos[o.restaurant].revenu += Number(o.amount||0);
+      const rname = o.restaurant || 'Inconnu';
+      if (!restos[rname]) restos[rname] = {count:0, revenu:0};
+      restos[rname].count++;
+      if (o.status === 'livree') restos[rname].revenu += Number(o.amount||0);
     });
-    const topRestos = Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,8);
+    const topRestos = Object.entries(restos).sort((a,b) => b[1].count - a[1].count).slice(0,8);
 
-    // â”€â”€ TOP LIVREURS â”€â”€
     const livreurs = {};
-    filtered.filter(o=>o.livreur).forEach(o => {
-      if (!livreurs[o.livreur]) livreurs[o.livreur] = {count:0, livrees:0};
-      livreurs[o.livreur].count++;
-      if(o.status==='livree') livreurs[o.livreur].livrees++;
+    filtered.filter(o => o.livreur).forEach(o => {
+      const lname = o.livreur;
+      if (!livreurs[lname]) livreurs[lname] = {count:0, livrees:0};
+      livreurs[lname].count++;
+      if (o.status === 'livree') livreurs[lname].livrees++;
     });
-    const topLivreurs = Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,8);
+    const topLivreurs = Object.entries(livreurs).sort((a,b) => b[1].livrees - a[1].livrees).slice(0,8);
 
     if (y > 240) { doc.addPage(); y = 20; }
 
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('helvetica','bold');
     doc.setFontSize(9);
-    doc.setTextColor(34, 197, 94);
-    doc.text('ðŸ½ Top Restaurants', margin, y);
-    doc.setTextColor(59, 130, 246);
-    doc.text('ðŸ›µ Top Livreurs', margin + colW + 6, y);
+    doc.setTextColor(34,197,94);
+    doc.text('Top Restaurants', margin, y);
+    doc.setTextColor(59,130,246);
+    doc.text('Top Livreurs', margin + colW + 6, y);
     y += 4;
 
     doc.autoTable({
-      startY: y,
-      margin: { left: margin },
-      tableWidth: colW,
-      head: [['#', 'Restaurant', 'Cmds', 'FCFA']],
+      startY:y, margin:{left:margin}, tableWidth:colW,
+      head:[['#','Restaurant','Cmds','FCFA']],
       body: topRestos.map(([name,d],i) => [i+1, name.length>20?name.substring(0,20)+'...':name, d.count, d.revenu.toLocaleString('fr-FR')]),
-      theme: 'grid',
-      headStyles: { fillColor: [30,30,30], textColor: [34,197,94], fontStyle:'bold', fontSize:8 },
-      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
-      alternateRowStyles: { fillColor: [22,22,22] },
-      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:12,halign:'center'} },
+      theme:'grid',
+      headStyles:{ fillColor:[30,30,30], textColor:[34,197,94], fontStyle:'bold', fontSize:8 },
+      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
+      alternateRowStyles:{ fillColor:[22,22,22] },
+      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:12,halign:'center'} },
     });
-
     const afterRestos = doc.lastAutoTable.finalY;
 
     doc.autoTable({
-      startY: y,
-      margin: { left: margin + colW + 6 },
-      tableWidth: colW,
-      head: [['#', 'Livreur', 'Prises', 'LivrÃ©es']],
+      startY:y, margin:{left:margin+colW+6}, tableWidth:colW,
+      head:[['#','Livreur','Prises','Livrees']],
       body: topLivreurs.map(([name,d],i) => [i+1, name, d.count, d.livrees]),
-      theme: 'grid',
-      headStyles: { fillColor: [30,30,30], textColor: [59,130,246], fontStyle:'bold', fontSize:8 },
-      bodyStyles: { fillColor: [18,18,18], textColor: [220,220,220], fontSize:8 },
-      alternateRowStyles: { fillColor: [22,22,22] },
-      columnStyles: { 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
+      theme:'grid',
+      headStyles:{ fillColor:[30,30,30], textColor:[59,130,246], fontStyle:'bold', fontSize:8 },
+      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
+      alternateRowStyles:{ fillColor:[22,22,22] },
+      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
     });
-
     y = Math.max(afterRestos, doc.lastAutoTable.finalY) + 8;
 
-    // â”€â”€ DERNIÃˆRES COMMANDES â”€â”€
+    // ── DERNIÈRES COMMANDES ──
     if (y > 230) { doc.addPage(); y = 20; }
 
-    doc.setFont('helvetica', 'bold');
+    doc.setFont('helvetica','bold');
     doc.setFontSize(9);
-    doc.setTextColor(245, 200, 0);
-    doc.text('ðŸ• DerniÃ¨res commandes', margin, y);
+    doc.setTextColor(245,200,0);
+    doc.text('Dernieres commandes', margin, y);
     y += 4;
 
-    const recent = [...filtered].sort((a,b)=>b.createdAt-a.createdAt).slice(0,15);
-    const statusLabels = {nouvelle:'Nouvelle','en-route':'En route',acceptee:'AcceptÃ©e',prete:'PrÃªte',livree:'LivrÃ©e'};
+    const recent       = [...filtered].sort((a,b) => b.createdAt - a.createdAt).slice(0,15);
+    const statusLabels = {nouvelle:'Nouvelle','en-route':'En route',acceptee:'Acceptee',prete:'Prete',livree:'Livree'};
 
     doc.autoTable({
-      startY: y,
-      margin: { left: margin },
-      head: [['Date', 'Client', 'Restaurant', 'Zone', 'Articles', 'Montant', 'Statut']],
+      startY:y, margin:{left:margin},
+      head:[['Date','Client','Restaurant','Zone','Articles','Montant','Statut']],
       body: recent.map(o => {
-        const d = new Date(o.createdAt);
+        const d       = new Date(o.createdAt);
         const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
         return [
           dateStr,
           (o.client||'').substring(0,12),
           (o.restaurant||'').substring(0,14),
           o.zone||'',
-          (o.items||'').substring(0,20)+(o.items&&o.items.length>20?'...':''),
-          Number(o.amount||0).toLocaleString('fr-FR')+' F',
-          statusLabels[o.status]||o.status
+          (o.items||'').substring(0,20) + (o.items&&o.items.length>20?'...':''),
+          Number(o.amount||0).toLocaleString('fr-FR') + ' F',
+          statusLabels[o.status] || o.status
         ];
       }),
-      theme: 'grid',
-      headStyles: { fillColor: [30,30,30], textColor: [245,200,0], fontStyle:'bold', fontSize:7 },
-      bodyStyles: { fillColor: [18,18,18], textColor: [200,200,200], fontSize:7 },
-      alternateRowStyles: { fillColor: [22,22,22] },
-      columnStyles: { 0:{cellWidth:20}, 5:{halign:'right'} },
+      theme:'grid',
+      headStyles:{ fillColor:[30,30,30], textColor:[245,200,0], fontStyle:'bold', fontSize:7 },
+      bodyStyles:{ fillColor:[18,18,18], textColor:[200,200,200], fontSize:7 },
+      alternateRowStyles:{ fillColor:[22,22,22] },
+      columnStyles:{ 0:{cellWidth:20}, 5:{halign:'right'} },
     });
 
-    // â”€â”€ FOOTER â”€â”€
+    // ── FOOTER ──
     const pageCount = doc.internal.getNumberOfPages();
-    for (let i=1; i<=pageCount; i++) {
+    for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
       doc.setFillColor(15,15,15);
-      doc.rect(0, 287, W, 10, 'F');
+      doc.rect(0,287,W,10,'F');
       doc.setFont('helvetica','normal');
       doc.setFontSize(7);
       doc.setTextColor(80,80,80);
-      doc.text('TropRapide Â· Rapport statistiques Â· ' + now, margin, 293);
+      doc.text('TropRapide - Rapport statistiques - ' + now, margin, 293);
       doc.text('Page ' + i + ' / ' + pageCount, W-margin, 293, {align:'right'});
     }
 
-    // â”€â”€ SAVE â”€â”€
     const filename = 'TropRapide_Stats_' + new Date().toISOString().slice(0,10) + '.pdf';
     doc.save(filename);
 
@@ -930,10 +925,9 @@ async function exportPDF() {
     alert('Erreur PDF: ' + e.message);
   } finally {
     btn.disabled = false;
-    btn.textContent = 'â¬‡ï¸ PDF';
+    btn.textContent = '⬇️ PDF';
   }
 }
 </script>
 </body>
 </html>
-

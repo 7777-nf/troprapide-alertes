@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meme Choco — Commander</title>
+<title>TropRapide — Commander</title>
 <style>
 :root{
   --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
@@ -115,7 +115,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   <div class="brand">
     <span class="brand-logo">🍗</span>
     <div>
-      <div class="brand-name">Meme Choco</div>
+      <div class="brand-name">TropRapide</div>
       <div class="brand-sub">Livraison Abidjan • 30-45 min</div>
     </div>
   </div>
@@ -215,7 +215,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 /* ============================================================
    SHARED DB
    ============================================================ */
-const DB_KEY = 'meme_choco_delivery';
+const DB_KEY = 'troprapide_delivery';
 const ZONES_COORDS = {
   'Cocody':     { lat:5.370, lng:-3.980 },
   'Koumassi':   { lat:5.290, lng:-4.010 },
@@ -360,7 +360,7 @@ function placeOrder(){
     lat: z.lat + (Math.random()*.01-.005),
     lng: z.lng + (Math.random()*.01-.005),
     status: 'nouvelle',
-    restaurant: 'Meme Choco',
+    restaurant: 'TropRapide',
     restaurantLat: 5.340,
     restaurantLng: -4.010,
     assignedTo: null,
