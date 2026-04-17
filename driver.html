@@ -47,12 +47,34 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;
   border-radius:8px;cursor:pointer;font-size:.8rem;}
 
-/* STATS BAR */
-.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 16px;
-  border-bottom:1px solid var(--border);background:#080808;}
-.stat-mini{text-align:center;}
-.stat-mini .val{font-size:1.4rem;font-weight:900;}
-.stat-mini .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;}
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 16px;
+  background:#080808;border-bottom:1px solid var(--border);}
+.kpi-card{background:var(--card2);border-radius:14px;padding:14px;position:relative;
+  overflow:hidden;border:1px solid var(--border);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.kpi-yellow::before{background:var(--yellow);}
+.kpi-orange::before{background:var(--orange);}
+.kpi-green::before{background:var(--green);}
+.kpi-blue::before{background:var(--blue);}
+.kpi-purple::before{background:#A855F7;}
+.kpi-icon{font-size:1.3rem;margin-bottom:6px;}
+.kpi-val{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:3px;}
+.kpi-yellow .kpi-val{color:var(--yellow);}
+.kpi-orange .kpi-val{color:var(--orange);}
+.kpi-green .kpi-val{color:var(--green);}
+.kpi-blue .kpi-val{color:var(--blue);}
+.kpi-purple .kpi-val{color:#A855F7;}
+.kpi-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
+.kpi-sub{font-size:.72rem;color:var(--muted);margin-top:4px;}
+
+/* KPI MINI ROW */
+.kpi-mini-row{display:grid;grid-template-columns:repeat(3,1fr);background:#080808;
+  border-bottom:1px solid var(--border);}
+.kpi-mini{text-align:center;padding:10px 8px;border-right:1px solid var(--border);}
+.kpi-mini:last-child{border-right:none;}
+.kpi-mini-val{display:block;font-weight:900;font-size:.95rem;color:var(--text);}
+.kpi-mini-lbl{display:block;font-size:.62rem;color:var(--muted);text-transform:uppercase;margin-top:2px;}
 
 /* SECTION */
 .section{padding:16px;}
@@ -150,19 +172,47 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="stats-bar">
-    <div class="stat-mini">
-      <div class="val" id="stat-today" style="color:var(--yellow);">0</div>
-      <div class="lbl">Livrées</div>
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-yellow">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-val" id="stat-today">0</div>
+      <div class="kpi-label">Livrées aujourd'hui</div>
+      <div class="kpi-sub" id="kpi-total-sub"></div>
     </div>
-    <div class="stat-mini">
-      <div class="val" id="stat-active" style="color:var(--orange);">0</div>
-      <div class="lbl">En cours</div>
+    <div class="kpi-card kpi-orange">
+      <div class="kpi-icon">🚀</div>
+      <div class="kpi-val" id="stat-active">0</div>
+      <div class="kpi-label">En cours</div>
+      <div class="kpi-sub" id="kpi-active-sub"></div>
     </div>
-    <div class="stat-mini">
-      <div class="val" id="stat-earnings" style="color:var(--green);">0</div>
-      <div class="lbl">FCFA today</div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-val" id="stat-earnings">0</div>
+      <div class="kpi-label">FCFA gagnés</div>
+      <div class="kpi-sub" id="kpi-earnings-sub"></div>
+    </div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-icon">⭐</div>
+      <div class="kpi-val" id="stat-rate">—</div>
+      <div class="kpi-label">Taux de succès</div>
+      <div class="kpi-sub" id="kpi-rate-sub"></div>
+    </div>
+  </div>
+
+  <!-- KPI MINI ROW -->
+  <div class="kpi-mini-row">
+    <div class="kpi-mini">
+      <span class="kpi-mini-val" id="stat-total" style="color:var(--yellow);">0</span>
+      <span class="kpi-mini-lbl">Total livraisons</span>
+    </div>
+    <div class="kpi-mini">
+      <span class="kpi-mini-val" id="stat-avg-time" style="color:var(--orange);">—</span>
+      <span class="kpi-mini-lbl">Temps moyen</span>
+    </div>
+    <div class="kpi-mini">
+      <span class="kpi-mini-val" id="stat-total-earn" style="color:var(--green);">0</span>
+      <span class="kpi-mini-lbl">FCFA total</span>
     </div>
   </div>
 
@@ -351,12 +401,38 @@ function renderApp(){
     .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
     .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
 
-  // Stats
-  const delivered = Object.values(db.orders||{}).filter(o=>o.assignedTo===myDriverId && o.status==='livree').length;
-  const earnings = delivered * 500; // 500 FCFA per delivery
-  document.getElementById('stat-today').textContent = delivered;
-  document.getElementById('stat-active').textContent = myOrders.length;
-  document.getElementById('stat-earnings').textContent = earnings.toLocaleString('fr');
+  // ── KPI CALCULS ──
+  const allOrders        = Object.values(db.orders||{});
+  const myAllOrders      = allOrders.filter(o => o.assignedTo === myDriverId);
+  const deliveredOrders  = myAllOrders.filter(o => o.status === 'livree');
+  const todayStart       = new Date(); todayStart.setHours(0,0,0,0);
+  const deliveredToday   = deliveredOrders.filter(o => (o.deliveredAt||o.dispatchedAt||0) >= todayStart.getTime());
+  const earningsToday    = deliveredToday.length * 500;
+  const earningsTotal    = deliveredOrders.length * 500;
+  const totalAssigned    = myAllOrders.length;
+  const successRate      = totalAssigned > 0 ? Math.round(deliveredOrders.length / totalAssigned * 100) : 0;
+
+  // Temps moyen (pickedAt → deliveredAt)
+  const timed = deliveredOrders.filter(o => o.pickedAt && o.deliveredAt);
+  const avgMinutes = timed.length > 0
+    ? Math.round(timed.reduce((s,o) => s + (o.deliveredAt - o.pickedAt), 0) / timed.length / 60000)
+    : null;
+
+  // KPI cards
+  document.getElementById('stat-today').textContent    = deliveredToday.length;
+  document.getElementById('kpi-total-sub').textContent = deliveredOrders.length > 0 ? `${deliveredOrders.length} au total` : '';
+  document.getElementById('stat-active').textContent   = myOrders.length;
+  document.getElementById('kpi-active-sub').textContent= myOrders.length > 0 ? 'En attente / en route' : 'Aucune en attente';
+  document.getElementById('stat-earnings').textContent = earningsToday.toLocaleString('fr');
+  document.getElementById('kpi-earnings-sub').textContent = `500 FCFA / livraison`;
+  document.getElementById('stat-rate').textContent     = totalAssigned > 0 ? successRate + '%' : '—';
+  document.getElementById('kpi-rate-sub').textContent  = totalAssigned > 0 ? `${deliveredOrders.length} / ${totalAssigned} courses` : 'Aucune course';
+
+  // Mini row
+  document.getElementById('stat-total').textContent      = deliveredOrders.length;
+  document.getElementById('stat-avg-time').textContent   = avgMinutes !== null ? avgMinutes + ' min' : '—';
+  document.getElementById('stat-total-earn').textContent = earningsTotal.toLocaleString('fr') + ' F';
+
   document.getElementById('orders-count').textContent = myOrders.length + ' active';
 
   // Orders list
