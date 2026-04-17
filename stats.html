@@ -34,116 +34,133 @@ body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;
 .btn-cfg{width:100%;padding:12px;background:var(--yellow);color:var(--black);border:none;border-radius:10px;font-size:.9rem;font-weight:800;font-family:'Syne',sans-serif;cursor:pointer;margin-top:4px}
 
 /* NAV */
-nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+nav{background:var(--dark);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-left{display:flex;align-items:center;gap:16px}
 .nav-logo{font-family:'Syne',sans-serif;font-weight:900;font-size:1.1rem;color:var(--yellow);display:flex;align-items:center;gap:8px}
 .nav-dot{width:8px;height:8px;background:var(--yellow);border-radius:50%;animation:pdot 1.5s infinite}
 @keyframes pdot{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
-.nav-actions{display:flex;gap:8px}
-.nbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.78rem;text-decoration:none;transition:all .2s}
+.nav-date{font-size:.8rem;color:var(--muted);display:flex;flex-direction:column;gap:1px}
+.nav-date .date-str{color:var(--text);font-weight:600}
+.nav-date .time-str{color:var(--yellow);font-family:monospace;font-size:.85rem}
+.nav-actions{display:flex;gap:6px;align-items:center}
+.nbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.75rem;text-decoration:none;transition:all .2s;white-space:nowrap}
 .nbtn:hover{border-color:var(--yellow);color:var(--yellow)}
-.nbtn.active{background:rgba(245,200,0,.1);border-color:var(--yellow);color:var(--yellow)}
-.btn-pdf{background:var(--yellow);color:var(--black);border:none;padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:800;font-family:'Syne',sans-serif;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-pdf{background:var(--yellow);color:var(--black);border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:800;font-family:'Syne',sans-serif;transition:all .2s}
 .btn-pdf:hover{background:var(--yellow-dark);transform:scale(1.02)}
 .btn-pdf:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-csv{background:transparent;color:var(--green);border:1px solid var(--green);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:.75rem;font-weight:700;transition:all .2s}
+.btn-csv:hover{background:rgba(34,197,94,.1)}
 
-/* PERIOD TABS */
-.period-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:8px}
-.ptab{padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.8rem;font-weight:600;border:1px solid var(--border);color:var(--muted);transition:all .2s}
+/* PERIOD BAR */
+.period-bar{background:var(--dark);border-bottom:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ptab{padding:6px 14px;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:600;border:1px solid var(--border);color:var(--muted);transition:all .2s}
 .ptab.active{background:var(--yellow);color:var(--black);border-color:var(--yellow)}
-.period-info{margin-left:auto;font-size:.75rem;color:var(--muted)}
+.period-info{margin-left:auto;font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.live-badge{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green);padding:3px 8px;border-radius:20px;font-size:.68rem;font-weight:700;display:flex;align-items:center;gap:4px}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pdot 1.5s infinite}
+.updated-at{font-size:.7rem;color:var(--muted)}
 
 /* MAIN */
-.main{padding:24px;max-width:1200px;margin:0 auto}
+.main{padding:20px 24px;max-width:1300px;margin:0 auto}
 
-/* KPI CARDS */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
+/* 6 KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden;transition:border-color .2s}
+.kpi:hover{border-color:var(--border);border-color:#333}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
 .kpi.y::before{background:var(--yellow)}.kpi.g::before{background:var(--green)}
-.kpi.b::before{background:var(--blue)}.kpi.o::before{background:var(--orange)}.kpi.p::before{background:var(--purple)}
-.kpi-icon{font-size:1.5rem;margin-bottom:10px}
-.kpi-val{font-family:'Syne',sans-serif;font-size:2rem;font-weight:900;line-height:1;margin-bottom:4px}
-.kpi-val.y{color:var(--yellow)}.kpi-val.g{color:var(--green)}.kpi-val.b{color:var(--blue)}.kpi-val.o{color:var(--orange)}.kpi-val.p{color:var(--purple)}
-.kpi-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.kpi-trend{font-size:.72rem;margin-top:6px;display:flex;align-items:center;gap:4px}
-.kpi-trend.up{color:var(--green)}.kpi-trend.down{color:var(--red)}
+.kpi.b::before{background:var(--blue)}.kpi.o::before{background:var(--orange)}
+.kpi.p::before{background:var(--purple)}.kpi.r::before{background:var(--red)}
+.kpi-icon{font-size:1.3rem;margin-bottom:8px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:900;line-height:1;margin-bottom:3px}
+.kpi-val.y{color:var(--yellow)}.kpi-val.g{color:var(--green)}.kpi-val.b{color:var(--blue)}
+.kpi-val.o{color:var(--orange)}.kpi-val.p{color:var(--purple)}.kpi-val.r{color:var(--red)}
+.kpi-lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.kpi-trend{font-size:.7rem;margin-top:6px;display:flex;align-items:center;gap:4px}
+.kpi-trend.up{color:var(--green)}.kpi-trend.down{color:var(--red)}.kpi-trend.flat{color:var(--muted)}
+.kpi-sub{font-size:.7rem;color:var(--muted);margin-top:3px}
 
 /* CHARTS ROW */
-.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:24px}
-.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
-.chart-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
-.chart-title span{color:var(--muted);font-size:.72rem;font-weight:400}
-.chart-wrap{position:relative;height:220px}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px}
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.chart-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.chart-title span{color:var(--muted);font-size:.7rem;font-weight:400}
+.chart-wrap{position:relative;height:210px}
 
 /* SECOND ROW */
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
 
 /* TABLES */
-.table-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px}
-.table-title{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:14px;color:var(--text)}
-.rank-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px}
+.table-title{font-family:'Syne',sans-serif;font-size:.85rem;font-weight:700;margin-bottom:12px;color:var(--text)}
+.rank-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
 .rank-item:last-child{border-bottom:none}
-.rank-num{font-family:'Syne',sans-serif;font-weight:900;font-size:.9rem;width:24px;color:var(--muted)}
+.rank-num{font-family:'Syne',sans-serif;font-weight:900;font-size:.88rem;width:22px;color:var(--muted);flex-shrink:0}
 .rank-num.top{color:var(--yellow)}
-.rank-info{flex:1}
-.rank-name{font-size:.85rem;font-weight:600}
-.rank-sub{font-size:.72rem;color:var(--muted)}
-.rank-val{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;text-align:right}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:.83rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-sub{font-size:.7rem;color:var(--muted)}
+.rank-val{font-family:'Syne',sans-serif;font-weight:800;font-size:.88rem;text-align:right;white-space:nowrap}
 .rank-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:4px}
 .rank-bar{height:3px;border-radius:2px;background:var(--yellow);transition:width .6s ease}
 
-/* TYPE CHART */
-.type-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
-.type-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center}
-.type-ico{font-size:1.8rem;margin-bottom:6px}
-.type-count{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:900}
-.type-lbl{font-size:.72rem;color:var(--muted)}
-.type-pct{font-size:.75rem;font-weight:600;margin-top:2px}
+/* TYPE ROW */
+.type-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.type-stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px;text-align:center}
+.type-ico{font-size:1.6rem;margin-bottom:4px}
+.type-count{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:900}
+.type-lbl{font-size:.7rem;color:var(--muted)}
+.type-pct{font-size:.72rem;font-weight:600;margin-top:2px}
+
+/* TOP PLATS & ZONES */
+.kpi2-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.kpi2{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden}
+.kpi2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi2.g::before{background:var(--green)}.kpi2.p::before{background:var(--purple)}
+.kpi2-title{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:10px}
+.top-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.top-item:last-child{border-bottom:none}
+.top-rank{font-family:'Syne',sans-serif;font-weight:900;font-size:.82rem;width:18px;color:var(--muted);flex-shrink:0}
+.top-rank.gold{color:#FFD700}.top-rank.silver{color:#C0C0C0}.top-rank.bronze{color:#CD7F32}
+.top-item-info{flex:1;min-width:0}
+.top-item-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-item-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:3px}
+.top-item-bar{height:3px;border-radius:2px;transition:width .6s ease}
+.top-item-count{font-family:'Syne',sans-serif;font-weight:800;font-size:.8rem;white-space:nowrap;flex-shrink:0}
 
 /* RECENT */
-.recent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:24px}
-.recent-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);font-size:.82rem}
+.recent-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:24px}
+.recent-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.recent-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:.8rem}
 .recent-row:last-child{border-bottom:none}
-.r-badge{padding:3px 8px;border-radius:6px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.r-badge{padding:3px 8px;border-radius:6px;font-size:.66rem;font-weight:700;white-space:nowrap}
 .r-badge.livree{background:rgba(34,197,94,.1);color:var(--green)}
 .r-badge.en-route{background:rgba(59,130,246,.1);color:var(--blue)}
 .r-badge.nouvelle{background:rgba(245,200,0,.1);color:var(--yellow)}
 .r-badge.acceptee{background:rgba(249,115,22,.1);color:var(--orange)}
+.r-badge.prete{background:rgba(168,85,247,.1);color:var(--purple)}
 
-/* LOADING */
-.loading{text-align:center;padding:40px;color:var(--muted);font-size:.88rem}
+/* LOADING / SKELETON */
+.loading{text-align:center;padding:30px;color:var(--muted);font-size:.85rem}
+.skel{background:linear-gradient(90deg,#1a1a1a 25%,#222 50%,#1a1a1a 75%);background-size:200% 100%;animation:skel 1.5s infinite;border-radius:6px;height:14px;margin:6px 0}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* TOP PLATS & ZONES KPI */
-.kpi2-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
-.kpi2{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;position:relative;overflow:hidden}
-.kpi2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
-.kpi2.g::before{background:var(--green)}.kpi2.p::before{background:var(--purple)}
-.kpi2-title{font-family:'Syne',sans-serif;font-size:.82rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
-.top-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
-.top-item:last-child{border-bottom:none}
-.top-rank{font-family:'Syne',sans-serif;font-weight:900;font-size:.85rem;width:20px;color:var(--muted);flex-shrink:0}
-.top-rank.gold{color:#FFD700}.top-rank.silver{color:#C0C0C0}.top-rank.bronze{color:#CD7F32}
-.top-item-info{flex:1;min-width:0}
-.top-item-name{font-size:.82rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.top-item-bar-wrap{height:3px;background:var(--border);border-radius:2px;margin-top:3px}
-.top-item-bar{height:3px;border-radius:2px;transition:width .6s ease}
-.top-item-count{font-family:'Syne',sans-serif;font-weight:800;font-size:.82rem;white-space:nowrap;flex-shrink:0}
-
-@media(max-width:900px){
+@media(max-width:1000px){
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
-  .kpi2-grid{grid-template-columns:1fr}
+  .type-row{grid-template-columns:repeat(3,1fr)}
   .charts-row{grid-template-columns:1fr}
   .row2{grid-template-columns:1fr}
-  .type-row{grid-template-columns:repeat(3,1fr)}
-}
-@media(max-width:500px){
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .kpi2-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .type-row{grid-template-columns:repeat(2,1fr)}
-  .main{padding:12px}
+  .main{padding:12px 14px}
   .chart-wrap{height:180px}
-  .kpi{padding:12px 10px}
-  .kpi-val{font-size:1.4rem}
+  .kpi{padding:14px 12px}
+  .kpi-val{font-size:1.5rem}
+  .nav-date{display:none}
+  .nav-actions .nbtn:not(:last-child):not(.btn-pdf):not(.btn-csv){display:none}
 }
 </style>
 </head>
@@ -166,12 +183,19 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo"><div class="nav-dot"></div>TROPRAPIDE · Stats</div>
+  <div class="nav-left">
+    <div class="nav-logo"><div class="nav-dot"></div>TROPRAPIDE · Stats</div>
+    <div class="nav-date">
+      <span class="date-str" id="navDate">—</span>
+      <span class="time-str" id="navTime">--:--:--</span>
+    </div>
+  </div>
   <div class="nav-actions">
     <a href="admin.html" class="nbtn">← Admin</a>
     <button class="nbtn" onclick="refreshData()">🔄 Actualiser</button>
+    <button class="btn-csv" onclick="exportCSV()" title="Exporter en CSV">⬇️ CSV</button>
     <button class="btn-pdf" id="pdfBtn" onclick="exportPDF()">⬇️ PDF</button>
-    <button class="nbtn" onclick="resetCfg()" style="color:var(--red)">⚙️</button>
+    <button class="nbtn" onclick="resetCfg()" style="color:var(--red)" title="Réinitialiser Firebase">⚙️</button>
   </div>
 </nav>
 
@@ -181,19 +205,23 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <div class="ptab" onclick="setPeriod('week',this)">7 jours</div>
   <div class="ptab" onclick="setPeriod('month',this)">30 jours</div>
   <div class="ptab" onclick="setPeriod('all',this)">Tout</div>
-  <div class="period-info" id="periodInfo">Chargement...</div>
+  <div class="period-info">
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <span class="updated-at" id="updatedAt">Chargement...</span>
+    <span id="periodCount" style="font-weight:700;color:var(--text)"></span>
+  </div>
 </div>
 
 <!-- MAIN -->
 <div class="main">
 
-  <!-- KPI -->
+  <!-- 6 KPI CARDS -->
   <div class="kpi-grid">
     <div class="kpi y">
       <div class="kpi-icon">📦</div>
       <div class="kpi-val y" id="kpi-total">0</div>
       <div class="kpi-lbl">Commandes totales</div>
-      <div class="kpi-trend up" id="kpi-total-trend"></div>
+      <div class="kpi-trend" id="kpi-total-trend"></div>
     </div>
     <div class="kpi g">
       <div class="kpi-icon">✅</div>
@@ -205,13 +233,25 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
       <div class="kpi-icon">💰</div>
       <div class="kpi-val b" id="kpi-revenu">0</div>
       <div class="kpi-lbl">FCFA collectés</div>
-      <div class="kpi-trend up" id="kpi-moy"></div>
+      <div class="kpi-trend" id="kpi-moy"></div>
     </div>
     <div class="kpi o">
-      <div class="kpi-icon">⏱</div>
+      <div class="kpi-icon">🚀</div>
       <div class="kpi-val o" id="kpi-enroute">0</div>
       <div class="kpi-lbl">En cours</div>
-      <div class="kpi-trend" id="kpi-attente"></div>
+      <div class="kpi-trend flat" id="kpi-attente"></div>
+    </div>
+    <div class="kpi p">
+      <div class="kpi-icon">⏰</div>
+      <div class="kpi-val p" id="kpi-avgtime">—</div>
+      <div class="kpi-lbl">Temps moyen livraison</div>
+      <div class="kpi-sub" id="kpi-avgtime-sub">Calculé sur les livrées</div>
+    </div>
+    <div class="kpi r">
+      <div class="kpi-icon">👥</div>
+      <div class="kpi-val r" id="kpi-clients">0</div>
+      <div class="kpi-lbl">Clients uniques</div>
+      <div class="kpi-sub" id="kpi-clients-sub"></div>
     </div>
   </div>
 
@@ -219,22 +259,22 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <div class="kpi2-grid">
     <div class="kpi2 g">
       <div class="kpi2-title">🍽 Plats les plus commandés</div>
-      <div id="topPlats"><div class="loading">Chargement...</div></div>
+      <div id="topPlats"><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div></div>
     </div>
     <div class="kpi2 p">
       <div class="kpi2-title">📍 Zones les plus actives</div>
-      <div id="topZonesKpi"><div class="loading">Chargement...</div></div>
+      <div id="topZonesKpi"><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel" style="width:60%"></div></div>
     </div>
   </div>
 
   <!-- CHARTS ROW 1 -->
   <div class="charts-row">
     <div class="chart-card">
-      <div class="chart-title">📈 Commandes par jour <span id="chartPeriodLabel"></span></div>
+      <div class="chart-title">📈 Commandes & Revenus <span id="chartPeriodLabel"></span></div>
       <div class="chart-wrap"><canvas id="chartCommandes"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">📋 Par type</div>
+      <div class="chart-title">📋 Par type de livraison</div>
       <div class="chart-wrap"><canvas id="chartTypes"></canvas></div>
     </div>
   </div>
@@ -246,22 +286,22 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
   <div class="row2">
     <div class="table-card">
       <div class="table-title">🍽 Top Restaurants</div>
-      <div id="topRestos"><div class="loading">Chargement...</div></div>
+      <div id="topRestos"><div class="skel"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:55%"></div></div>
     </div>
     <div class="table-card">
       <div class="table-title">🛵 Top Livreurs</div>
-      <div id="topLivreurs"><div class="loading">Chargement...</div></div>
+      <div id="topLivreurs"><div class="skel"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:55%"></div></div>
     </div>
   </div>
 
   <!-- ZONE CHART -->
-  <div class="chart-card" style="margin-bottom:24px">
+  <div class="chart-card" style="margin-bottom:20px">
     <div class="chart-title">📍 Commandes par zone</div>
     <div class="chart-wrap" style="height:180px"><canvas id="chartZones"></canvas></div>
   </div>
 
-  <!-- PAIEMENT CHART -->
-  <div class="charts-row" style="margin-bottom:24px">
+  <!-- PAIEMENT + HEURES -->
+  <div class="charts-row" style="margin-bottom:20px">
     <div class="chart-card">
       <div class="chart-title">💳 Mode de paiement</div>
       <div class="chart-wrap"><canvas id="chartPaiement"></canvas></div>
@@ -274,8 +314,11 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 
   <!-- RECENT ORDERS -->
   <div class="recent-card">
-    <div class="table-title">🕐 Dernières commandes</div>
-    <div id="recentOrders"><div class="loading">Chargement...</div></div>
+    <div class="recent-hdr">
+      <div class="table-title">🕐 Dernières commandes</div>
+      <span id="recentCount" style="font-size:.75rem;color:var(--muted)"></span>
+    </div>
+    <div id="recentOrders"><div class="skel"></div><div class="skel" style="width:90%"></div><div class="skel" style="width:70%"></div></div>
   </div>
 
 </div>
@@ -284,7 +327,6 @@ nav{background:var(--dark);border-bottom:1px solid var(--border);padding:14px 24
 // ── FIREBASE CONFIG ──
 const CFG_KEY = 'troprapide_firebase_cfg';
 
-// Credentials pré-configurés
 const FIREBASE_CONFIG = {
   dburl: 'https://troprapide-821a7-default-rtdb.firebaseio.com',
   apiKey: 'AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkiNbBZnU',
@@ -314,9 +356,25 @@ function connectRealtimeDB(cfg, appName) {
 // ── XSS PROTECTION ──
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
+// ── HELPER: Nom livreur (champ variable selon la page source) ──
+function getLivreurName(o) {
+  return o.assignedName || o.livreurName || o.livreur || o.assignedTo || null;
+}
+
 // ── STATE ──
 let db = null, allOrders = [], currentPeriod = 'today';
 let chartCmds = null, chartTypes = null, chartZones = null, chartPay = null, chartH = null;
+
+// ── HORLOGE ──
+function updateClock() {
+  const now = new Date();
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  document.getElementById('navDate').textContent = `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('navTime').textContent = now.toLocaleTimeString('fr-FR');
+}
+updateClock();
+setInterval(updateClock, 1000);
 
 // ── CONNECT ──
 function connectDB() {
@@ -343,7 +401,6 @@ function resetCfg() {
   }
 }
 
-// Auto-connect
 const saved = readFirebaseConfig();
 if (saved) { try { initDB(saved); } catch(e) {} }
 
@@ -367,21 +424,47 @@ function setPeriod(p, el) {
 }
 
 // ── FILTER BY PERIOD ──
-function filterByPeriod(orders) {
-  const now = Date.now();
-  const DAY = 86400000;
-  if (currentPeriod === 'today') {
+function filterByPeriod(orders, period) {
+  const p = period || currentPeriod;
+  const now = Date.now(), DAY = 86400000;
+  if (p === 'today') {
     const start = new Date(); start.setHours(0,0,0,0);
     return orders.filter(o => o.createdAt >= start.getTime());
   }
-  if (currentPeriod === 'week')  return orders.filter(o => o.createdAt >= now - 7*DAY);
-  if (currentPeriod === 'month') return orders.filter(o => o.createdAt >= now - 30*DAY);
+  if (p === 'week')  return orders.filter(o => o.createdAt >= now - 7*DAY);
+  if (p === 'month') return orders.filter(o => o.createdAt >= now - 30*DAY);
   return orders;
+}
+
+// ── PÉRIODE PRÉCÉDENTE (pour tendances) ──
+function getPrevPeriodOrders() {
+  const now = Date.now(), DAY = 86400000;
+  if (currentPeriod === 'today') {
+    const start = new Date(); start.setHours(0,0,0,0);
+    const prevStart = new Date(start); prevStart.setDate(prevStart.getDate()-1);
+    return allOrders.filter(o => o.createdAt >= prevStart.getTime() && o.createdAt < start.getTime());
+  }
+  if (currentPeriod === 'week')  return allOrders.filter(o => o.createdAt >= now-14*DAY && o.createdAt < now-7*DAY);
+  if (currentPeriod === 'month') return allOrders.filter(o => o.createdAt >= now-60*DAY && o.createdAt < now-30*DAY);
+  return [];
+}
+
+// ── TENDANCE ──
+function trendHtml(curr, prev) {
+  if (prev === 0 && curr === 0) return '<span class="kpi-trend flat">Stable</span>';
+  if (prev === 0) return `<span class="kpi-trend up">↑ Nouveau</span>`;
+  const pct = Math.round((curr - prev) / prev * 100);
+  const dir = pct >= 0 ? 'up' : 'down';
+  const arrow = pct >= 0 ? '↑' : '↓';
+  const label = currentPeriod === 'today' ? 'vs hier' : currentPeriod === 'week' ? 'vs semaine préc.' : 'vs mois préc.';
+  return `<span class="kpi-trend ${dir}">${arrow} ${Math.abs(pct)}% ${label}</span>`;
 }
 
 // ── MAIN RENDER ──
 function render() {
   const filtered = filterByPeriod(allOrders);
+  const prev     = getPrevPeriodOrders();
+
   const livrees  = filtered.filter(o => o.status === 'livree');
   const enRoute  = filtered.filter(o => o.status === 'en-route');
   const attente  = filtered.filter(o => o.status === 'nouvelle' || o.status === 'acceptee');
@@ -389,17 +472,45 @@ function render() {
   const taux     = filtered.length ? Math.round(livrees.length / filtered.length * 100) : 0;
   const moy      = livrees.length ? Math.round(revenu / livrees.length) : 0;
 
-  const pLabels = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les données"};
-  document.getElementById('periodInfo').textContent = `${pLabels[currentPeriod]} · ${filtered.length} commandes`;
+  // Temps moyen livraison (dispatchedAt → deliveredAt)
+  const timed    = livrees.filter(o => o.dispatchedAt && o.deliveredAt);
+  const avgMs    = timed.length ? timed.reduce((s,o) => s+(o.deliveredAt-o.dispatchedAt),0)/timed.length : 0;
+  const avgMin   = avgMs ? Math.round(avgMs/60000) : null;
 
+  // Clients uniques
+  const clients  = new Set(filtered.map(o => o.client||o.phone||'').filter(Boolean));
+
+  // Période précédente
+  const prevLivrees = prev.filter(o => o.status === 'livree');
+  const prevRevenu  = prevLivrees.reduce((s,o) => s + Number(o.amount||0), 0);
+
+  // Period info
+  const pLabels = {today:"Aujourd'hui",week:"7 derniers jours",month:"30 derniers jours",all:"Toutes les données"};
+  document.getElementById('periodCount').textContent = `${filtered.length} commandes`;
+  document.getElementById('updatedAt').textContent   = `Mis à jour à ${new Date().toLocaleTimeString('fr-FR')}`;
+
+  // KPIs
   document.getElementById('kpi-total').textContent   = filtered.length;
+  document.getElementById('kpi-total-trend').innerHTML = currentPeriod !== 'all' ? trendHtml(filtered.length, prev.length) : '';
+
   document.getElementById('kpi-livrees').textContent = livrees.length;
-  document.getElementById('kpi-revenu').textContent  = revenu.toLocaleString('fr-FR');
-  document.getElementById('kpi-enroute').textContent = enRoute.length;
-  document.getElementById('kpi-taux').className      = 'kpi-trend ' + (taux >= 80 ? 'up' : 'down');
+  document.getElementById('kpi-taux').className      = 'kpi-trend ' + (taux >= 80 ? 'up' : taux >= 50 ? 'flat' : 'down');
   document.getElementById('kpi-taux').textContent    = `${taux}% taux de livraison`;
-  document.getElementById('kpi-moy').textContent     = `Moy: ${moy.toLocaleString()} FCFA/commande`;
+
+  document.getElementById('kpi-revenu').textContent  = revenu.toLocaleString('fr-FR');
+  document.getElementById('kpi-moy').textContent     = `Moy: ${moy.toLocaleString()} FCFA / commande`;
+  if (currentPeriod !== 'all') {
+    document.getElementById('kpi-moy').innerHTML += ' &nbsp;' + trendHtml(revenu, prevRevenu).replace('kpi-trend','kpi-trend').replace('↑','↑').replace('↓','↓');
+  }
+
+  document.getElementById('kpi-enroute').textContent = enRoute.length;
   document.getElementById('kpi-attente').textContent = `${attente.length} en attente`;
+
+  document.getElementById('kpi-avgtime').textContent  = avgMin !== null ? avgMin + ' min' : '—';
+  document.getElementById('kpi-avgtime-sub').textContent = timed.length ? `Sur ${timed.length} livraison${timed.length>1?'s':''}` : 'Pas encore de données';
+
+  document.getElementById('kpi-clients').textContent  = clients.size;
+  document.getElementById('kpi-clients-sub').textContent = clients.size > 0 ? `${Math.round(clients.size/Math.max(filtered.length,1)*100)}% de commandes uniques` : '';
 
   renderChartCommandes(filtered);
   renderChartTypes(filtered);
@@ -414,34 +525,35 @@ function render() {
   renderRecent(filtered);
 }
 
-// ── CHART COMMANDES PAR JOUR ──
+// ── CHART COMMANDES + REVENUS ──
 function renderChartCommandes(orders) {
   const isToday = currentPeriod === 'today';
-  const days = isToday ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
-  const labels = [], data = [], dataLivrees = [];
+  const days    = isToday ? 1 : currentPeriod === 'week' ? 7 : currentPeriod === 'month' ? 30 : 14;
+  const labels  = [], data = [], dataLivrees = [], dataRevenu = [];
 
   if (isToday) {
-    // Afficher les heures de la journée (0h → 23h)
     for (let h = 0; h < 24; h++) {
       labels.push(h + 'h');
-      const hourOrders = orders.filter(o => {
+      const ho = orders.filter(o => {
         const d = new Date(o.createdAt);
         return d.getHours() === h && d.toDateString() === new Date().toDateString();
       });
-      data.push(hourOrders.length);
-      dataLivrees.push(hourOrders.filter(o => o.status === 'livree').length);
+      data.push(ho.length);
+      dataLivrees.push(ho.filter(o => o.status === 'livree').length);
+      dataRevenu.push(ho.filter(o=>o.status==='livree').reduce((s,o)=>s+Number(o.amount||0),0));
     }
   } else {
     for (let i = days-1; i >= 0; i--) {
       const d = new Date(); d.setDate(d.getDate()-i); d.setHours(0,0,0,0);
       const next = new Date(d); next.setDate(next.getDate()+1);
-      labels.push(d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}));
-      const dayOrders = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
-      data.push(dayOrders.length);
-      dataLivrees.push(dayOrders.filter(o => o.status === 'livree').length);
+      labels.push(d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}));
+      const do_ = orders.filter(o => o.createdAt >= d.getTime() && o.createdAt < next.getTime());
+      data.push(do_.length);
+      dataLivrees.push(do_.filter(o=>o.status==='livree').length);
+      dataRevenu.push(do_.filter(o=>o.status==='livree').reduce((s,o)=>s+Number(o.amount||0),0));
     }
   }
-  document.getElementById('chartPeriodLabel').textContent = `(${days === 1 ? "aujourd'hui" : days + ' jours'})`;
+  document.getElementById('chartPeriodLabel').textContent = `(${days===1?"aujourd'hui":days+' jours'})`;
 
   if (chartCmds) chartCmds.destroy();
   chartCmds = new Chart(document.getElementById('chartCommandes'), {
@@ -449,16 +561,18 @@ function renderChartCommandes(orders) {
     data: {
       labels,
       datasets: [
-        { label:'Commandes', data, backgroundColor:'rgba(245,200,0,.3)', borderColor:'#F5C800', borderWidth:2, borderRadius:4 },
-        { label:'Livrées',   data:dataLivrees, backgroundColor:'rgba(34,197,94,.2)', borderColor:'#22C55E', borderWidth:2, borderRadius:4 }
+        { label:'Commandes',  data, backgroundColor:'rgba(245,200,0,.25)', borderColor:'#F5C800', borderWidth:2, borderRadius:4, yAxisID:'y' },
+        { label:'Livrées',    data:dataLivrees, backgroundColor:'rgba(34,197,94,.2)', borderColor:'#22C55E', borderWidth:2, borderRadius:4, yAxisID:'y' },
+        { label:'Revenus (F)',data:dataRevenu, type:'line', borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,.08)', borderWidth:2, tension:.4, pointRadius:2, fill:true, yAxisID:'y2' }
       ]
     },
     options: {
       responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ labels:{ color:'#888', font:{size:11} } } },
+      plugins:{ legend:{ labels:{ color:'#888', font:{size:10} } } },
       scales:{
-        x:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555', maxRotation:0} },
-        y:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555'}, beginAtZero:true }
+        y:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555'}, beginAtZero:true, position:'left' },
+        y2:{ grid:{display:false}, ticks:{color:'#3B82F6',font:{size:9}}, beginAtZero:true, position:'right' },
+        x:{ grid:{color:'#1a1a1a'}, ticks:{color:'#555', maxRotation:0} }
       }
     }
   });
@@ -466,100 +580,70 @@ function renderChartCommandes(orders) {
 
 // ── CHART TYPES ──
 function renderChartTypes(orders) {
-  const types = {repas:0, colis:0, courses:0, medicaments:0, documents:0, entreprise:0};
-  orders.forEach(o => { if (types[o.type] !== undefined) types[o.type]++; else types.repas++; });
-  const labels = ['🍽 Repas', '📦 Colis', '🛒 Courses', '💊 Médic.', '📄 Docs', '🏢 Pro'];
+  const types = {repas:0,colis:0,courses:0,medicaments:0,documents:0,entreprise:0};
+  orders.forEach(o => { if(types[o.type]!==undefined) types[o.type]++; else types.repas++; });
+  const labels = ['🍽 Repas','📦 Colis','🛒 Courses','💊 Médic.','📄 Docs','🏢 Pro'];
   const data   = Object.values(types);
   const colors = ['#F5C800','#F97316','#22C55E','#EF4444','#3B82F6','#A855F7'];
-
   if (chartTypes) chartTypes.destroy();
-  chartTypes = new Chart(document.getElementById('chartTypes'), {
-    type: 'doughnut',
-    data: { labels, datasets:[{ data, backgroundColor:colors.map(c => c+'88'), borderColor:colors, borderWidth:2 }] },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
-    }
+  chartTypes = new Chart(document.getElementById('chartTypes'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data,backgroundColor:colors.map(c=>c+'88'),borderColor:colors,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:9},padding:8}}}}
   });
 }
 
 // ── CHART ZONES ──
 function renderChartZones(orders) {
   const zones = {};
-  orders.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
-  const sorted = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,10);
-
+  orders.forEach(o => { if(o.zone) zones[o.zone]=(zones[o.zone]||0)+1; });
+  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,10);
   if (chartZones) chartZones.destroy();
-  chartZones = new Chart(document.getElementById('chartZones'), {
-    type: 'bar',
-    data: {
-      labels: sorted.map(([z]) => z),
-      datasets:[{ label:'Commandes', data:sorted.map(([,n]) => n), backgroundColor:'rgba(59,130,246,.3)', borderColor:'#3B82F6', borderWidth:2, borderRadius:4 }]
-    },
-    options: {
-      indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{ x:{grid:{color:'#1a1a1a'},ticks:{color:'#555'}}, y:{grid:{color:'#1a1a1a'},ticks:{color:'#888'}} }
-    }
+  chartZones = new Chart(document.getElementById('chartZones'),{
+    type:'bar',
+    data:{labels:sorted.map(([z])=>z),datasets:[{label:'Commandes',data:sorted.map(([,n])=>n),backgroundColor:'rgba(59,130,246,.3)',borderColor:'#3B82F6',borderWidth:2,borderRadius:4}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1a1a1a'},ticks:{color:'#555'}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#888'}}}}
   });
 }
 
 // ── CHART PAIEMENT ──
 function renderChartPaiement(orders) {
-  const pays = {cash:0, momo:0, wave:0, prepaye:0};
-  orders.forEach(o => { if (pays[o.paiement] !== undefined) pays[o.paiement]++; else pays.cash++; });
-  const labels = ['💵 Cash', '📱 Mobile Money', '🌊 Wave', '✅ Prépayé'];
-  const data   = Object.values(pays);
+  const pays = {cash:0,momo:0,wave:0,prepaye:0};
+  orders.forEach(o=>{ if(pays[o.paiement]!==undefined) pays[o.paiement]++; else pays.cash++; });
+  const labels = ['💵 Cash','📱 Mobile Money','🌊 Wave','✅ Prépayé'];
   const colors = ['#F5C800','#3B82F6','#22C55E','#A855F7'];
-
   if (chartPay) chartPay.destroy();
-  chartPay = new Chart(document.getElementById('chartPaiement'), {
-    type: 'pie',
-    data: { labels, datasets:[{ data, backgroundColor:colors.map(c => c+'99'), borderColor:colors, borderWidth:2 }] },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{ position:'bottom', labels:{ color:'#888', font:{size:10}, padding:8 } } }
-    }
+  chartPay = new Chart(document.getElementById('chartPaiement'),{
+    type:'pie',
+    data:{labels,datasets:[{data:Object.values(pays),backgroundColor:colors.map(c=>c+'99'),borderColor:colors,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#888',font:{size:9},padding:8}}}}
   });
 }
 
 // ── CHART HEURES ──
 function renderChartHeures(orders) {
   const hours = Array(24).fill(0);
-  orders.forEach(o => { const h = new Date(o.createdAt).getHours(); hours[h]++; });
-  const labels = Array.from({length:24}, (_,i) => i + 'h');
-
+  orders.forEach(o=>{ hours[new Date(o.createdAt).getHours()]++; });
   if (chartH) chartH.destroy();
-  chartH = new Chart(document.getElementById('chartHeures'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets:[{ label:'Commandes', data:hours, fill:true, backgroundColor:'rgba(168,85,247,.1)', borderColor:'#A855F7', borderWidth:2, tension:.4, pointRadius:2 }]
-    },
-    options: {
-      responsive:true, maintainAspectRatio:false,
-      plugins:{ legend:{display:false} },
-      scales:{
-        x:{grid:{color:'#1a1a1a'}, ticks:{color:'#555', maxRotation:0, font:{size:9}}},
-        y:{grid:{color:'#1a1a1a'}, ticks:{color:'#555'}, beginAtZero:true}
-      }
-    }
+  chartH = new Chart(document.getElementById('chartHeures'),{
+    type:'line',
+    data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[{label:'Commandes',data:hours,fill:true,backgroundColor:'rgba(168,85,247,.1)',borderColor:'#A855F7',borderWidth:2,tension:.4,pointRadius:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1a1a1a'},ticks:{color:'#555',maxRotation:0,font:{size:8}}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#555'},beginAtZero:true}}}
   });
 }
 
 // ── TOP RESTOS ──
 function renderTopRestos(orders) {
   const restos = {};
-  orders.filter(o => o.type === 'repas' || !o.type).forEach(o => {
-    const name = o.restaurant || 'Inconnu';
-    if (!restos[name]) restos[name] = {count:0, revenu:0};
-    restos[name].count++;
-    if (o.status === 'livree') restos[name].revenu += Number(o.amount||0);
+  orders.filter(o => o.type==='repas'||!o.type).forEach(o => {
+    const n = o.restaurant||'Inconnu';
+    if(!restos[n]) restos[n]={count:0,revenu:0};
+    restos[n].count++;
+    if(o.status==='livree') restos[n].revenu+=Number(o.amount||0);
   });
-  const sorted = Object.entries(restos).sort((a,b) => b[1].count - a[1].count).slice(0,6);
-  const max    = sorted[0]?.[1].count || 1;
-
-  document.getElementById('topRestos').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
+  const sorted = Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,6);
+  const max = sorted[0]?.[1].count||1;
+  document.getElementById('topRestos').innerHTML = sorted.length ? sorted.map(([name,d],i)=>`
     <div class="rank-item">
       <div class="rank-num ${i<3?'top':''}">${i+1}</div>
       <div class="rank-info">
@@ -571,24 +655,24 @@ function renderTopRestos(orders) {
     </div>`).join('') : '<div class="loading">Aucune donnée</div>';
 }
 
-// ── TOP LIVREURS ──
+// ── TOP LIVREURS (champ corrigé) ──
 function renderTopLivreurs(orders) {
   const livreurs = {};
-  orders.filter(o => o.livreur).forEach(o => {
-    const name = o.livreur;
-    if (!livreurs[name]) livreurs[name] = {count:0, livrees:0};
+  orders.forEach(o => {
+    const name = getLivreurName(o);
+    if (!name) return;
+    if(!livreurs[name]) livreurs[name]={count:0,livrees:0,revenu:0};
     livreurs[name].count++;
-    if (o.status === 'livree') livreurs[name].livrees++;
+    if(o.status==='livree'){ livreurs[name].livrees++; livreurs[name].revenu+=Number(o.amount||0); }
   });
-  const sorted = Object.entries(livreurs).sort((a,b) => b[1].livrees - a[1].livrees).slice(0,6);
-  const max    = sorted[0]?.[1].livrees || 1;
-
-  document.getElementById('topLivreurs').innerHTML = sorted.length ? sorted.map(([name,d],i) => `
+  const sorted = Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,6);
+  const max = sorted[0]?.[1].livrees||1;
+  document.getElementById('topLivreurs').innerHTML = sorted.length ? sorted.map(([name,d],i)=>`
     <div class="rank-item">
       <div class="rank-num ${i<3?'top':''}">${i+1}</div>
       <div class="rank-info">
         <div class="rank-name">🛵 ${esc(name)}</div>
-        <div class="rank-sub">${d.count} courses prises</div>
+        <div class="rank-sub">${d.count} courses · ${d.revenu.toLocaleString()} FCFA</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(d.livrees/max*100)}%;background:var(--green)"></div></div>
       </div>
       <div class="rank-val" style="color:var(--green)">${d.livrees} livrées</div>
@@ -597,48 +681,40 @@ function renderTopLivreurs(orders) {
 
 // ── TYPE ROW ──
 function renderTypeRow(orders) {
-  const TYPES = {
-    repas:      {e:'🍽', l:'Repas'},
-    colis:      {e:'📦', l:'Colis'},
-    courses:    {e:'🛒', l:'Courses'},
-    medicaments:{e:'💊', l:'Médic.'},
-    documents:  {e:'📄', l:'Docs'},
-    entreprise: {e:'🏢', l:'Pro'}
-  };
-  const total = orders.length || 1;
-  document.getElementById('typeRow').innerHTML = Object.entries(TYPES).map(([k,v]) => {
-    const count = orders.filter(o => (o.type||'repas') === k).length;
-    const pct   = Math.round(count / total * 100);
+  const TYPES = {repas:{e:'🍽',l:'Repas'},colis:{e:'📦',l:'Colis'},courses:{e:'🛒',l:'Courses'},medicaments:{e:'💊',l:'Médic.'},documents:{e:'📄',l:'Docs'},entreprise:{e:'🏢',l:'Pro'}};
+  const total = orders.length||1;
+  document.getElementById('typeRow').innerHTML = Object.entries(TYPES).map(([k,v])=>{
+    const count = orders.filter(o=>(o.type||'repas')===k).length;
     return `<div class="type-stat">
       <div class="type-ico">${v.e}</div>
       <div class="type-count" style="color:var(--yellow)">${count}</div>
       <div class="type-lbl">${v.l}</div>
-      <div class="type-pct" style="color:var(--muted)">${pct}%</div>
+      <div class="type-pct" style="color:var(--muted)">${Math.round(count/total*100)}%</div>
     </div>`;
   }).join('');
 }
 
 // ── RECENT ──
 function renderRecent(orders) {
-  const recent = [...orders].sort((a,b) => b.createdAt - a.createdAt).slice(0,10);
-  const TYPES  = {repas:'🍽', colis:'📦', courses:'🛒', medicaments:'💊', documents:'📄', entreprise:'🏢'};
-  const SL     = {nouvelle:'nouvelle', acceptee:'acceptee', 'en-route':'en-route', livree:'livree'};
-  const SLabel = {nouvelle:'🔴 Nouvelle', acceptee:'🟠 Acceptée', 'en-route':'🔵 En route', livree:'✅ Livrée'};
-
-  document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o => {
+  const recent  = [...orders].sort((a,b)=>b.createdAt-a.createdAt).slice(0,15);
+  const TYPES   = {repas:'🍽',colis:'📦',courses:'🛒',medicaments:'💊',documents:'📄',entreprise:'🏢'};
+  const SL      = {nouvelle:'nouvelle',acceptee:'acceptee','en-route':'en-route',livree:'livree',prete:'prete'};
+  const SLabel  = {nouvelle:'🔴 Nouvelle',acceptee:'🟠 Acceptée','en-route':'🔵 En route',livree:'✅ Livrée',prete:'🟣 Prête'};
+  document.getElementById('recentCount').textContent = `${recent.length} sur ${orders.length}`;
+  document.getElementById('recentOrders').innerHTML = recent.length ? recent.map(o=>{
     const d       = new Date(o.createdAt);
     const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-    const ico     = TYPES[o.type||'repas'] || '🍽';
     const items   = esc(o.items||'Commande');
-    const short   = items.length > 35 ? items.substring(0,35) + '...' : items;
+    const livreur = getLivreurName(o);
     return `<div class="recent-row">
-      <span>${ico}</span>
-      <span style="flex:1;font-weight:600">${short}</span>
-      <span style="color:var(--muted);font-size:.75rem">${esc(o.restaurant||'')}</span>
-      <span style="color:var(--muted);font-size:.75rem">📍 ${esc(o.zone||'')}</span>
-      <span style="font-weight:700;color:var(--yellow)">${Number(o.amount||0).toLocaleString()} F</span>
+      <span>${TYPES[o.type||'repas']||'🍽'}</span>
+      <span style="flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${items.length>32?items.substring(0,32)+'…':items}</span>
+      <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">${esc(o.restaurant||'')}</span>
+      <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">📍${esc(o.zone||'')}</span>
+      ${livreur?`<span style="color:var(--blue);font-size:.72rem;white-space:nowrap">🛵${esc(livreur)}</span>`:''}
+      <span style="font-weight:700;color:var(--yellow);white-space:nowrap">${Number(o.amount||0).toLocaleString()} F</span>
       <span class="r-badge ${SL[o.status]||'nouvelle'}">${SLabel[o.status]||esc(o.status)}</span>
-      <span style="color:var(--muted);font-size:.72rem;white-space:nowrap">${dateStr}</span>
+      <span style="color:var(--muted);font-size:.7rem;white-space:nowrap">${dateStr}</span>
     </div>`;
   }).join('') : '<div class="loading">Aucune commande</div>';
 }
@@ -646,287 +722,223 @@ function renderRecent(orders) {
 // ── TOP PLATS ──
 function renderTopPlats(orders) {
   const plats = {};
-  orders.forEach(o => {
-    if (!o.items) return;
-    const items = o.items.split(/[,+\n]/).map(s => s.trim()).filter(s => s.length > 2);
-    items.forEach(item => {
-      const clean = item.replace(/^\d+[xX]\s*/, '').trim();
-      if (clean.length > 2) plats[clean] = (plats[clean]||0) + 1;
+  orders.forEach(o=>{
+    if(!o.items) return;
+    o.items.split(/[,+\n]/).map(s=>s.trim()).filter(s=>s.length>2).forEach(item=>{
+      const clean = item.replace(/^\d+[xX]\s*/,'').trim();
+      if(clean.length>2) plats[clean]=(plats[clean]||0)+1;
     });
   });
-
-  const sorted     = Object.entries(plats).sort((a,b) => b[1]-a[1]).slice(0,7);
-  const max        = sorted[0]?.[1] || 1;
-  const rankColors = ['gold','silver','bronze','','','',''];
-
-  document.getElementById('topPlats').innerHTML = sorted.length ? sorted.map(([name,count],i) => `
+  const sorted = Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const max    = sorted[0]?.[1]||1;
+  const rc     = ['gold','silver','bronze','','','',''];
+  document.getElementById('topPlats').innerHTML = sorted.length ? sorted.map(([name,count],i)=>`
     <div class="top-item">
-      <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
+      <div class="top-rank ${rc[i]||''}">${i+1}</div>
       <div class="top-item-info">
         <div class="top-item-name">${esc(name)}</div>
-        <div class="top-item-bar-wrap">
-          <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--green)"></div>
-        </div>
+        <div class="top-item-bar-wrap"><div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--green)"></div></div>
       </div>
       <div class="top-item-count" style="color:var(--green)">${count}x</div>
-    </div>`).join('')
-  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucun plat enregistré</div>';
+    </div>`).join('') : '<div style="color:var(--muted);font-size:.8rem;padding:8px 0">Aucun plat enregistré</div>';
 }
 
-// ── TOP ZONES KPI ──
+// ── TOP ZONES ──
 function renderTopZonesKpi(orders) {
   const zones = {};
-  orders.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
-  const sorted     = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,7);
-  const max        = sorted[0]?.[1] || 1;
-  const total      = orders.length || 1;
-  const rankColors = ['gold','silver','bronze','','','',''];
-  const zoneEmojis = {
-    'Cocody':'🏘','Plateau':'🏙','Yopougon':'🏗','Marcory':'🌆',
-    'Treichville':'🌃','Adjamé':'🏪','Abobo':'🏠','Koumassi':'🏭',
-    'Port-Bouët':'✈️','Bingerville':'🌿','Attécoubé':'🏠','Songon':'🌾'
-  };
-
-  document.getElementById('topZonesKpi').innerHTML = sorted.length ? sorted.map(([zone,count],i) => `
+  orders.forEach(o=>{ if(o.zone) zones[o.zone]=(zones[o.zone]||0)+1; });
+  const sorted = Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,7);
+  const max    = sorted[0]?.[1]||1;
+  const total  = orders.length||1;
+  const rc     = ['gold','silver','bronze','','','',''];
+  const ze     = {'Cocody':'🏘','Plateau':'🏙','Yopougon':'🏗','Marcory':'🌆','Treichville':'🌃','Adjamé':'🏪','Abobo':'🏠','Koumassi':'🏭','Port-Bouët':'✈️','Bingerville':'🌿','Attécoubé':'🏠','Songon':'🌾'};
+  document.getElementById('topZonesKpi').innerHTML = sorted.length ? sorted.map(([zone,count],i)=>`
     <div class="top-item">
-      <div class="top-rank ${rankColors[i]||''}">${i+1}</div>
+      <div class="top-rank ${rc[i]||''}">${i+1}</div>
       <div class="top-item-info">
-        <div class="top-item-name">${zoneEmojis[zone]||'📍'} ${esc(zone)}</div>
-        <div class="top-item-bar-wrap">
-          <div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--purple)"></div>
-        </div>
+        <div class="top-item-name">${ze[zone]||'📍'} ${esc(zone)}</div>
+        <div class="top-item-bar-wrap"><div class="top-item-bar" style="width:${Math.round(count/max*100)}%;background:var(--purple)"></div></div>
       </div>
-      <div class="top-item-count" style="color:var(--purple)">${count} <span style="font-size:.65rem;color:var(--muted)">(${Math.round(count/total*100)}%)</span></div>
-    </div>`).join('')
-  : '<div style="color:var(--muted);font-size:.82rem;padding:10px 0">Aucune zone enregistrée</div>';
+      <div class="top-item-count" style="color:var(--purple)">${count} <span style="font-size:.62rem;color:var(--muted)">(${Math.round(count/total*100)}%)</span></div>
+    </div>`).join('') : '<div style="color:var(--muted);font-size:.8rem;padding:8px 0">Aucune zone enregistrée</div>';
+}
+
+// ── EXPORT CSV ──
+function exportCSV() {
+  const filtered = filterByPeriod(allOrders);
+  const headers  = ['Date','Client','Téléphone','Restaurant','Zone','Articles','Montant (FCFA)','Statut','Livreur','Paiement','Type'];
+  const rows = filtered.sort((a,b)=>b.createdAt-a.createdAt).map(o=>{
+    const d = new Date(o.createdAt);
+    const statLabels = {nouvelle:'Nouvelle','en-route':'En route',acceptee:'Acceptée',prete:'Prête',livree:'Livrée'};
+    return [
+      d.toLocaleDateString('fr-FR')+' '+d.toLocaleTimeString('fr-FR'),
+      o.client||'',
+      o.phone||'',
+      o.restaurant||'',
+      o.zone||'',
+      (o.items||'').replace(/"/g,"'"),
+      o.amount||0,
+      statLabels[o.status]||o.status||'',
+      getLivreurName(o)||'',
+      o.paiement||'',
+      o.type||'repas'
+    ];
+  });
+  const pLabels = {today:"aujourd-hui",week:"7-jours",month:"30-jours",all:"tout"};
+  const csv = [headers,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `TropRapide_Stats_${pLabels[currentPeriod]}_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
 }
 
 // ── EXPORT PDF ──
 async function exportPDF() {
   const btn = document.getElementById('pdfBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Génération...';
-
+  btn.disabled = true; btn.textContent = '⏳ Génération...';
   try {
     const { jsPDF } = window.jspdf;
-    const doc       = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-    const filtered  = filterByPeriod(allOrders);
-    const livrees   = filtered.filter(o => o.status === 'livree');
-    const enRoute   = filtered.filter(o => o.status === 'en-route');
-    const revenu    = livrees.reduce((s,o) => s + Number(o.amount||0), 0);
-    const taux      = filtered.length ? Math.round(livrees.length / filtered.length * 100) : 0;
-    const moy       = livrees.length ? Math.round(revenu / livrees.length) : 0;
-    const pLabels   = {today:"Aujourd'hui", week:"7 derniers jours", month:"30 derniers jours", all:"Toutes les donnees"};
-    const now       = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'long', year:'numeric'});
-    const W = 210, margin = 14;
+    const doc      = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const filtered = filterByPeriod(allOrders);
+    const livrees  = filtered.filter(o=>o.status==='livree');
+    const enRoute  = filtered.filter(o=>o.status==='en-route');
+    const revenu   = livrees.reduce((s,o)=>s+Number(o.amount||0),0);
+    const taux     = filtered.length?Math.round(livrees.length/filtered.length*100):0;
+    const clients  = new Set(filtered.map(o=>o.client||o.phone||'').filter(Boolean));
+    const timed    = livrees.filter(o=>o.dispatchedAt&&o.deliveredAt);
+    const avgMin   = timed.length?Math.round(timed.reduce((s,o)=>s+(o.deliveredAt-o.dispatchedAt),0)/timed.length/60000):null;
+    const pLabels  = {today:"Aujourd'hui",week:"7 derniers jours",month:"30 derniers jours",all:"Toutes les donnees"};
+    const now      = new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+    const nowFull  = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+    const W=210, margin=14;
 
-    // ── HEADER ──
-    doc.setFillColor(15,15,15);
-    doc.rect(0,0,W,32,'F');
-    doc.setFillColor(245,200,0);
-    doc.rect(0,0,W,3,'F');
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(18);
-    doc.setTextColor(245,200,0);
-    doc.text('TROPRAPIDE', margin, 14);
-    doc.setFontSize(9);
-    doc.setTextColor(150,150,150);
-    doc.text('Rapport Statistiques - ' + pLabels[currentPeriod], margin, 21);
-    doc.text('Genere le ' + now, W - margin, 21, {align:'right'});
-    doc.setFontSize(8);
-    doc.setTextColor(100,100,100);
-    doc.text(filtered.length + ' commandes analysees', margin, 28);
+    // HEADER
+    doc.setFillColor(10,10,10); doc.rect(0,0,W,36,'F');
+    doc.setFillColor(245,200,0); doc.rect(0,0,W,3,'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(245,200,0);
+    doc.text('TROPRAPIDE', margin, 15);
+    doc.setFontSize(8); doc.setTextColor(150,150,150);
+    doc.text('Rapport Statistiques - '+pLabels[currentPeriod], margin, 22);
+    doc.text('Date: '+nowFull, margin, 27);
+    doc.text('Genere le '+now+' a '+new Date().toLocaleTimeString('fr-FR'), W-margin, 22,{align:'right'});
+    doc.text(filtered.length+' commandes analysees', W-margin, 27,{align:'right'});
 
-    let y = 40;
+    let y=44;
 
-    // ── KPI BOXES ──
-    const kpis = [
-      { label:'Commandes totales', val:filtered.length,                      color:[245,200,0]   },
-      { label:'Livrees',           val:livrees.length + ' (' + taux + '%)',  color:[34,197,94]   },
-      { label:'FCFA collectes',    val:revenu.toLocaleString('fr-FR'),       color:[59,130,246]  },
-      { label:'En cours',          val:enRoute.length,                       color:[249,115,22]  },
+    // KPI BOXES (6)
+    const kpis=[
+      {label:'Commandes',val:filtered.length,color:[245,200,0]},
+      {label:'Livrees ('+taux+'%)',val:livrees.length,color:[34,197,94]},
+      {label:'FCFA collectes',val:revenu.toLocaleString('fr-FR'),color:[59,130,246]},
+      {label:'En cours',val:enRoute.length,color:[249,115,22]},
+      {label:'Temps moyen',val:avgMin?avgMin+' min':'N/A',color:[168,85,247]},
+      {label:'Clients uniques',val:clients.size,color:[239,68,68]},
     ];
-    const boxW = (W - 2*margin - 9) / 4;
-    kpis.forEach((k, i) => {
-      const x = margin + i*(boxW+3);
-      doc.setFillColor(22,22,22);
-      doc.roundedRect(x, y, boxW, 20, 2, 2, 'F');
-      doc.setFillColor(...k.color);
-      doc.rect(x, y, boxW, 1.5, 'F');
-      doc.setFont('helvetica','bold');
-      doc.setFontSize(14);
-      doc.setTextColor(...k.color);
-      doc.text(String(k.val), x+boxW/2, y+11, {align:'center'});
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(7);
-      doc.setTextColor(120,120,120);
-      doc.text(k.label, x+boxW/2, y+17, {align:'center'});
+    const bW=(W-2*margin-10)/6;
+    kpis.forEach((k,i)=>{
+      const x=margin+i*(bW+2);
+      doc.setFillColor(22,22,22); doc.roundedRect(x,y,bW,18,2,2,'F');
+      doc.setFillColor(...k.color); doc.rect(x,y,bW,1.5,'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(...k.color);
+      doc.text(String(k.val),x+bW/2,y+9,{align:'center'});
+      doc.setFont('helvetica','normal'); doc.setFontSize(6); doc.setTextColor(120,120,120);
+      doc.text(k.label,x+bW/2,y+15,{align:'center'});
     });
-    y += 28;
+    y+=26;
 
-    // ── TOP PLATS & ZONES ──
-    const plats = {};
-    filtered.forEach(o => {
-      if (!o.items) return;
-      o.items.split(/[,+\n]/).map(s => s.trim()).filter(s => s.length>2).forEach(item => {
-        const clean = item.replace(/^\d+[xX]\s*/,'').trim();
-        if (clean.length > 2) plats[clean] = (plats[clean]||0) + 1;
+    // PLATS & ZONES
+    const plats={};
+    filtered.forEach(o=>{
+      if(!o.items) return;
+      o.items.split(/[,+\n]/).map(s=>s.trim()).filter(s=>s.length>2).forEach(item=>{
+        const c=item.replace(/^\d+[xX]\s*/,'').trim();
+        if(c.length>2) plats[c]=(plats[c]||0)+1;
       });
     });
-    const topPlats = Object.entries(plats).sort((a,b) => b[1]-a[1]).slice(0,8);
+    const topPlats=Object.entries(plats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const zones={};
+    filtered.forEach(o=>{if(o.zone) zones[o.zone]=(zones[o.zone]||0)+1;});
+    const topZones=Object.entries(zones).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const colW=(W-2*margin-6)/2;
 
-    const zones    = {};
-    filtered.forEach(o => { if (o.zone) zones[o.zone] = (zones[o.zone]||0) + 1; });
-    const topZones = Object.entries(zones).sort((a,b) => b[1]-a[1]).slice(0,8);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.setTextColor(245,200,0); doc.text('Top Plats commandes', margin, y);
+    doc.setTextColor(168,85,247); doc.text('Zones les plus actives', margin+colW+6, y);
+    y+=4;
 
-    const colW = (W - 2*margin - 6) / 2;
+    doc.autoTable({startY:y,margin:{left:margin},tableWidth:colW,head:[['#','Plat','Qte']],
+      body:topPlats.map(([n,c],i)=>[i+1,n.length>26?n.substring(0,26)+'...':n,c+'x']),
+      theme:'grid',headStyles:{fillColor:[30,30,30],textColor:[245,200,0],fontStyle:'bold',fontSize:7},
+      bodyStyles:{fillColor:[18,18,18],textColor:[220,220,220],fontSize:7},
+      alternateRowStyles:{fillColor:[22,22,22]},columnStyles:{0:{cellWidth:7},2:{cellWidth:12,halign:'center'}}});
+    const aP=doc.lastAutoTable.finalY;
 
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(245,200,0);
-    doc.text('Top Plats commandes', margin, y);
-    doc.setTextColor(168,85,247);
-    doc.text('Zones les plus actives', margin + colW + 6, y);
-    y += 4;
+    doc.autoTable({startY:y,margin:{left:margin+colW+6},tableWidth:colW,head:[['#','Zone','Cmds','%']],
+      body:topZones.map(([z,c],i)=>[i+1,z,c,Math.round(c/(filtered.length||1)*100)+'%']),
+      theme:'grid',headStyles:{fillColor:[30,30,30],textColor:[168,85,247],fontStyle:'bold',fontSize:7},
+      bodyStyles:{fillColor:[18,18,18],textColor:[220,220,220],fontSize:7},
+      alternateRowStyles:{fillColor:[22,22,22]},columnStyles:{0:{cellWidth:7},2:{cellWidth:12,halign:'center'},3:{cellWidth:12,halign:'center'}}});
+    y=Math.max(aP,doc.lastAutoTable.finalY)+8;
 
-    doc.autoTable({
-      startY: y, margin:{left:margin}, tableWidth:colW,
-      head: [['#','Plat','Qte']],
-      body: topPlats.map(([name,cnt],i) => [i+1, name.length>28?name.substring(0,28)+'...':name, cnt+'x']),
-      theme:'grid',
-      headStyles:{ fillColor:[30,30,30], textColor:[245,200,0], fontStyle:'bold', fontSize:8 },
-      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
-      alternateRowStyles:{ fillColor:[22,22,22] },
-      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'} },
-    });
-    const afterPlats = doc.lastAutoTable.finalY;
+    // RESTOS & LIVREURS
+    const restos={};
+    filtered.forEach(o=>{const n=o.restaurant||'Inconnu';if(!restos[n])restos[n]={count:0,revenu:0};restos[n].count++;if(o.status==='livree')restos[n].revenu+=Number(o.amount||0);});
+    const topRestos=Object.entries(restos).sort((a,b)=>b[1].count-a[1].count).slice(0,8);
+    const livreurs={};
+    filtered.forEach(o=>{const n=getLivreurName(o);if(!n)return;if(!livreurs[n])livreurs[n]={count:0,livrees:0};livreurs[n].count++;if(o.status==='livree')livreurs[n].livrees++;});
+    const topLiv=Object.entries(livreurs).sort((a,b)=>b[1].livrees-a[1].livrees).slice(0,8);
 
-    doc.autoTable({
-      startY: y, margin:{left:margin+colW+6}, tableWidth:colW,
-      head: [['#','Zone','Cmds','%']],
-      body: topZones.map(([zone,cnt],i) => {
-        const pct = Math.round(cnt/(filtered.length||1)*100);
-        return [i+1, zone, cnt, pct+'%'];
-      }),
-      theme:'grid',
-      headStyles:{ fillColor:[30,30,30], textColor:[168,85,247], fontStyle:'bold', fontSize:8 },
-      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
-      alternateRowStyles:{ fillColor:[22,22,22] },
-      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
-    });
-    y = Math.max(afterPlats, doc.lastAutoTable.finalY) + 8;
+    if(y>240){doc.addPage();y=20;}
+    doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.setTextColor(34,197,94); doc.text('Top Restaurants', margin, y);
+    doc.setTextColor(59,130,246); doc.text('Top Livreurs', margin+colW+6, y);
+    y+=4;
 
-    // ── TOP RESTOS & LIVREURS ──
-    const restos = {};
-    filtered.forEach(o => {
-      const rname = o.restaurant || 'Inconnu';
-      if (!restos[rname]) restos[rname] = {count:0, revenu:0};
-      restos[rname].count++;
-      if (o.status === 'livree') restos[rname].revenu += Number(o.amount||0);
-    });
-    const topRestos = Object.entries(restos).sort((a,b) => b[1].count - a[1].count).slice(0,8);
+    doc.autoTable({startY:y,margin:{left:margin},tableWidth:colW,head:[['#','Restaurant','Cmds','FCFA']],
+      body:topRestos.map(([n,d],i)=>[i+1,n.length>18?n.substring(0,18)+'...':n,d.count,d.revenu.toLocaleString('fr-FR')]),
+      theme:'grid',headStyles:{fillColor:[30,30,30],textColor:[34,197,94],fontStyle:'bold',fontSize:7},
+      bodyStyles:{fillColor:[18,18,18],textColor:[220,220,220],fontSize:7},
+      alternateRowStyles:{fillColor:[22,22,22]},columnStyles:{0:{cellWidth:7},2:{cellWidth:10,halign:'center'}}});
+    const aR=doc.lastAutoTable.finalY;
 
-    const livreurs = {};
-    filtered.filter(o => o.livreur).forEach(o => {
-      const lname = o.livreur;
-      if (!livreurs[lname]) livreurs[lname] = {count:0, livrees:0};
-      livreurs[lname].count++;
-      if (o.status === 'livree') livreurs[lname].livrees++;
-    });
-    const topLivreurs = Object.entries(livreurs).sort((a,b) => b[1].livrees - a[1].livrees).slice(0,8);
+    doc.autoTable({startY:y,margin:{left:margin+colW+6},tableWidth:colW,head:[['#','Livreur','Prises','Livrees']],
+      body:topLiv.map(([n,d],i)=>[i+1,n,d.count,d.livrees]),
+      theme:'grid',headStyles:{fillColor:[30,30,30],textColor:[59,130,246],fontStyle:'bold',fontSize:7},
+      bodyStyles:{fillColor:[18,18,18],textColor:[220,220,220],fontSize:7},
+      alternateRowStyles:{fillColor:[22,22,22]},columnStyles:{0:{cellWidth:7},2:{cellWidth:12,halign:'center'},3:{cellWidth:12,halign:'center'}}});
+    y=Math.max(aR,doc.lastAutoTable.finalY)+8;
 
-    if (y > 240) { doc.addPage(); y = 20; }
-
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(34,197,94);
-    doc.text('Top Restaurants', margin, y);
-    doc.setTextColor(59,130,246);
-    doc.text('Top Livreurs', margin + colW + 6, y);
-    y += 4;
-
-    doc.autoTable({
-      startY:y, margin:{left:margin}, tableWidth:colW,
-      head:[['#','Restaurant','Cmds','FCFA']],
-      body: topRestos.map(([name,d],i) => [i+1, name.length>20?name.substring(0,20)+'...':name, d.count, d.revenu.toLocaleString('fr-FR')]),
-      theme:'grid',
-      headStyles:{ fillColor:[30,30,30], textColor:[34,197,94], fontStyle:'bold', fontSize:8 },
-      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
-      alternateRowStyles:{ fillColor:[22,22,22] },
-      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:12,halign:'center'} },
-    });
-    const afterRestos = doc.lastAutoTable.finalY;
-
-    doc.autoTable({
-      startY:y, margin:{left:margin+colW+6}, tableWidth:colW,
-      head:[['#','Livreur','Prises','Livrees']],
-      body: topLivreurs.map(([name,d],i) => [i+1, name, d.count, d.livrees]),
-      theme:'grid',
-      headStyles:{ fillColor:[30,30,30], textColor:[59,130,246], fontStyle:'bold', fontSize:8 },
-      bodyStyles:{ fillColor:[18,18,18], textColor:[220,220,220], fontSize:8 },
-      alternateRowStyles:{ fillColor:[22,22,22] },
-      columnStyles:{ 0:{cellWidth:8}, 2:{cellWidth:14,halign:'center'}, 3:{cellWidth:14,halign:'center'} },
-    });
-    y = Math.max(afterRestos, doc.lastAutoTable.finalY) + 8;
-
-    // ── DERNIÈRES COMMANDES ──
-    if (y > 230) { doc.addPage(); y = 20; }
-
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(245,200,0);
+    // DERNIÈRES COMMANDES
+    if(y>225){doc.addPage();y=20;}
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(245,200,0);
     doc.text('Dernieres commandes', margin, y);
-    y += 4;
-
-    const recent       = [...filtered].sort((a,b) => b.createdAt - a.createdAt).slice(0,15);
-    const statusLabels = {nouvelle:'Nouvelle','en-route':'En route',acceptee:'Acceptee',prete:'Prete',livree:'Livree'};
-
-    doc.autoTable({
-      startY:y, margin:{left:margin},
-      head:[['Date','Client','Restaurant','Zone','Articles','Montant','Statut']],
-      body: recent.map(o => {
-        const d       = new Date(o.createdAt);
-        const dateStr = d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'}) + ' ' + d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-        return [
-          dateStr,
-          (o.client||'').substring(0,12),
-          (o.restaurant||'').substring(0,14),
-          o.zone||'',
-          (o.items||'').substring(0,20) + (o.items&&o.items.length>20?'...':''),
-          Number(o.amount||0).toLocaleString('fr-FR') + ' F',
-          statusLabels[o.status] || o.status
-        ];
+    y+=4;
+    const recent=[...filtered].sort((a,b)=>b.createdAt-a.createdAt).slice(0,15);
+    const sL={nouvelle:'Nouvelle','en-route':'En route',acceptee:'Acceptee',prete:'Prete',livree:'Livree'};
+    doc.autoTable({startY:y,margin:{left:margin},
+      head:[['Date','Client','Restaurant','Zone','Livreur','Montant','Statut']],
+      body:recent.map(o=>{
+        const d=new Date(o.createdAt);
+        return[d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit'})+' '+d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),(o.client||'').substring(0,12),(o.restaurant||'').substring(0,12),o.zone||'',(getLivreurName(o)||'').substring(0,10),Number(o.amount||0).toLocaleString('fr-FR')+' F',sL[o.status]||o.status];
       }),
-      theme:'grid',
-      headStyles:{ fillColor:[30,30,30], textColor:[245,200,0], fontStyle:'bold', fontSize:7 },
-      bodyStyles:{ fillColor:[18,18,18], textColor:[200,200,200], fontSize:7 },
-      alternateRowStyles:{ fillColor:[22,22,22] },
-      columnStyles:{ 0:{cellWidth:20}, 5:{halign:'right'} },
-    });
+      theme:'grid',headStyles:{fillColor:[30,30,30],textColor:[245,200,0],fontStyle:'bold',fontSize:6.5},
+      bodyStyles:{fillColor:[18,18,18],textColor:[200,200,200],fontSize:6.5},
+      alternateRowStyles:{fillColor:[22,22,22]},columnStyles:{0:{cellWidth:22},5:{halign:'right'}}});
 
-    // ── FOOTER ──
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
+    // FOOTER
+    const pc=doc.internal.getNumberOfPages();
+    for(let i=1;i<=pc;i++){
       doc.setPage(i);
-      doc.setFillColor(15,15,15);
-      doc.rect(0,287,W,10,'F');
-      doc.setFont('helvetica','normal');
-      doc.setFontSize(7);
-      doc.setTextColor(80,80,80);
-      doc.text('TropRapide - Rapport statistiques - ' + now, margin, 293);
-      doc.text('Page ' + i + ' / ' + pageCount, W-margin, 293, {align:'right'});
+      doc.setFillColor(10,10,10); doc.rect(0,287,W,10,'F');
+      doc.setFillColor(245,200,0); doc.rect(0,287,W,0.5,'F');
+      doc.setFont('helvetica','normal'); doc.setFontSize(6.5); doc.setTextColor(80,80,80);
+      doc.text('TropRapide - Rapport statistiques - '+pLabels[currentPeriod]+' - '+now, margin, 293);
+      doc.text('Page '+i+' / '+pc, W-margin, 293,{align:'right'});
     }
-
-    const filename = 'TropRapide_Stats_' + new Date().toISOString().slice(0,10) + '.pdf';
-    doc.save(filename);
-
-  } catch(e) {
-    console.error(e);
-    alert('Erreur PDF: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '⬇️ PDF';
-  }
+    doc.save('TropRapide_Stats_'+new Date().toISOString().slice(0,10)+'.pdf');
+  } catch(e){ console.error(e); alert('Erreur PDF: '+e.message); }
+  finally{ btn.disabled=false; btn.textContent='⬇️ PDF'; }
 }
 </script>
 </body>
