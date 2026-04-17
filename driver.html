@@ -115,9 +115,19 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .order-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .action-btn{padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:.9rem;transition:opacity .2s;}
 .action-btn:active{opacity:.7;}
+.btn-accept{background:var(--green);color:#fff;}
+.btn-decline{background:#1a1a1a;border:1px solid var(--red);color:var(--red);}
 .btn-pickup{background:var(--yellow);color:#000;}
 .btn-delivered{background:var(--green);color:#fff;}
 .btn-issue{background:var(--border);color:var(--muted);}
+
+/* ATTRIBUE STATE */
+.order-card.attribue{border-color:#A855F7;background:#0a001a;animation:pulse-card 2s infinite;}
+@keyframes pulse-card{0%,100%{border-color:#A855F7}50%{border-color:#d88fff}}
+.accept-banner{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center;}
+.accept-banner .title{font-weight:900;font-size:1rem;color:#d88fff;margin-bottom:4px;}
+.accept-banner .sub{font-size:.78rem;color:var(--muted);}
+.countdown{font-family:monospace;font-size:1.2rem;font-weight:900;color:#A855F7;}
 
 /* EMPTY STATE */
 .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
@@ -319,7 +329,8 @@ function login(){
   // Mémoriser les commandes déjà existantes pour ne pas bipper au démarrage
   const dbInit = getDB();
   Object.entries(dbInit.orders||{}).forEach(([id,o])=>{
-    if(o.assignedTo === myDriverId) _knownAssignedIds.add(id);
+    if(o.assignedTo === myDriverId && (o.status==='attribue'||o.status==='prete'))
+      _knownAssignedIds.add(id);
   });
 
   updateGPS();
@@ -396,7 +407,7 @@ function renderApp(){
     badge.className = 'driver-badge badge-busy';
   }
 
-  // My orders (assigned to me)
+  // My orders (assigned to me — y compris les commandes en attente d'acceptation)
   const myOrders = Object.entries(db.orders||{})
     .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
     .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
@@ -449,14 +460,26 @@ function renderApp(){
 
   container.innerHTML = myOrders.map(([id,o])=>{
     const progress = deliveryProgress[id]?.progress || 0;
+    const cardClass = o.status==='attribue' ? 'attribue' : o.status==='en-route' ? 'en-route' : 'active';
+    const statusLabel = {
+      attribue: '📲 En attente de votre réponse',
+      prete:    '🟡 À récupérer au restaurant',
+      'en-route':'🔵 En livraison'
+    }[o.status] || o.status;
+    const statusClass = o.status==='prete' ? 'os-prete' : 'os-en-route';
+
     return `
-    <div class="order-card ${o.status==='en-route'?'en-route':'active'}">
+    <div class="order-card ${cardClass}">
       <div class="order-header">
         <span class="order-num">#${id.slice(-6).toUpperCase()}</span>
-        <span class="order-status-badge ${o.status==='prete'?'os-prete':'os-en-route'}">
-          ${o.status==='prete'?'🟡 À récupérer':'🔵 En livraison'}
-        </span>
+        <span class="order-status-badge ${statusClass}">${statusLabel}</span>
       </div>
+
+      ${o.status==='attribue' ? `
+      <div class="accept-banner">
+        <div class="title">🔔 Nouvelle commande assignée !</div>
+        <div class="sub">Acceptez ou refusez dans les 60 secondes</div>
+      </div>` : ''}
 
       <div class="info-row">
         <span class="info-icon">👤</span>
@@ -482,8 +505,16 @@ function renderApp(){
         </div>
       </div>
 
+      ${o.amount ? `
+      <div class="info-row">
+        <span class="info-icon">💰</span>
+        <div class="info-content">
+          <div class="info-label">Montant</div>
+          <div class="info-value" style="color:var(--yellow)">${Number(o.amount).toLocaleString('fr')} FCFA</div>
+        </div>
+      </div>` : ''}
+
       ${o.status==='en-route' ? `
-      <!-- ROUTE PROGRESS -->
       <div class="map-mini">
         <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;font-weight:700;">PROGRESSION</div>
         <div class="map-route">
@@ -495,13 +526,20 @@ function renderApp(){
         </div>
         <div class="distance-bar"><div class="distance-fill" style="width:${progress}%;"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;">
-          <span>TropRapide</span>
+          <span>Restaurant</span>
           <span style="color:var(--yellow);font-weight:700;">${Math.round(progress)}% — ~${Math.max(1,Math.round((100-progress)/15))} min</span>
           <span>${esc(o.zone)}</span>
         </div>
       </div>` : ''}
 
       <div class="order-actions">
+        ${o.status==='attribue' ? `
+          <button class="action-btn btn-accept" onclick="acceptOrder('${id}')">
+            ✅ Accepter la commande
+          </button>
+          <button class="action-btn btn-decline" onclick="declineOrder('${id}')">
+            ❌ Refuser
+          </button>` : ''}
         ${o.status==='prete' ? `
           <button class="action-btn btn-pickup" onclick="pickupOrder('${id}')" style="grid-column:1/-1;">
             🏪 J'ai récupéré la commande → En route !
@@ -521,6 +559,48 @@ function renderApp(){
 /* ============================================================
    ORDER ACTIONS
    ============================================================ */
+function acceptOrder(orderId){
+  const db = getDB();
+  if(!db.orders[orderId]) return;
+  db.orders[orderId].status = 'prete';
+  db.orders[orderId].acceptedAt = Date.now();
+  saveDB(db);
+  addLog(`✅ ${db.drivers[myDriverId].name} a accepté la commande #${orderId.slice(-4)}`);
+  // Petit bip de confirmation
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.value=660; g.gain.setValueAtTime(.4,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3);
+    o.start(); o.stop(ctx.currentTime+.31);
+    setTimeout(()=>ctx.close(),500);
+  }catch(e){}
+  renderApp();
+}
+
+function declineOrder(orderId){
+  if(!confirm('Refuser cette commande ? Elle sera réattribuée à un autre livreur.')) return;
+  const db = getDB();
+  if(!db.orders[orderId]) return;
+  const driverName = db.drivers[myDriverId]?.name || myDriverId;
+  // Marquer comme refusée (statut spécial, pas 'prete' pour éviter un re-dispatch immédiat)
+  db.orders[orderId].status      = 'declined';
+  db.orders[orderId].assignedTo  = null;
+  db.orders[orderId].assignedName = null;
+  db.orders[orderId].declinedBy  = (db.orders[orderId].declinedBy||[]).concat([myDriverId]);
+  db.orders[orderId].declinedAt  = Date.now();
+  // Libérer le livreur
+  if(db.drivers[myDriverId]){
+    db.drivers[myDriverId].status = 'available';
+    db.drivers[myDriverId].activeOrders = Math.max(0,(db.drivers[myDriverId].activeOrders||1)-1);
+    db.drivers[myDriverId].currentOrder = null;
+  }
+  saveDB(db);
+  addLog(`❌ ${driverName} a refusé la commande #${orderId.slice(-4)} — en attente d'un autre livreur`);
+  renderApp();
+}
+
 function pickupOrder(orderId){
   const db = getDB();
   db.orders[orderId].status = 'en-route';
@@ -617,11 +697,12 @@ function checkNewAssignments(){
   const orders = db.orders || {};
   let hasNew = false;
   Object.entries(orders).forEach(([id,o])=>{
-    if(o.assignedTo === myDriverId){
+    // Détecter les nouvelles commandes attribuées (statut attribue ou prete avec ce livreur)
+    if(o.assignedTo === myDriverId && (o.status === 'attribue' || o.status === 'prete')){
       if(!_knownAssignedIds.has(id)){
         hasNew = true;
       }
-      _knownAssignedIds.add(id); // on n'ajoute que les commandes de CE livreur
+      _knownAssignedIds.add(id);
     }
   });
   if(hasNew) playBeep();

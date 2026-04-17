@@ -227,8 +227,10 @@ function getDistance(lat1,lng1,lat2,lng2){
 
 function findBestDriver(order, drivers){
   let best=null, bestScore=Infinity;
+  const excluded = order.declinedBy || []; // Exclure les livreurs qui ont refusé
   Object.entries(drivers).forEach(([id,d])=>{
     if(d.status !== 'available') return;
+    if(excluded.includes(id)) return; // Ignorer les refusants
     const dist = getDistance(order.lat, order.lng, d.lat, d.lng);
     const load = d.activeOrders || 0;
     const perf = d.speed || 1;
@@ -242,12 +244,12 @@ function dispatchOrder(orderId){
   const db = getDB();
   const order = db.orders[orderId];
   if(!order || order.assignedTo || order.status === 'livree') return false;
-  if(order.status !== 'prete'){ addLog(`⚠️ #${orderId} pas encore prête`); render(); return false; }
+  if(order.status !== 'prete' && order.status !== 'declined'){ addLog(`⚠️ #${orderId} pas encore prête`); render(); return false; }
 
   const best = findBestDriver(order, db.drivers);
   if(!best){ addLog(`❌ Aucun livreur dispo pour #${orderId}`); render(); return false; }
 
-  db.orders[orderId] = { ...order, assignedTo: best.id, assignedName: best.name, status:'en-route', dispatchedAt: Date.now() };
+  db.orders[orderId] = { ...order, assignedTo: best.id, assignedName: best.name, status:'attribue', dispatchedAt: Date.now() };
   db.drivers[best.id] = { ...db.drivers[best.id], status:'busy', activeOrders:(best.activeOrders||0)+1, currentOrder:orderId };
   db.log.unshift({ time: Date.now(), msg:`✅ #${orderId} → ${best.name} | ${best._dist} km | score ${best._score}` });
   if(db.log.length > 80) db.log = db.log.slice(0,80);
@@ -275,7 +277,7 @@ function render(){
   /* ---- STATS ---- */
   const all = Object.values(orders);
   document.getElementById('s-total').textContent   = all.length;
-  document.getElementById('s-pending').textContent = all.filter(o=>['nouvelle','acceptee','prete'].includes(o.status)).length;
+  document.getElementById('s-pending').textContent = all.filter(o=>['nouvelle','acceptee','prete','attribue','declined'].includes(o.status)).length;
   document.getElementById('s-enroute').textContent = all.filter(o=>o.status==='en-route').length;
   document.getElementById('s-done').textContent    = all.filter(o=>o.status==='livree').length;
   document.getElementById('s-drivers').textContent = Object.values(drivers).filter(d=>d.status==='available').length;
@@ -294,11 +296,13 @@ function render(){
       const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
       const canDispatch = o.status==='prete' && !o.assignedTo;
       const statusBadge = {
-        'nouvelle':`<span class="badge badge-nouvelle">🔴 Nouvelle</span>`,
-        'acceptee':`<span class="badge badge-acceptee">🟠 Cuisine</span>`,
-        'prete':   `<span class="badge badge-prete">🟡 Prête</span>`,
-        'en-route':`<span class="badge badge-en-route">🔵 En route</span>`,
-        'livree':  `<span class="badge badge-livree">✅ Livrée</span>`
+        'nouvelle': `<span class="badge badge-nouvelle">🔴 Nouvelle</span>`,
+        'acceptee': `<span class="badge badge-acceptee">🟠 Cuisine</span>`,
+        'prete':    `<span class="badge badge-prete">🟡 Prête</span>`,
+        'attribue': `<span class="badge badge-en-route">📲 En attente livreur</span>`,
+        'declined': `<span class="badge" style="background:#1a0000;color:var(--red);">⛔ Refusée — redispatch…</span>`,
+        'en-route': `<span class="badge badge-en-route">🔵 En route</span>`,
+        'livree':   `<span class="badge badge-livree">✅ Livrée</span>`
       }[o.status] || `<span class="badge">${o.status}</span>`;
 
       return `
@@ -416,11 +420,33 @@ function clearLog(){
 let _lastPrete = new Set();
 function autoDispatchWatcher(){
   const db = getDB();
-  const pretes = Object.keys(db.orders).filter(id => db.orders[id].status==='prete' && !db.orders[id].assignedTo);
-  pretes.forEach(id => {
+  // Gérer : commandes prêtes non assignées OU commandes refusées à re-dispatcher
+  const toDispatch = Object.keys(db.orders).filter(id => {
+    const o = db.orders[id];
+    return (o.status === 'prete' || o.status === 'declined') && !o.assignedTo;
+  });
+  toDispatch.forEach(id => {
     if(!_lastPrete.has(id)){
       _lastPrete.add(id);
-      setTimeout(()=>{ dispatchOrder(id); _lastPrete.delete(id); }, 500);
+      setTimeout(()=>{
+        const db2 = getDB();
+        const o2 = db2.orders[id];
+        // Vérifier qu'il y a encore un livreur disponible (différent de ceux qui ont refusé)
+        const best = o2 ? findBestDriver(o2, db2.drivers) : null;
+        if(best){
+          dispatchOrder(id);
+        } else {
+          // Aucun autre livreur dispo — remettre en 'prete' pour retry plus tard
+          if(o2 && o2.status === 'declined'){
+            db2.orders[id].status = 'prete';
+            db2.orders[id].declinedBy = []; // reset pour réessayer
+            saveDB(db2);
+            addLog(`⚠️ Aucun livreur dispo pour #${id.slice(-4)} — remis en file`);
+            render();
+          }
+        }
+        _lastPrete.delete(id);
+      }, 800);
     }
   });
 }
