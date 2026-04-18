@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TropRapide — Livraison Express Abidjan</title>
+<style>
+:root{
+  --bg:#000;--card:#0d0d0d;--card2:#111;--border:#1e1e1e;
+  --yellow:#F5C800;--green:#22C55E;--red:#EF4444;--orange:#F97316;--blue:#3B82F6;
+  --text:#fff;--muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 20px;text-align:center;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(245,200,0,.12) 0%, transparent 70%);
+  pointer-events:none;
+}
+
+.logo-wrap{margin-bottom:24px;animation:fadeDown .7s ease both;}
+.logo-emoji{font-size:5rem;display:block;animation:bounce 2s infinite;}
+.logo-title{
+  font-size:clamp(2.2rem,8vw,4rem);font-weight:900;letter-spacing:-1px;
+  background:linear-gradient(135deg,var(--yellow) 0%,#ffaa00 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.logo-sub{font-size:.95rem;color:var(--muted);margin-top:6px;letter-spacing:1px;text-transform:uppercase;}
+
+.hero-tagline{
+  font-size:clamp(1rem,3vw,1.4rem);color:var(--muted);margin:16px 0 40px;
+  max-width:480px;line-height:1.6;animation:fadeUp .7s .2s ease both;
+}
+.hero-tagline strong{color:var(--yellow);}
+
+/* ── CARDS GRID ── */
+.cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:16px;width:100%;max-width:860px;
+  animation:fadeUp .7s .4s ease both;
+}
+
+.card{
+  background:var(--card2);border-radius:20px;padding:28px 24px;
+  border:1px solid var(--border);cursor:pointer;text-decoration:none;color:inherit;
+  transition:transform .2s,border-color .2s,box-shadow .2s;
+  display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+  position:relative;overflow:hidden;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;}
+.card-admin::before{background:var(--yellow);}
+.card-driver::before{background:var(--orange);}
+.card-stats::before{background:var(--blue);}
+
+.card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.4);}
+.card-admin:hover{border-color:var(--yellow);}
+.card-driver:hover{border-color:var(--orange);}
+.card-stats:hover{border-color:var(--blue);}
+
+.card-icon{font-size:2.4rem;}
+.card-title{font-size:1.15rem;font-weight:900;}
+.card-desc{font-size:.85rem;color:var(--muted);line-height:1.5;}
+
+.card-tag{
+  margin-top:auto;padding-top:14px;font-size:.78rem;font-weight:700;
+  display:flex;align-items:center;gap:6px;
+}
+.card-admin .card-tag{color:var(--yellow);}
+.card-driver .card-tag{color:var(--orange);}
+.card-stats .card-tag{color:var(--blue);}
+.card-tag::after{content:'→';transition:transform .2s;}
+.card:hover .card-tag::after{transform:translateX(4px);}
+
+/* ── LIVE BADGE ── */
+.live-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);
+  color:var(--green);padding:5px 14px;border-radius:20px;font-size:.78rem;font-weight:700;
+  margin-bottom:28px;animation:fadeUp .7s .1s ease both;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite;}
+
+/* ── FOOTER ── */
+.footer{
+  padding:32px 20px;text-align:center;color:var(--muted);font-size:.8rem;
+  border-top:1px solid var(--border);margin-top:20px;
+}
+.footer strong{color:var(--yellow);}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── STATS BAR ── */
+.stats-bar{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+  margin:32px 0 8px;animation:fadeUp .7s .6s ease both;
+}
+.stat-item{text-align:center;}
+.stat-num{font-size:1.6rem;font-weight:900;color:var(--yellow);}
+.stat-lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+@media(max-width:480px){
+  .cards{grid-template-columns:1fr;}
+  .stats-bar{gap:20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <span class="logo-emoji">🏍️</span>
+    <div class="logo-title">TropRapide</div>
+    <div class="logo-sub">Dispatch System — Abidjan</div>
+  </div>
+
+  <!-- Live badge -->
+  <div class="live-badge">
+    <span class="live-dot"></span>
+    Système en ligne
+  </div>
+
+  <p class="hero-tagline">
+    Plateforme de livraison express pour <strong>Abidjan</strong>.<br>
+    Dispatch intelligent, suivi en temps réel, livreurs connectés.
+  </p>
+
+  <!-- Cards -->
+  <div class="cards">
+
+    <a class="card card-admin" href="admin.html">
+      <span class="card-icon">⚡</span>
+      <div class="card-title">Admin Panel</div>
+      <div class="card-desc">
+        Gérez les commandes, dispatchez les livreurs automatiquement, suivez les livraisons en temps réel.
+      </div>
+      <div class="card-tag">Ouvrir le panneau admin</div>
+    </a>
+
+    <a class="card card-driver" href="driver.html">
+      <span class="card-icon">🏍️</span>
+      <div class="card-title">App Livreur</div>
+      <div class="card-desc">
+        Interface dédiée aux livreurs. Acceptez ou refusez les commandes, suivez votre progression et vos gains.
+      </div>
+      <div class="card-tag">Accéder à l'espace livreur</div>
+    </a>
+
+    <a class="card card-stats" href="stats.html">
+      <span class="card-icon">📊</span>
+      <div class="card-title">Statistiques</div>
+      <div class="card-desc">
+        KPIs, revenus, commandes par livreur, tendances, export CSV. Vue complète de l'activité.
+      </div>
+      <div class="card-tag">Voir les statistiques</div>
+    </a>
+
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num" id="live-orders">—</div>
+      <div class="stat-lbl">Commandes actives</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="live-drivers">—</div>
+      <div class="stat-lbl">Livreurs disponibles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="live-done">—</div>
+      <div class="stat-lbl">Livraisons totales</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <strong>TropRapide</strong> · Abidjan, Côte d'Ivoire · Dispatch System v2.0
+</div>
+
+<script>
+// Lecture des stats depuis localStorage
+const DB_KEY = 'troprapide_delivery';
+function loadStats(){
+  try{
+    const db = JSON.parse(localStorage.getItem(DB_KEY)) || {};
+    const orders = Object.values(db.orders||{});
+    const drivers = Object.values(db.drivers||{});
+    const active = orders.filter(o=>!['livree'].includes(o.status)).length;
+    const dispo  = drivers.filter(d=>d.status==='available').length;
+    const done   = orders.filter(o=>o.status==='livree').length;
+    document.getElementById('live-orders').textContent  = active;
+    document.getElementById('live-drivers').textContent = dispo;
+    document.getElementById('live-done').textContent    = done;
+  }catch(e){}
+}
+loadStats();
+setInterval(loadStats, 5000);
+window.addEventListener('storage', e=>{ if(e.key===DB_KEY) loadStats(); });
+</script>
+
+</body>
+</html>
