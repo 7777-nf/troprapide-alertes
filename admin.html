@@ -28,6 +28,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .btn-green{background:var(--green);color:#fff;}
 .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
 
+/* FIREBASE BADGE */
+.fb-badge{font-size:.75rem;padding:4px 10px;border-radius:20px;font-weight:700;}
+.fb-ok{background:#022;color:var(--green);}
+.fb-err{background:#200;color:var(--red);}
+.fb-connecting{background:#221;color:var(--yellow);}
+
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:16px 20px;}
 @media(max-width:900px){.stats{grid-template-columns:repeat(3,1fr);}}
@@ -84,9 +90,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .log-item{padding:6px 10px;font-size:.8rem;border-bottom:1px solid var(--border);color:var(--muted);}
 .log-item .log-time{color:var(--yellow);margin-right:8px;font-size:.72rem;}
 
-/* DISPATCH ALERT */
-.dispatch-alert{background:#1a1200;border:1px solid var(--yellow);border-radius:10px;padding:12px;margin-bottom:10px;font-size:.85rem;}
-
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
@@ -94,14 +97,18 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 </head>
 <body>
 
+<!-- FIREBASE SDK COMPAT -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <!-- TOP BAR -->
 <div class="topbar">
   <h1>🚀 ADMIN — TropRapide</h1>
   <div class="topbar-right">
+    <span class="fb-badge fb-connecting" id="fb-badge">🔄 Connexion...</span>
     <span class="clock" id="clock"></span>
-    <button class="btn btn-ghost" onclick="seedDemo()">🌱 Seed Démo</button>
     <button class="btn btn-yellow" onclick="forceDispatchAll()">⚡ Dispatch Tout</button>
-    <button class="btn btn-red" onclick="resetDB()">🗑️ Reset</button>
+    <button class="btn btn-red" onclick="resetOrders()">🗑️ Reset</button>
   </div>
 </div>
 
@@ -143,7 +150,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <span id="order-count" style="color:var(--muted);font-size:.8rem;"></span>
     </div>
     <div class="panel-body" id="orders-list">
-      <p style="color:var(--muted);text-align:center;margin-top:40px;">Aucune commande — Clique sur "Seed Démo" pour tester</p>
+      <p style="color:var(--muted);text-align:center;margin-top:40px;">Connexion Firebase...</p>
     </div>
   </div>
 
@@ -156,7 +163,9 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
         <h2>🏍️ Livreurs</h2>
         <span id="driver-count" style="color:var(--muted);font-size:.8rem;"></span>
       </div>
-      <div class="panel-body" id="drivers-list"></div>
+      <div class="panel-body" id="drivers-list">
+        <p style="color:var(--muted);text-align:center;margin-top:20px;font-size:.8rem;">Chargement...</p>
+      </div>
     </div>
 
     <!-- DISPATCH LOG -->
@@ -175,49 +184,41 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 
 <script>
 /* ============================================================
-   BASE DE DONNÉES PARTAGÉE (localStorage — migrable Firebase)
+   FIREBASE CONFIG — même projet que kds.html, driver.html, commande.html
    ============================================================ */
-const DB_KEY = 'troprapide_delivery';
-
-const ZONES = {
-  'Cocody':     { lat:5.370, lng:-3.980 },
-  'Koumassi':   { lat:5.290, lng:-4.010 },
-  'Treichville':{ lat:5.300, lng:-4.005 },
-  'Plateau':    { lat:5.320, lng:-4.020 },
-  'Yopougon':   { lat:5.350, lng:-4.070 },
-  'Adjamé':     { lat:5.360, lng:-4.025 }
+const firebaseConfig = {
+  apiKey: "AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkiNbBZnU",
+  authDomain: "troprapide-821a7.firebaseapp.com",
+  databaseURL: "https://troprapide-821a7-default-rtdb.firebaseio.com",
+  projectId: "troprapide-821a7"
 };
 
-const SEED_DATA = {
-  orders: {},
-  drivers: {
-    'd1':{ name:'Ali Koné',    avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
-    'd2':{ name:'Brice Yao',   avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
-    'd3':{ name:'Cédric Ama',  avatar:'🏍️', lat:5.352, lng:-4.020, status:'available', speed:1.5, activeOrders:0 }
-  },
-  log: [],
-  revenue: 0
-};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb = firebase.database();
 
-function getDB(){
-  try{ return JSON.parse(localStorage.getItem(DB_KEY)) || structuredClone(SEED_DATA); }
-  catch(e){ return structuredClone(SEED_DATA); }
-}
-function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-/* XSS sanitization */
+/* ── État local (mis à jour par Firebase onValue) ── */
+let allOrders  = {};
+let allDrivers = {};
+let allLog     = {};
+
+/* ── XSS ── */
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
+/* ── Firebase badge ── */
+function setBadge(state){
+  const b = document.getElementById('fb-badge');
+  b.className = 'fb-badge fb-'+state;
+  b.textContent = state==='ok' ? '🔥 Firebase OK' : state==='err' ? '❌ Erreur Firebase' : '🔄 Connexion...';
+}
+
+/* ── Log Firebase ── */
 function addLog(msg){
-  const db = getDB();
-  db.log.unshift({ time: Date.now(), msg });
-  if(db.log.length > 80) db.log = db.log.slice(0, 80);
-  saveDB(db);
+  rtdb.ref('/log').push({ time: Date.now(), msg }).catch(()=>{});
 }
 
 /* ============================================================
-   MOTEUR DE DISPATCH INTELLIGENT
-   score = distance + (charge * 2) - performance
-   Plus le score est bas = meilleur livreur
+   MOTEUR DE DISPATCH
+   score = distance + (charge × 2) - performance
    ============================================================ */
 function getDistance(lat1,lng1,lat2,lng2){
   const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
@@ -227,11 +228,12 @@ function getDistance(lat1,lng1,lat2,lng2){
 
 function findBestDriver(order, drivers){
   let best=null, bestScore=Infinity;
-  const excluded = order.declinedBy || []; // Exclure les livreurs qui ont refusé
+  const excluded = order.declinedBy || [];
   Object.entries(drivers).forEach(([id,d])=>{
     if(d.status !== 'available') return;
-    if(excluded.includes(id)) return; // Ignorer les refusants
-    const dist = getDistance(order.lat, order.lng, d.lat, d.lng);
+    if(excluded.includes(id)) return;
+    const oLat = order.lat || 5.340, oLng = order.lng || -4.010;
+    const dist = getDistance(oLat, oLng, d.lat||5.340, d.lng||-4.010);
     const load = d.activeOrders || 0;
     const perf = d.speed || 1;
     const score = dist + (load * 2) - perf;
@@ -240,39 +242,75 @@ function findBestDriver(order, drivers){
   return best;
 }
 
-function dispatchOrder(orderId){
-  const db = getDB();
-  const order = db.orders[orderId];
-  if(!order || order.assignedTo || order.status === 'livree') return false;
-  if(order.status !== 'prete' && order.status !== 'declined'){ addLog(`⚠️ #${orderId} pas encore prête`); render(); return false; }
+window.dispatchOrder = function(orderId){
+  const order = allOrders[orderId];
+  if(!order) return;
+  if(order.assignedTo || order.status === 'livree') return;
+  if(order.status !== 'prete' && order.status !== 'declined'){
+    addLog(`⚠️ #${orderId.slice(-4)} pas encore prête (statut: ${order.status})`);
+    return;
+  }
 
-  const best = findBestDriver(order, db.drivers);
-  if(!best){ addLog(`❌ Aucun livreur dispo pour #${orderId}`); render(); return false; }
+  const best = findBestDriver(order, allDrivers);
+  if(!best){
+    addLog(`❌ Aucun livreur dispo pour #${orderId.slice(-4)}`);
+    return;
+  }
 
-  db.orders[orderId] = { ...order, assignedTo: best.id, assignedName: best.name, status:'attribue', dispatchedAt: Date.now() };
-  db.drivers[best.id] = { ...db.drivers[best.id], status:'busy', activeOrders:(best.activeOrders||0)+1, currentOrder:orderId };
-  db.log.unshift({ time: Date.now(), msg:`✅ #${orderId} → ${best.name} | ${best._dist} km | score ${best._score}` });
-  if(db.log.length > 80) db.log = db.log.slice(0,80);
-  saveDB(db);
-  render();
-  return true;
-}
+  const updates = {};
+  updates[`/orders/${orderId}/assignedTo`]    = best.id;
+  updates[`/orders/${orderId}/assignedName`]  = best.name;
+  updates[`/orders/${orderId}/status`]        = 'attribue';
+  updates[`/orders/${orderId}/dispatchedAt`]  = Date.now();
+  updates[`/livreurs/${best.id}/status`]        = 'busy';
+  updates[`/livreurs/${best.id}/activeOrders`]  = (best.activeOrders||0)+1;
+  updates[`/livreurs/${best.id}/currentOrder`]  = orderId;
+
+  rtdb.ref().update(updates)
+    .then(()=> addLog(`✅ #${orderId.slice(-4)} → ${best.name} | ${best._dist} km | score ${best._score}`))
+    .catch(e=> addLog(`❌ Erreur dispatch: ${e.message}`));
+};
 
 function forceDispatchAll(){
-  const db = getDB();
-  const ready = Object.keys(db.orders).filter(id => db.orders[id].status==='prete' && !db.orders[id].assignedTo);
+  const ready = Object.keys(allOrders).filter(id => allOrders[id].status==='prete' && !allOrders[id].assignedTo);
   if(ready.length === 0){ alert('Aucune commande prête à dispatcher'); return; }
   ready.forEach(id => dispatchOrder(id));
+}
+
+/* ── Auto-dispatch watcher ── */
+let _lastPrete = new Set();
+function autoDispatchWatcher(){
+  const toDispatch = Object.keys(allOrders).filter(id => {
+    const o = allOrders[id];
+    return (o.status === 'prete' || o.status === 'declined') && !o.assignedTo;
+  });
+  toDispatch.forEach(id => {
+    if(!_lastPrete.has(id)){
+      _lastPrete.add(id);
+      setTimeout(()=>{
+        const o = allOrders[id];
+        if(!o){ _lastPrete.delete(id); return; }
+        const best = findBestDriver(o, allDrivers);
+        if(best){
+          dispatchOrder(id);
+        } else if(o.status === 'declined'){
+          // Reset et remettre en file
+          rtdb.ref(`/orders/${id}`).update({ status:'prete', declinedBy: [], assignedTo:null, assignedName:null });
+          addLog(`⚠️ Aucun livreur dispo pour #${id.slice(-4)} — remis en file`);
+        }
+        _lastPrete.delete(id);
+      }, 1200);
+    }
+  });
 }
 
 /* ============================================================
    RENDER
    ============================================================ */
 function render(){
-  const db = getDB();
-  const orders = db.orders || {};
-  const drivers = db.drivers || {};
-  const log = db.log || [];
+  const orders  = allOrders;
+  const drivers = allDrivers;
+  const log     = allLog;
 
   /* ---- STATS ---- */
   const all = Object.values(orders);
@@ -281,7 +319,7 @@ function render(){
   document.getElementById('s-enroute').textContent = all.filter(o=>o.status==='en-route').length;
   document.getElementById('s-done').textContent    = all.filter(o=>o.status==='livree').length;
   document.getElementById('s-drivers').textContent = Object.values(drivers).filter(d=>d.status==='available').length;
-  const rev = all.filter(o=>o.status==='livree').reduce((s,o)=>s+(o.total||0),0);
+  const rev = all.filter(o=>o.status==='livree').reduce((s,o)=>s+(Number(o.total||o.amount||0)),0);
   document.getElementById('s-revenue').textContent = rev.toLocaleString('fr');
 
   /* ---- ORDERS ---- */
@@ -290,11 +328,11 @@ function render(){
   document.getElementById('order-count').textContent = ordersSorted.length + ' commandes';
 
   if(ordersSorted.length === 0){
-    orderList.innerHTML = '<p style="color:var(--muted);text-align:center;margin-top:40px;">Aucune commande — Clique sur "Seed Démo"</p>';
+    orderList.innerHTML = '<p style="color:var(--muted);text-align:center;margin-top:40px;">Aucune commande dans Firebase</p>';
   } else {
     orderList.innerHTML = ordersSorted.map(([id,o])=>{
       const elapsed = Math.floor((Date.now()-(o.createdAt||Date.now()))/60000);
-      const canDispatch = o.status==='prete' && !o.assignedTo;
+      const canDispatch = (o.status==='prete' || o.status==='declined') && !o.assignedTo;
       const statusBadge = {
         'nouvelle': `<span class="badge badge-nouvelle">🔴 Nouvelle</span>`,
         'acceptee': `<span class="badge badge-acceptee">🟠 Cuisine</span>`,
@@ -303,17 +341,18 @@ function render(){
         'declined': `<span class="badge" style="background:#1a0000;color:var(--red);">⛔ Refusée — redispatch…</span>`,
         'en-route': `<span class="badge badge-en-route">🔵 En route</span>`,
         'livree':   `<span class="badge badge-livree">✅ Livrée</span>`
-      }[o.status] || `<span class="badge">${o.status}</span>`;
+      }[o.status] || `<span class="badge">${esc(o.status)}</span>`;
 
       return `
-      <div class="order-row" style="${o.status==='prete'&&!o.assignedTo?'border-color:var(--yellow);':''}">
-        <div class="order-id">#${id.slice(-4)}</div>
+      <div class="order-row" style="${canDispatch?'border-color:var(--yellow);':''}">
+        <div class="order-id">#${id.slice(-4).toUpperCase()}</div>
         <div class="order-info">
-          <div class="order-name">${esc(o.client) || 'Client'}</div>
-          <div class="order-sub">${esc(o.items)}</div>
+          <div class="order-name">${esc(o.client||o.nom||'Client')}</div>
+          <div class="order-sub">${esc(o.items||o.plat||'—')}</div>
           ${o.assignedName ? `<div class="order-sub" style="color:var(--blue)">🏍️ ${esc(o.assignedName)}</div>` : ''}
+          ${o.total||o.amount ? `<div class="order-sub" style="color:var(--yellow)">${Number(o.total||o.amount||0).toLocaleString('fr')} FCFA</div>` : ''}
         </div>
-        <div class="order-zone">📍 ${esc(o.zone)}<br><span style="color:var(--muted);font-size:.7rem;">${elapsed}min</span></div>
+        <div class="order-zone">📍 ${esc(o.zone||o.adresse||'—')}<br><span style="color:var(--muted);font-size:.7rem;">${elapsed}min</span></div>
         <div>${statusBadge}</div>
         <div>
           <button class="dispatch-btn" ${canDispatch?'':'disabled'} onclick="dispatchOrder('${id}')">
@@ -324,34 +363,41 @@ function render(){
     }).join('');
   }
 
-  /* ---- DRIVERS ---- */
+  /* ---- DRIVERS (/livreurs) ---- */
   const driverList = document.getElementById('drivers-list');
-  const driversSorted = Object.entries(drivers).sort((a,b)=> a[1].name.localeCompare(b[1].name));
+  const driversSorted = Object.entries(drivers).sort((a,b)=> (a[1].name||'').localeCompare(b[1].name||''));
   document.getElementById('driver-count').textContent = driversSorted.length + ' livreurs';
-  driverList.innerHTML = driversSorted.map(([id,d])=>`
-    <div class="driver-row">
-      <div class="driver-avatar">${d.avatar||'🏍️'}</div>
-      <div class="driver-info">
-        <div class="driver-name">${esc(d.name)}</div>
-        <div class="driver-meta">
-          Vitesse: ${d.speed||1} • Commandes: ${d.activeOrders||0}
-          ${d.currentOrder ? ` • #${String(d.currentOrder).slice(-4)}` : ''}
+
+  if(driversSorted.length === 0){
+    driverList.innerHTML = '<p style="color:var(--muted);text-align:center;margin-top:20px;font-size:.8rem;">Aucun livreur dans Firebase</p>';
+  } else {
+    driverList.innerHTML = driversSorted.map(([id,d])=>`
+      <div class="driver-row">
+        <div class="driver-avatar">${d.avatar||'🏍️'}</div>
+        <div class="driver-info">
+          <div class="driver-name">${esc(d.name||id)}</div>
+          <div class="driver-meta">
+            ${d.speed ? `Vitesse: ${d.speed} • ` : ''}Cmd: ${d.activeOrders||0}
+            ${d.currentOrder ? ` • #${String(d.currentOrder).slice(-4).toUpperCase()}` : ''}
+            ${d.lat ? `<br>📍 ${d.lat.toFixed(3)}, ${d.lng.toFixed(3)}` : ''}
+          </div>
         </div>
+        <span class="driver-badge ${d.status==='available'?'d-available':'d-busy'}">
+          ${d.status==='available'? '🟢 Dispo' : '🟠 Busy'}
+        </span>
       </div>
-      <span class="driver-badge ${d.status==='available'?'d-available':'d-busy'}">
-        ${d.status==='available'? '🟢 Dispo' : '🟠 Busy'}
-      </span>
-    </div>
-  `).join('');
+    `).join('');
+  }
 
   /* ---- LOG ---- */
   const logEl = document.getElementById('log-list');
-  if(log.length === 0){
+  const logEntries = Object.values(log).sort((a,b)=>(b.time||0)-(a.time||0)).slice(0,80);
+  if(logEntries.length === 0){
     logEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px;font-size:.8rem;">Log vide</p>';
   } else {
-    logEl.innerHTML = log.map(l=>`
+    logEl.innerHTML = logEntries.map(l=>`
       <div class="log-item">
-        <span class="log-time">${new Date(l.time).toLocaleTimeString('fr')}</span>${l.msg}
+        <span class="log-time">${new Date(l.time).toLocaleTimeString('fr')}</span>${esc(l.msg)}
       </div>`).join('');
   }
 }
@@ -359,105 +405,18 @@ function render(){
 /* ============================================================
    ACTIONS
    ============================================================ */
-function seedDemo(){
-  const db = getDB();
-  const clients = ['Koffi Mensah','Aicha Bamba','Chris Yao','Marie-Claire','Djibril Koné','Sandrine K.'];
-  const zones = Object.keys(ZONES);
-  const menus = ['Poulet braisé + Attiéké','Riz + Poisson braisé','Foutou + Sauce graine','Kedjenou + Riz','Poisson braisé + Alloco'];
-  const prices = [3500,2500,2000,3000,4000];
-
-  for(let i=0; i<6; i++){
-    const id = 'cmd' + Date.now() + i;
-    const zone = zones[Math.floor(Math.random()*zones.length)];
-    const z = ZONES[zone];
-    const menuIdx = Math.floor(Math.random()*menus.length);
-    const statusOpts = ['nouvelle','nouvelle','acceptee','prete','prete','en-route'];
-    const status = statusOpts[i % statusOpts.length];
-    db.orders[id] = {
-      client: clients[i % clients.length],
-      items: menus[menuIdx],
-      total: prices[menuIdx] + 500,
-      zone, lat: z.lat+(Math.random()*.01-.005), lng: z.lng+(Math.random()*.01-.005),
-      status,
-      restaurant: 'TropRapide',
-      restaurantLat: 5.340, restaurantLng: -4.010,
-      createdAt: Date.now() - Math.floor(Math.random()*600000),
-      assignedTo: null, assignedName: null
-    };
-    if(status === 'en-route'){
-      const driverIds = Object.keys(db.drivers);
-      const dId = driverIds[i % driverIds.length];
-      db.orders[id].assignedTo = dId;
-      db.orders[id].assignedName = db.drivers[dId].name;
-      db.orders[id].dispatchedAt = Date.now();
-      db.drivers[dId].status = 'busy';
-      db.drivers[dId].activeOrders = (db.drivers[dId].activeOrders||0)+1;
-      db.drivers[dId].currentOrder = id;
-    }
-  }
-  db.log.unshift({ time: Date.now(), msg: '🌱 Données de démo injectées' });
-  saveDB(db);
-  render();
-}
-
-function resetDB(){
-  if(!confirm('Supprimer toutes les données ?')) return;
-  localStorage.removeItem(DB_KEY);
-  render();
-  addLog('🗑️ Base de données réinitialisée');
+function resetOrders(){
+  if(!confirm('Supprimer toutes les commandes Firebase ?')) return;
+  rtdb.ref('/orders').remove().then(()=> addLog('🗑️ Commandes réinitialisées'));
 }
 
 function clearLog(){
-  const db = getDB();
-  db.log = [];
-  saveDB(db);
-  render();
+  rtdb.ref('/log').remove();
 }
 
 /* ============================================================
-   AUTO-DISPATCH: écoute les commandes "prête" non assignées
+   BEEP SONORE
    ============================================================ */
-let _lastPrete = new Set();
-function autoDispatchWatcher(){
-  const db = getDB();
-  // Gérer : commandes prêtes non assignées OU commandes refusées à re-dispatcher
-  const toDispatch = Object.keys(db.orders).filter(id => {
-    const o = db.orders[id];
-    return (o.status === 'prete' || o.status === 'declined') && !o.assignedTo;
-  });
-  toDispatch.forEach(id => {
-    if(!_lastPrete.has(id)){
-      _lastPrete.add(id);
-      setTimeout(()=>{
-        const db2 = getDB();
-        const o2 = db2.orders[id];
-        // Vérifier qu'il y a encore un livreur disponible (différent de ceux qui ont refusé)
-        const best = o2 ? findBestDriver(o2, db2.drivers) : null;
-        if(best){
-          dispatchOrder(id);
-        } else {
-          // Aucun autre livreur dispo — remettre en 'prete' pour retry plus tard
-          if(o2 && o2.status === 'declined'){
-            db2.orders[id].status = 'prete';
-            db2.orders[id].declinedBy = []; // reset pour réessayer
-            saveDB(db2);
-            addLog(`⚠️ Aucun livreur dispo pour #${id.slice(-4)} — remis en file`);
-            render();
-          }
-        }
-        _lastPrete.delete(id);
-      }, 800);
-    }
-  });
-}
-
-/* ============================================================
-   INIT
-   ============================================================ */
-// Clock
-setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr'); }, 1000);
-
-/* ── BIP SONORE ── */
 let _knownOrderIds = new Set();
 function playBeep(){
   try{
@@ -474,25 +433,47 @@ function playBeep(){
     if(navigator.vibrate) navigator.vibrate([200,100,200]);
   }catch(e){}
 }
-function checkNewOrders(){
-  const db = getDB();
-  const orders = db.orders || {};
+
+/* ============================================================
+   FIREBASE LISTENERS EN TEMPS RÉEL
+   ============================================================ */
+// Écoute des commandes
+rtdb.ref('/orders').on('value', snap => {
+  setBadge('ok');
+  const newOrders = snap.val() || {};
+
+  // Beep si nouvelle commande
   let hasNew = false;
-  Object.keys(orders).forEach(id=>{
+  Object.keys(newOrders).forEach(id => {
     if(!_knownOrderIds.has(id)){ hasNew = true; }
     _knownOrderIds.add(id);
   });
   if(hasNew) playBeep();
-}
 
-// Listen cross-tab updates
-window.addEventListener('storage', e=>{ if(e.key===DB_KEY){ checkNewOrders(); render(); } });
+  allOrders = newOrders;
+  autoDispatchWatcher();
+  render();
+}, err => {
+  setBadge('err');
+  console.error('Firebase orders error:', err);
+});
 
-// Poll every 3s for same-tab updates
-setInterval(()=>{ checkNewOrders(); autoDispatchWatcher(); render(); }, 3000);
+// Écoute des livreurs (chemin /livreurs — même que admin.troprapide.com)
+rtdb.ref('/livreurs').on('value', snap => {
+  allDrivers = snap.val() || {};
+  render();
+}, err => {
+  console.error('Firebase livreurs error:', err);
+});
 
-Object.keys((getDB().orders||{})).forEach(id=>_knownOrderIds.add(id));
-render();
+// Écoute du log
+rtdb.ref('/log').on('value', snap => {
+  allLog = snap.val() || {};
+  render();
+});
+
+/* ── HORLOGE ── */
+setInterval(()=>{ document.getElementById('clock').textContent = new Date().toLocaleTimeString('fr'); }, 1000);
 </script>
 </body>
 </html>

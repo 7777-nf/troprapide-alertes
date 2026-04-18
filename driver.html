@@ -13,7 +13,7 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:14px;min-height:100vh;}
 
-/* LOGIN SCREEN */
+/* LOGIN */
 #login-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;}
 .login-card{background:var(--card2);border-radius:20px;padding:32px;max-width:380px;width:100%;border:1px solid var(--border);}
 .login-logo{font-size:3rem;text-align:center;margin-bottom:12px;}
@@ -33,11 +33,14 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   border-radius:12px;font-weight:900;font-size:1rem;cursor:pointer;margin-top:8px;transition:opacity .2s;}
 .login-btn:hover{opacity:.9;}
 .login-btn:disabled{opacity:.3;cursor:default;}
+.fb-badge{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+.fb-ok{background:#022;color:var(--green);}
+.fb-connecting{background:#221;color:var(--yellow);}
+.fb-err{background:#200;color:var(--red);}
 
-/* MAIN APP */
+/* APP */
 #app-screen{display:none;min-height:100vh;}
-
-/* TOP BAR */
 .topbar{display:flex;justify-content:space-between;align-items:center;
   padding:12px 16px;background:#0a0a0a;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
 .driver-info-bar{display:flex;align-items:center;gap:10px;}
@@ -47,33 +50,28 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .logout-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 12px;
   border-radius:8px;cursor:pointer;font-size:.8rem;}
 
-/* KPI GRID */
+/* KPI */
 .kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px 16px;
   background:#080808;border-bottom:1px solid var(--border);}
-.kpi-card{background:var(--card2);border-radius:14px;padding:14px;position:relative;
-  overflow:hidden;border:1px solid var(--border);}
+.kpi-card{background:var(--card2);border-radius:14px;padding:14px;position:relative;overflow:hidden;border:1px solid var(--border);}
 .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .kpi-yellow::before{background:var(--yellow);}
 .kpi-orange::before{background:var(--orange);}
 .kpi-green::before{background:var(--green);}
 .kpi-blue::before{background:var(--blue);}
-.kpi-purple::before{background:#A855F7;}
 .kpi-icon{font-size:1.3rem;margin-bottom:6px;}
 .kpi-val{font-size:1.8rem;font-weight:900;line-height:1;margin-bottom:3px;}
 .kpi-yellow .kpi-val{color:var(--yellow);}
 .kpi-orange .kpi-val{color:var(--orange);}
 .kpi-green .kpi-val{color:var(--green);}
 .kpi-blue .kpi-val{color:var(--blue);}
-.kpi-purple .kpi-val{color:#A855F7;}
 .kpi-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
 .kpi-sub{font-size:.72rem;color:var(--muted);margin-top:4px;}
 
-/* KPI MINI ROW */
-.kpi-mini-row{display:grid;grid-template-columns:repeat(3,1fr);background:#080808;
-  border-bottom:1px solid var(--border);}
+.kpi-mini-row{display:grid;grid-template-columns:repeat(3,1fr);background:#080808;border-bottom:1px solid var(--border);}
 .kpi-mini{text-align:center;padding:10px 8px;border-right:1px solid var(--border);}
 .kpi-mini:last-child{border-right:none;}
-.kpi-mini-val{display:block;font-weight:900;font-size:.95rem;color:var(--text);}
+.kpi-mini-val{display:block;font-weight:900;font-size:.95rem;}
 .kpi-mini-lbl{display:block;font-size:.62rem;color:var(--muted);text-transform:uppercase;margin-top:2px;}
 
 /* SECTION */
@@ -82,13 +80,16 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   display:flex;justify-content:space-between;align-items:center;}
 
 /* ORDER CARDS */
-.order-card{background:var(--card2);border-radius:14px;padding:16px;margin-bottom:12px;
-  border:1px solid var(--border);}
+.order-card{background:var(--card2);border-radius:14px;padding:16px;margin-bottom:12px;border:1px solid var(--border);}
 .order-card.active{border-color:var(--orange);background:#110a00;}
 .order-card.en-route{border-color:var(--blue);background:#00000a;}
+.order-card.attribue{border-color:#A855F7;background:#0a001a;animation:pulse-card 2s infinite;}
+@keyframes pulse-card{0%,100%{border-color:#A855F7}50%{border-color:#d88fff}}
+
 .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
 .order-num{font-weight:900;font-size:1rem;color:var(--yellow);}
 .order-status-badge{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:700;}
+.os-attribue{background:#1a0030;color:#d88fff;}
 .os-prete{background:#1a1500;color:var(--yellow);}
 .os-en-route{background:#00001a;color:var(--blue);}
 
@@ -98,20 +99,14 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .info-label{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;}
 .info-value{font-weight:700;margin-top:1px;}
 
-/* MAP PREVIEW */
-.map-mini{background:#0a0a1a;border-radius:10px;padding:12px;margin:12px 0;
-  border:1px solid var(--border);position:relative;overflow:hidden;}
-.map-route{display:flex;align-items:center;gap:8px;font-size:.85rem;}
-.map-dot{width:10px;height:10px;border-radius:50%;}
-.map-line{flex:1;height:2px;border-top:2px dashed var(--border);position:relative;}
-.map-driver{position:absolute;top:-7px;font-size:1rem;transition:left 1s linear;}
-.map-dest{width:10px;height:10px;border-radius:50%;}
+.accept-banner{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center;}
+.accept-banner .title{font-weight:900;font-size:1rem;color:#d88fff;margin-bottom:4px;}
+.accept-banner .sub{font-size:.78rem;color:var(--muted);}
 
-/* DISTANCE BAR */
+.map-mini{background:#0a0a1a;border-radius:10px;padding:12px;margin:12px 0;border:1px solid var(--border);}
 .distance-bar{background:#1a1a1a;border-radius:6px;height:6px;overflow:hidden;margin:8px 0;}
 .distance-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width 1s;}
 
-/* ACTIONS */
 .order-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .action-btn{padding:12px;border:none;border-radius:10px;font-weight:900;cursor:pointer;font-size:.9rem;transition:opacity .2s;}
 .action-btn:active{opacity:.7;}
@@ -121,25 +116,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .btn-delivered{background:var(--green);color:#fff;}
 .btn-issue{background:var(--border);color:var(--muted);}
 
-/* ATTRIBUE STATE */
-.order-card.attribue{border-color:#A855F7;background:#0a001a;animation:pulse-card 2s infinite;}
-@keyframes pulse-card{0%,100%{border-color:#A855F7}50%{border-color:#d88fff}}
-.accept-banner{background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.3);border-radius:10px;padding:12px;margin-bottom:10px;text-align:center;}
-.accept-banner .title{font-weight:900;font-size:1rem;color:#d88fff;margin-bottom:4px;}
-.accept-banner .sub{font-size:.78rem;color:var(--muted);}
-.countdown{font-family:monospace;font-size:1.2rem;font-weight:900;color:#A855F7;}
-
-/* EMPTY STATE */
-.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
-.empty-icon{font-size:3rem;margin-bottom:12px;}
-
-/* GPS PANEL */
 .gps-panel{background:var(--card2);border-radius:14px;padding:14px;border:1px solid var(--border);margin-bottom:16px;}
-.gps-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .gps-coords{font-family:monospace;font-size:.8rem;color:var(--muted);}
-.gps-accuracy{font-size:.75rem;}
 .gps-btn{background:#1a1500;border:1px solid var(--yellow);color:var(--yellow);
   padding:8px 14px;border-radius:8px;font-weight:700;cursor:pointer;font-size:.8rem;}
+
+.empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+.empty-icon{font-size:3rem;margin-bottom:12px;}
 
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:var(--border);}
@@ -147,27 +130,28 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
+<!-- FIREBASE COMPAT SDK (même version que admin.troprapide.com) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">🏍️</div>
     <div class="login-title">Espace Livreur</div>
     <div class="login-sub">Choisissez votre profil pour commencer</div>
-
+    <div style="text-align:center;margin-bottom:12px;">
+      <span class="fb-badge fb-connecting" id="fb-badge">🔄 Connexion Firebase...</span>
+    </div>
     <div id="driver-options">
       <p style="color:var(--muted);text-align:center;font-size:.85rem;">Chargement des livreurs...</p>
     </div>
-
-    <button class="login-btn" id="login-btn" onclick="login()" disabled>
-      🚀 Commencer la journée
-    </button>
+    <button class="login-btn" id="login-btn" onclick="login()" disabled>🚀 Commencer la journée</button>
   </div>
 </div>
 
-<!-- MAIN APP -->
+<!-- APP -->
 <div id="app-screen">
-
-  <!-- TOPBAR -->
   <div class="topbar">
     <div class="driver-info-bar">
       <span id="driver-avatar-bar" style="font-size:1.5rem;">🏍️</span>
@@ -182,7 +166,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     </div>
   </div>
 
-  <!-- KPI CARDS -->
+  <!-- KPI -->
   <div class="kpi-grid">
     <div class="kpi-card kpi-yellow">
       <div class="kpi-icon">📦</div>
@@ -200,7 +184,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <div class="kpi-icon">💰</div>
       <div class="kpi-val" id="stat-earnings">0</div>
       <div class="kpi-label">FCFA gagnés</div>
-      <div class="kpi-sub" id="kpi-earnings-sub"></div>
+      <div class="kpi-sub" id="kpi-earnings-sub">500 FCFA / livraison</div>
     </div>
     <div class="kpi-card kpi-blue">
       <div class="kpi-icon">⭐</div>
@@ -209,8 +193,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <div class="kpi-sub" id="kpi-rate-sub"></div>
     </div>
   </div>
-
-  <!-- KPI MINI ROW -->
   <div class="kpi-mini-row">
     <div class="kpi-mini">
       <span class="kpi-mini-val" id="stat-total" style="color:var(--yellow);">0</span>
@@ -226,58 +208,47 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     </div>
   </div>
 
-  <!-- CONTENT -->
   <div class="section">
-
-    <!-- GPS POSITION -->
     <div class="gps-panel">
-      <div class="gps-row">
-        <div>
-          <div style="font-weight:700;font-size:.85rem;">📡 Ma Position GPS</div>
-          <div class="gps-coords" id="gps-display">lat: -- lng: --</div>
-        </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <div style="font-weight:700;font-size:.85rem;">📡 Ma Position GPS</div>
         <button class="gps-btn" onclick="updateGPS()">↻ Actualiser</button>
       </div>
-      <div style="font-size:.75rem;color:var(--muted);">Position mise à jour automatiquement toutes les 10s</div>
+      <div class="gps-coords" id="gps-display">lat: -- lng: --</div>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px;">Mise à jour automatique toutes les 10s</div>
     </div>
 
-    <!-- MY ORDERS -->
     <div class="section-title">
       📦 Mes Commandes
       <span id="orders-count" style="color:var(--muted);font-weight:400;font-size:.8rem;"></span>
     </div>
     <div id="my-orders"></div>
-
   </div>
-
 </div>
 
 <script>
 /* ============================================================
-   SHARED DB
+   FIREBASE CONFIG — même projet que admin.troprapide.com
    ============================================================ */
-const DB_KEY = 'troprapide_delivery';
-const SEED_DRIVERS = {
-  'd1':{ name:'Ali Koné',   avatar:'🏍️', lat:5.370, lng:-3.980, status:'available', speed:1.2, activeOrders:0 },
-  'd2':{ name:'Brice Yao',  avatar:'🛵',  lat:5.300, lng:-4.050, status:'available', speed:1.0, activeOrders:0 },
-  'd3':{ name:'Cédric Ama', avatar:'🏍️', lat:5.352, lng:-4.020, status:'available', speed:1.5, activeOrders:0 }
+const firebaseConfig = {
+  apiKey: "AIzaSyD0FL4ua8NUWKfwu_gGUL5TI1RkiNbBZnU",
+  authDomain: "troprapide-821a7.firebaseapp.com",
+  databaseURL: "https://troprapide-821a7-default-rtdb.firebaseio.com",
+  projectId: "troprapide-821a7"
 };
 
-function getDB(){
-  try{
-    const d = JSON.parse(localStorage.getItem(DB_KEY));
-    if(!d){ return { orders:{}, drivers: structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
-    if(!d.drivers || Object.keys(d.drivers).length===0) d.drivers = structuredClone(SEED_DRIVERS);
-    return d;
-  }catch(e){ return { orders:{}, drivers: structuredClone(SEED_DRIVERS), log:[], revenue:0 }; }
-}
-function saveDB(db){ localStorage.setItem(DB_KEY, JSON.stringify(db)); }
-/* XSS sanitization */
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const rtdb = firebase.database();
+
+/* XSS */
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
-function addLog(msg){
-  const db=getDB(); db.log=db.log||[];
-  db.log.unshift({time:Date.now(),msg}); if(db.log.length>80) db.log=db.log.slice(0,80);
-  saveDB(db);
+
+/* Badge Firebase */
+function setBadge(state){
+  const b = document.getElementById('fb-badge');
+  if(!b) return;
+  b.className = 'fb-badge fb-'+state;
+  b.textContent = state==='ok' ? '🔥 Firebase OK' : state==='err' ? '❌ Erreur Firebase' : '🔄 Connexion...';
 }
 
 /* ============================================================
@@ -285,31 +256,44 @@ function addLog(msg){
    ============================================================ */
 let myDriverId = null;
 let selectedDriverId = null;
-let deliveryProgress = {}; // orderId -> { progress: 0-100, interval }
+let allOrders = {};
+let allDrivers = {};
+let deliveryProgress = {};
 
 /* ============================================================
-   LOGIN
+   LOGIN — charger livreurs depuis Firebase
    ============================================================ */
+rtdb.ref('/livreurs').on('value', snap => {
+  setBadge('ok');
+  allDrivers = snap.val() || {};
+  if(!myDriverId) renderDriverOptions();
+  else renderApp();
+}, err => setBadge('err'));
+
 function renderDriverOptions(){
-  const db = getDB();
-  const drivers = db.drivers || SEED_DRIVERS;
   const el = document.getElementById('driver-options');
-  el.innerHTML = Object.entries(drivers).map(([id,d])=>`
+  if(Object.keys(allDrivers).length === 0){
+    el.innerHTML = '<p style="color:var(--muted);text-align:center;font-size:.85rem;">Aucun livreur configuré</p>';
+    return;
+  }
+  el.innerHTML = Object.entries(allDrivers).map(([id,d])=>`
     <div class="driver-option" id="opt-${id}" onclick="selectDriver('${id}')">
-      <span class="driver-avatar">${d.avatar||'🏍️'}</span>
+      <span class="driver-avatar">${esc(d.avatar||'🏍️')}</span>
       <div class="driver-detail">
         <div class="driver-name">${esc(d.name)}</div>
         <div class="driver-status ${d.status==='available'?'ds-available':'ds-busy'}">
           ${d.status==='available'?'🟢 Disponible':'🟠 En mission'}
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
+
+  // Restore selection
+  if(selectedDriverId) document.getElementById('opt-'+selectedDriverId)?.classList.add('selected');
 }
 
 function selectDriver(id){
   selectedDriverId = id;
-  document.querySelectorAll('.driver-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.driver-option').forEach(el=>el.classList.remove('selected'));
   document.getElementById('opt-'+id)?.classList.add('selected');
   document.getElementById('login-btn').disabled = false;
 }
@@ -317,136 +301,91 @@ function selectDriver(id){
 function login(){
   if(!selectedDriverId) return;
   myDriverId = selectedDriverId;
-  localStorage.setItem('driver_session', myDriverId);
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
+  localStorage.setItem('driver_session_fb', myDriverId);
 
-  const db = getDB();
-  const d = db.drivers[myDriverId];
-  document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
-  document.getElementById('driver-name-bar').textContent = d.name;
+  const d = allDrivers[myDriverId];
+  document.getElementById('driver-avatar-bar').textContent = d?.avatar||'🏍️';
+  document.getElementById('driver-name-bar').textContent   = d?.name||myDriverId;
+  document.getElementById('login-screen').style.display    = 'none';
+  document.getElementById('app-screen').style.display      = 'block';
 
-  // Mémoriser les commandes déjà existantes pour ne pas bipper au démarrage
-  const dbInit = getDB();
-  Object.entries(dbInit.orders||{}).forEach(([id,o])=>{
-    if(o.assignedTo === myDriverId && (o.status==='attribue'||o.status==='prete'))
-      _knownAssignedIds.add(id);
-  });
+  // Mettre le livreur disponible
+  rtdb.ref(`/livreurs/${myDriverId}`).update({ status:'available' });
 
   updateGPS();
   startGPSInterval();
-  renderApp();
+  listenOrders();
 }
 
 function logout(){
+  if(myDriverId){
+    rtdb.ref(`/livreurs/${myDriverId}`).update({ status:'available', activeOrders:0, currentOrder:null });
+  }
   myDriverId = null;
   selectedDriverId = null;
-  localStorage.removeItem('driver_session');
-  document.getElementById('app-screen').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  renderDriverOptions();
+  localStorage.removeItem('driver_session_fb');
+  document.getElementById('app-screen').style.display  = 'none';
+  document.getElementById('login-screen').style.display= 'flex';
 }
 
 /* ============================================================
-   GPS SIMULATION
+   ÉCOUTE COMMANDES FIREBASE EN TEMPS RÉEL
    ============================================================ */
-function updateGPS(){
-  const db = getDB();
-  if(!db.drivers[myDriverId]) return;
-
-  // Simulate small GPS movement
-  const jitter = ()=>(Math.random()-.5)*0.001;
-  db.drivers[myDriverId].lat += jitter();
-  db.drivers[myDriverId].lng += jitter();
-  saveDB(db);
-
-  const lat = db.drivers[myDriverId].lat.toFixed(5);
-  const lng = db.drivers[myDriverId].lng.toFixed(5);
-  document.getElementById('gps-display').textContent = `lat: ${lat}  lng: ${lng}`;
-  document.getElementById('driver-gps-bar').textContent = `${lat}, ${lng}`;
-}
-
-let gpsInterval = null;
-function startGPSInterval(){
-  if(gpsInterval) clearInterval(gpsInterval);
-  gpsInterval = setInterval(updateGPS, 10000);
+let ordersListener = null;
+function listenOrders(){
+  ordersListener = rtdb.ref('/orders').on('value', snap => {
+    const prev = allOrders;
+    allOrders = snap.val() || {};
+    checkNewAssignments(prev);
+    renderApp();
+  });
 }
 
 /* ============================================================
-   STATUS TOGGLE
-   ============================================================ */
-function toggleStatus(){
-  const db = getDB();
-  const d = db.drivers[myDriverId];
-  if(!d) return;
-  if(d.status === 'busy'){ alert('Vous avez des commandes en cours — livrez-les d\'abord'); return; }
-  d.status = d.status==='available' ? 'offline' : 'available';
-  saveDB(db);
-  addLog(`🏍️ ${d.name} est maintenant ${d.status==='available'?'disponible':'hors ligne'}`);
-  renderApp();
-}
-
-/* ============================================================
-   RENDER APP
+   RENDER
    ============================================================ */
 function renderApp(){
-  const db = getDB();
-  const driver = db.drivers[myDriverId];
+  const driver = allDrivers[myDriverId];
   if(!driver) return;
 
   // Status badge
   const badge = document.getElementById('status-badge');
   if(driver.status==='available'){
-    badge.textContent = '🟢 Disponible';
-    badge.className = 'driver-badge badge-available';
+    badge.textContent='🟢 Disponible'; badge.className='driver-badge badge-available';
   } else if(driver.status==='busy'){
-    badge.textContent = '🟠 En mission';
-    badge.className = 'driver-badge badge-busy';
+    badge.textContent='🟠 En mission'; badge.className='driver-badge badge-busy';
   } else {
-    badge.textContent = '⚫ Hors ligne';
-    badge.className = 'driver-badge badge-busy';
+    badge.textContent='⚫ Hors ligne'; badge.className='driver-badge badge-busy';
   }
 
-  // My orders (assigned to me — y compris les commandes en attente d'acceptation)
-  const myOrders = Object.entries(db.orders||{})
-    .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree')
-    .sort((a,b) => (a[1].dispatchedAt||0) - (b[1].dispatchedAt||0));
+  // Mes commandes (attribuées à moi, pas encore livrées)
+  const myOrders = Object.entries(allOrders)
+    .filter(([,o]) => o.assignedTo === myDriverId && o.status !== 'livree' && o.status !== 'annulee')
+    .sort((a,b) => (a[1].dispatchedAt||a[1].createdAt||0)-(b[1].dispatchedAt||b[1].createdAt||0));
 
-  // ── KPI CALCULS ──
-  const allOrders        = Object.values(db.orders||{});
-  const myAllOrders      = allOrders.filter(o => o.assignedTo === myDriverId);
-  const deliveredOrders  = myAllOrders.filter(o => o.status === 'livree');
-  const todayStart       = new Date(); todayStart.setHours(0,0,0,0);
-  const deliveredToday   = deliveredOrders.filter(o => (o.deliveredAt||o.dispatchedAt||0) >= todayStart.getTime());
-  const earningsToday    = deliveredToday.length * 500;
-  const earningsTotal    = deliveredOrders.length * 500;
-  const totalAssigned    = myAllOrders.length;
-  const successRate      = totalAssigned > 0 ? Math.round(deliveredOrders.length / totalAssigned * 100) : 0;
+  // KPIs
+  const myAll       = Object.values(allOrders).filter(o=>o.assignedTo===myDriverId);
+  const delivered   = myAll.filter(o=>o.status==='livree');
+  const todayStart  = new Date(); todayStart.setHours(0,0,0,0);
+  const todayDel    = delivered.filter(o=>(o.deliveredAt||0)>=todayStart.getTime());
+  const earningsToday = todayDel.length * 500;
+  const earningsTotal = delivered.length * 500;
+  const successRate = myAll.length > 0 ? Math.round(delivered.length/myAll.length*100) : 0;
+  const timed = delivered.filter(o=>o.pickedAt&&o.deliveredAt);
+  const avgMin = timed.length > 0 ? Math.round(timed.reduce((s,o)=>s+(o.deliveredAt-o.pickedAt),0)/timed.length/60000) : null;
 
-  // Temps moyen (pickedAt → deliveredAt)
-  const timed = deliveredOrders.filter(o => o.pickedAt && o.deliveredAt);
-  const avgMinutes = timed.length > 0
-    ? Math.round(timed.reduce((s,o) => s + (o.deliveredAt - o.pickedAt), 0) / timed.length / 60000)
-    : null;
-
-  // KPI cards
-  document.getElementById('stat-today').textContent    = deliveredToday.length;
-  document.getElementById('kpi-total-sub').textContent = deliveredOrders.length > 0 ? `${deliveredOrders.length} au total` : '';
+  document.getElementById('stat-today').textContent    = todayDel.length;
+  document.getElementById('kpi-total-sub').textContent = delivered.length > 0 ? `${delivered.length} au total` : '';
   document.getElementById('stat-active').textContent   = myOrders.length;
   document.getElementById('kpi-active-sub').textContent= myOrders.length > 0 ? 'En attente / en route' : 'Aucune en attente';
   document.getElementById('stat-earnings').textContent = earningsToday.toLocaleString('fr');
-  document.getElementById('kpi-earnings-sub').textContent = `500 FCFA / livraison`;
-  document.getElementById('stat-rate').textContent     = totalAssigned > 0 ? successRate + '%' : '—';
-  document.getElementById('kpi-rate-sub').textContent  = totalAssigned > 0 ? `${deliveredOrders.length} / ${totalAssigned} courses` : 'Aucune course';
+  document.getElementById('stat-rate').textContent     = myAll.length > 0 ? successRate+'%' : '—';
+  document.getElementById('kpi-rate-sub').textContent  = myAll.length > 0 ? `${delivered.length}/${myAll.length} courses` : '';
+  document.getElementById('stat-total').textContent      = delivered.length;
+  document.getElementById('stat-avg-time').textContent   = avgMin !== null ? avgMin+' min' : '—';
+  document.getElementById('stat-total-earn').textContent = earningsTotal.toLocaleString('fr')+' F';
+  document.getElementById('orders-count').textContent    = myOrders.length+' active';
 
-  // Mini row
-  document.getElementById('stat-total').textContent      = deliveredOrders.length;
-  document.getElementById('stat-avg-time').textContent   = avgMinutes !== null ? avgMinutes + ' min' : '—';
-  document.getElementById('stat-total-earn').textContent = earningsTotal.toLocaleString('fr') + ' F';
-
-  document.getElementById('orders-count').textContent = myOrders.length + ' active';
-
-  // Orders list
   const container = document.getElementById('my-orders');
   if(myOrders.length === 0){
     container.innerHTML = `
@@ -460,13 +399,13 @@ function renderApp(){
 
   container.innerHTML = myOrders.map(([id,o])=>{
     const progress = deliveryProgress[id]?.progress || 0;
-    const cardClass = o.status==='attribue' ? 'attribue' : o.status==='en-route' ? 'en-route' : 'active';
+    const cardClass = o.status==='attribue'?'attribue':o.status==='en-route'?'en-route':'active';
     const statusLabel = {
       attribue: '📲 En attente de votre réponse',
       prete:    '🟡 À récupérer au restaurant',
       'en-route':'🔵 En livraison'
     }[o.status] || o.status;
-    const statusClass = o.status==='prete' ? 'os-prete' : 'os-en-route';
+    const statusClass = o.status==='attribue'?'os-attribue':o.status==='en-route'?'os-en-route':'os-prete';
 
     return `
     <div class="order-card ${cardClass}">
@@ -475,208 +414,187 @@ function renderApp(){
         <span class="order-status-badge ${statusClass}">${statusLabel}</span>
       </div>
 
-      ${o.status==='attribue' ? `
+      ${o.status==='attribue'?`
       <div class="accept-banner">
-        <div class="title">🔔 Nouvelle commande assignée !</div>
+        <div class="title">🔔 Nouvelle commande !</div>
         <div class="sub">Acceptez ou refusez dans les 60 secondes</div>
-      </div>` : ''}
+      </div>`:''}
 
       <div class="info-row">
         <span class="info-icon">👤</span>
         <div class="info-content">
           <div class="info-label">Client</div>
-          <div class="info-value">${esc(o.client)||'—'} ${o.phone?`• ${esc(o.phone)}`:''}</div>
+          <div class="info-value">${esc(o.client||o.nom||'—')} ${o.phone||o.tel?`• ${esc(o.phone||o.tel)}`:''}</div>
         </div>
       </div>
-
       <div class="info-row">
         <span class="info-icon">🍗</span>
         <div class="info-content">
           <div class="info-label">Commande</div>
-          <div class="info-value" style="font-size:.85rem;">${esc(o.items)||'—'}</div>
+          <div class="info-value" style="font-size:.85rem;">${esc(o.items||o.plat||'—')}</div>
         </div>
       </div>
-
       <div class="info-row">
         <span class="info-icon">📍</span>
         <div class="info-content">
           <div class="info-label">Adresse de livraison</div>
-          <div class="info-value">${esc(o.zone)} ${o.address?`— ${esc(o.address)}`:''}</div>
+          <div class="info-value">${esc(o.zone||'—')} ${o.address||o.adresse?`— ${esc(o.address||o.adresse)}`:''}</div>
         </div>
       </div>
-
-      ${o.amount ? `
+      ${o.total||o.amount?`
       <div class="info-row">
         <span class="info-icon">💰</span>
         <div class="info-content">
           <div class="info-label">Montant</div>
-          <div class="info-value" style="color:var(--yellow)">${Number(o.amount).toLocaleString('fr')} FCFA</div>
+          <div class="info-value" style="color:var(--yellow)">${Number(o.total||o.amount||0).toLocaleString('fr')} FCFA</div>
         </div>
-      </div>` : ''}
+      </div>`:''}
 
-      ${o.status==='en-route' ? `
+      ${o.status==='en-route'?`
       <div class="map-mini">
-        <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;font-weight:700;">PROGRESSION</div>
-        <div class="map-route">
-          <span style="font-size:.9rem;">🏪</span>
-          <div class="map-line">
-            <span class="map-driver" style="left:${progress}%;">🏍️</span>
-          </div>
-          <span style="font-size:.9rem;">🏠</span>
-        </div>
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px;font-weight:700;">PROGRESSION</div>
         <div class="distance-bar"><div class="distance-fill" style="width:${progress}%;"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:4px;">
-          <span>Restaurant</span>
-          <span style="color:var(--yellow);font-weight:700;">${Math.round(progress)}% — ~${Math.max(1,Math.round((100-progress)/15))} min</span>
-          <span>${esc(o.zone)}</span>
+          <span>🏪 Restaurant</span>
+          <span style="color:var(--yellow);font-weight:700;">${Math.round(progress)}%</span>
+          <span>🏠 ${esc(o.zone||'')}</span>
         </div>
-      </div>` : ''}
+      </div>`:''}
 
       <div class="order-actions">
-        ${o.status==='attribue' ? `
-          <button class="action-btn btn-accept" onclick="acceptOrder('${id}')">
-            ✅ Accepter la commande
-          </button>
-          <button class="action-btn btn-decline" onclick="declineOrder('${id}')">
-            ❌ Refuser
-          </button>` : ''}
-        ${o.status==='prete' ? `
+        ${o.status==='attribue'?`
+          <button class="action-btn btn-accept" onclick="acceptOrder('${id}')">✅ Accepter</button>
+          <button class="action-btn btn-decline" onclick="declineOrder('${id}')">❌ Refuser</button>`:''}
+        ${o.status==='prete'?`
           <button class="action-btn btn-pickup" onclick="pickupOrder('${id}')" style="grid-column:1/-1;">
-            🏪 J'ai récupéré la commande → En route !
-          </button>` : ''}
-        ${o.status==='en-route' ? `
-          <button class="action-btn btn-delivered" onclick="deliverOrder('${id}')">
-            ✅ Livrée !
-          </button>
-          <button class="action-btn btn-issue" onclick="reportIssue('${id}')">
-            ⚠️ Problème
-          </button>` : ''}
+            🏪 J'ai récupéré → En route !
+          </button>`:''}
+        ${o.status==='en-route'?`
+          <button class="action-btn btn-delivered" onclick="deliverOrder('${id}')">✅ Livrée !</button>
+          <button class="action-btn btn-issue" onclick="reportIssue('${id}')">⚠️ Problème</button>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
 /* ============================================================
-   ORDER ACTIONS
+   ACTIONS COMMANDES → Firebase
    ============================================================ */
 function acceptOrder(orderId){
-  const db = getDB();
-  if(!db.orders[orderId]) return;
-  db.orders[orderId].status = 'prete';
-  db.orders[orderId].acceptedAt = Date.now();
-  saveDB(db);
-  addLog(`✅ ${db.drivers[myDriverId].name} a accepté la commande #${orderId.slice(-4)}`);
-  // Petit bip de confirmation
-  try{
-    const ctx = new(window.AudioContext||window.webkitAudioContext)();
-    const o=ctx.createOscillator(), g=ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.frequency.value=660; g.gain.setValueAtTime(.4,ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3);
-    o.start(); o.stop(ctx.currentTime+.31);
-    setTimeout(()=>ctx.close(),500);
-  }catch(e){}
-  renderApp();
+  rtdb.ref(`/orders/${orderId}`).update({
+    status: 'prete',
+    acceptedAt: Date.now()
+  });
+  rtdb.ref('/log').push({ time:Date.now(), msg:`✅ ${allDrivers[myDriverId]?.name} a accepté #${orderId.slice(-4)}` });
+  playBeepAccept();
 }
 
 function declineOrder(orderId){
   if(!confirm('Refuser cette commande ? Elle sera réattribuée à un autre livreur.')) return;
-  const db = getDB();
-  if(!db.orders[orderId]) return;
-  const driverName = db.drivers[myDriverId]?.name || myDriverId;
-  // Marquer comme refusée (statut spécial, pas 'prete' pour éviter un re-dispatch immédiat)
-  db.orders[orderId].status      = 'declined';
-  db.orders[orderId].assignedTo  = null;
-  db.orders[orderId].assignedName = null;
-  db.orders[orderId].declinedBy  = (db.orders[orderId].declinedBy||[]).concat([myDriverId]);
-  db.orders[orderId].declinedAt  = Date.now();
-  // Libérer le livreur
-  if(db.drivers[myDriverId]){
-    db.drivers[myDriverId].status = 'available';
-    db.drivers[myDriverId].activeOrders = Math.max(0,(db.drivers[myDriverId].activeOrders||1)-1);
-    db.drivers[myDriverId].currentOrder = null;
-  }
-  saveDB(db);
-  addLog(`❌ ${driverName} a refusé la commande #${orderId.slice(-4)} — en attente d'un autre livreur`);
-  renderApp();
+  const order = allOrders[orderId] || {};
+  const declinedBy = (order.declinedBy || []).concat([myDriverId]);
+  rtdb.ref(`/orders/${orderId}`).update({
+    status: 'declined',
+    assignedTo: null,
+    assignedName: null,
+    declinedBy,
+    declinedAt: Date.now()
+  });
+  rtdb.ref(`/livreurs/${myDriverId}`).update({
+    status: 'available',
+    activeOrders: Math.max(0, (allDrivers[myDriverId]?.activeOrders||1)-1),
+    currentOrder: null
+  });
+  rtdb.ref('/log').push({ time:Date.now(), msg:`❌ ${allDrivers[myDriverId]?.name} a refusé #${orderId.slice(-4)} — redispatch` });
 }
 
 function pickupOrder(orderId){
-  const db = getDB();
-  db.orders[orderId].status = 'en-route';
-  db.orders[orderId].pickedAt = Date.now();
-  saveDB(db);
-  addLog(`🏍️ ${db.drivers[myDriverId].name} en route pour #${orderId.slice(-4)}`);
+  rtdb.ref(`/orders/${orderId}`).update({ status:'en-route', pickedAt:Date.now() });
+  rtdb.ref('/log').push({ time:Date.now(), msg:`🏍️ ${allDrivers[myDriverId]?.name} en route pour #${orderId.slice(-4)}` });
   startDeliveryProgress(orderId);
-  renderApp();
 }
 
 function deliverOrder(orderId){
-  const db = getDB();
-  db.orders[orderId].status = 'livree';
-  db.orders[orderId].deliveredAt = Date.now();
-  db.drivers[myDriverId].activeOrders = Math.max(0,(db.drivers[myDriverId].activeOrders||1)-1);
-  db.drivers[myDriverId].currentOrder = null;
-  if(db.drivers[myDriverId].activeOrders === 0) db.drivers[myDriverId].status = 'available';
-  db.revenue = (db.revenue||0) + (db.orders[orderId].total||0);
-  saveDB(db);
-  addLog(`✅ Commande #${orderId.slice(-4)} livrée par ${db.drivers[myDriverId].name}`);
+  const order = allOrders[orderId] || {};
+  rtdb.ref(`/orders/${orderId}`).update({ status:'livree', deliveredAt:Date.now() });
+  rtdb.ref(`/livreurs/${myDriverId}`).update({
+    activeOrders: Math.max(0,(allDrivers[myDriverId]?.activeOrders||1)-1),
+    currentOrder: null,
+    status: (allDrivers[myDriverId]?.activeOrders||1) <= 1 ? 'available' : 'busy'
+  });
+  if(order.total) rtdb.ref('/revenue').transaction(rev=>(rev||0)+(order.total||0));
+  rtdb.ref('/log').push({ time:Date.now(), msg:`✅ Commande #${orderId.slice(-4)} livrée par ${allDrivers[myDriverId]?.name}` });
   stopDeliveryProgress(orderId);
-  renderApp();
 }
 
 function reportIssue(orderId){
-  const reason = prompt('Décrivez le problème (ex: client absent, adresse introuvable):');
+  const reason = prompt('Décrivez le problème:');
   if(!reason) return;
-  addLog(`⚠️ Problème sur #${orderId.slice(-4)}: ${reason}`);
-  alert('Problème signalé. Le support va vous contacter.');
+  rtdb.ref('/log').push({ time:Date.now(), msg:`⚠️ Problème #${orderId.slice(-4)}: ${reason}` });
+  alert('Problème signalé.');
+}
+
+function toggleStatus(){
+  const d = allDrivers[myDriverId];
+  if(!d) return;
+  if(d.status==='busy'){ alert('Vous avez des commandes en cours — livrez-les d\'abord'); return; }
+  const newStatus = d.status==='available' ? 'offline' : 'available';
+  rtdb.ref(`/livreurs/${myDriverId}`).update({ status: newStatus });
 }
 
 /* ============================================================
-   DELIVERY ANIMATION
+   GPS
+   ============================================================ */
+let gpsInterval = null;
+function updateGPS(){
+  if(!myDriverId) return;
+  const jitter = ()=>(Math.random()-.5)*0.001;
+  const d = allDrivers[myDriverId];
+  if(!d) return;
+  const lat = (d.lat||5.340) + jitter();
+  const lng = (d.lng||-4.010) + jitter();
+  rtdb.ref(`/livreurs/${myDriverId}`).update({ lat, lng });
+  document.getElementById('gps-display').textContent = `lat: ${lat.toFixed(5)}  lng: ${lng.toFixed(5)}`;
+  document.getElementById('driver-gps-bar').textContent = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+}
+function startGPSInterval(){
+  if(gpsInterval) clearInterval(gpsInterval);
+  gpsInterval = setInterval(updateGPS, 10000);
+}
+
+/* ============================================================
+   PROGRESSION LIVRAISON
    ============================================================ */
 function startDeliveryProgress(orderId){
   if(deliveryProgress[orderId]) return;
-  deliveryProgress[orderId] = { progress: 0 };
+  deliveryProgress[orderId] = { progress:0 };
   deliveryProgress[orderId].interval = setInterval(()=>{
     deliveryProgress[orderId].progress = Math.min(99, deliveryProgress[orderId].progress + (Math.random()*2));
     renderApp();
   }, 3000);
 }
-
 function stopDeliveryProgress(orderId){
   if(deliveryProgress[orderId]?.interval) clearInterval(deliveryProgress[orderId].interval);
   delete deliveryProgress[orderId];
 }
 
 /* ============================================================
-   INIT
+   BIP SONORE
    ============================================================ */
-renderDriverOptions();
-
-// Restore session
-const savedSession = localStorage.getItem('driver_session');
-if(savedSession){
-  const db = getDB();
-  if(db.drivers[savedSession]){
-    selectedDriverId = savedSession;
-    document.querySelectorAll('.driver-option').forEach(el => el.classList.remove('selected'));
-    // Options not rendered yet in session restore, just login directly
-    myDriverId = savedSession;
-    const d = db.drivers[myDriverId];
-    document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
-    document.getElementById('driver-name-bar').textContent = d.name;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-screen').style.display = 'block';
-    updateGPS();
-    startGPSInterval();
-    renderApp();
-  }
+let _knownAssigned = new Set();
+function checkNewAssignments(prev){
+  if(!myDriverId) return;
+  let hasNew = false;
+  Object.entries(allOrders).forEach(([id,o])=>{
+    if(o.assignedTo===myDriverId && o.status==='attribue' && !_knownAssigned.has(id)){
+      hasNew = true;
+    }
+    if(o.assignedTo===myDriverId) _knownAssigned.add(id);
+  });
+  if(hasNew) playBeepNew();
 }
 
-/* ── BIP SONORE ── */
-let _knownAssignedIds = new Set();
-function playBeep(){
+function playBeepNew(){
   try{
     const ctx = new(window.AudioContext||window.webkitAudioContext)();
     [[880,0],[1100,.2],[1320,.4]].forEach(([f,t])=>{
@@ -691,28 +609,42 @@ function playBeep(){
     if(navigator.vibrate) navigator.vibrate([300,100,300,100,300]);
   }catch(e){}
 }
-function checkNewAssignments(){
-  if(!myDriverId) return;
-  const db = getDB();
-  const orders = db.orders || {};
-  let hasNew = false;
-  Object.entries(orders).forEach(([id,o])=>{
-    // Détecter les nouvelles commandes attribuées (statut attribue ou prete avec ce livreur)
-    if(o.assignedTo === myDriverId && (o.status === 'attribue' || o.status === 'prete')){
-      if(!_knownAssignedIds.has(id)){
-        hasNew = true;
-      }
-      _knownAssignedIds.add(id);
-    }
-  });
-  if(hasNew) playBeep();
+
+function playBeepAccept(){
+  try{
+    const ctx = new(window.AudioContext||window.webkitAudioContext)();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.frequency.value=660;
+    g.gain.setValueAtTime(.4,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.3);
+    o.start();o.stop(ctx.currentTime+.31);
+    setTimeout(()=>ctx.close(),500);
+  }catch(e){}
 }
 
-// Cross-tab sync
-window.addEventListener('storage', e=>{ if(e.key===DB_KEY && myDriverId){ checkNewAssignments(); renderApp(); } });
-
-// Poll every 5s
-setInterval(()=>{ if(myDriverId){ checkNewAssignments(); renderApp(); } }, 5000);
+/* ============================================================
+   RESTORE SESSION
+   ============================================================ */
+const savedSession = localStorage.getItem('driver_session_fb');
+if(savedSession){
+  selectedDriverId = savedSession;
+  myDriverId = savedSession;
+  // Attendre que Firebase charge les livreurs
+  setTimeout(()=>{
+    if(allDrivers[myDriverId]){
+      const d = allDrivers[myDriverId];
+      document.getElementById('driver-avatar-bar').textContent = d.avatar||'🏍️';
+      document.getElementById('driver-name-bar').textContent   = d.name;
+      document.getElementById('login-screen').style.display    = 'none';
+      document.getElementById('app-screen').style.display      = 'block';
+      rtdb.ref(`/livreurs/${myDriverId}`).update({ status:'available' });
+      updateGPS();
+      startGPSInterval();
+      listenOrders();
+    }
+  }, 2000);
+}
 </script>
 </body>
 </html>
