@@ -330,12 +330,12 @@ nav{
 
 <!-- ── NAV ── -->
 <nav>
-  <a href="https://www.troprapide.com" class="nav-logo">
+  <a href="index.html" class="nav-logo">
     <div class="nav-logo-dot"></div>
     <div class="nav-logo-text">TROPRAPIDE</div>
   </a>
   <div class="online-badge"><div class="online-dot"></div>En ligne · 7h–22h</div>
-  <a href="https://www.troprapide.com" class="nav-back">← Retour</a>
+  <a href="index.html" class="nav-back">← Accueil</a>
 </nav>
 
 <!-- ── HERO ── -->
@@ -750,6 +750,32 @@ window.submitOrder = async function() {
 
   document.getElementById('loadingOverlay').classList.add('show');
   document.getElementById('submitBtn').disabled = true;
+
+  // Ajouter coordonnées GPS de la zone pour le dispatch
+  const ZONE_COORDS = {
+    'Cocody':{lat:5.370,lng:-3.980},'Plateau':{lat:5.320,lng:-4.020},
+    'Yopougon':{lat:5.350,lng:-4.070},'Marcory':{lat:5.295,lng:-3.990},
+    'Treichville':{lat:5.300,lng:-4.005},'Adjamé':{lat:5.360,lng:-4.025},
+    'Abobo':{lat:5.420,lng:-4.020},'Koumassi':{lat:5.290,lng:-4.010},
+    'Port-Bouët':{lat:5.255,lng:-3.955},'Bingerville':{lat:5.360,lng:-3.880},
+    'Attécoubé':{lat:5.340,lng:-4.040},'Songon':{lat:5.370,lng:-4.110}
+  };
+  const zc = ZONE_COORDS[zone] || {lat:5.340,lng:-4.010};
+  order.lat = zc.lat + (Math.random()*.01-.005);
+  order.lng = zc.lng + (Math.random()*.01-.005);
+  order.restaurantLat = 5.340; order.restaurantLng = -4.010;
+  order.assignedTo = null; order.assignedName = null;
+
+  // Écrire aussi dans localStorage pour que admin/driver/kds voient la commande
+  const LS_KEY = 'troprapide_delivery';
+  try {
+    const localDB = JSON.parse(localStorage.getItem(LS_KEY)) || {orders:{},drivers:{},log:[],revenue:0};
+    const localId = 'cmd' + Date.now();
+    localDB.orders[localId] = {...order, localId};
+    localDB.log = localDB.log || [];
+    localDB.log.unshift({time:Date.now(), msg:`📱 Nouvelle commande web — ${client} • ${zone}`});
+    localStorage.setItem(LS_KEY, JSON.stringify(localDB));
+  } catch(le){}
 
   try {
     const newRef = await push(ref(db, 'orders'), order);

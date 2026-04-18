@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tracking — Meme Choco</title>
+<title>Tracking — TropRapide</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
 :root{
@@ -121,7 +121,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <div class="header-sub">Suivi en temps réel — Abidjan</div>
     </div>
   </div>
-  <a href="app.html" class="back-btn">← Retour</a>
+  <a href="index.html" class="back-btn">← Accueil</a>
 </div>
 
 <!-- LAYOUT -->
@@ -173,11 +173,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 /* ============================================================
    SHARED DB
    ============================================================ */
-const DB_KEY = 'meme_choco_delivery';
+const DB_KEY = 'troprapide_delivery';
 function getDB(){
   try{ return JSON.parse(localStorage.getItem(DB_KEY)) || {orders:{},drivers:{},log:[],revenue:0}; }
   catch(e){ return {orders:{},drivers:{},log:[],revenue:0}; }
 }
+/* XSS sanitization */
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 /* ============================================================
    MAP INIT (Abidjan centered)
@@ -276,7 +278,7 @@ function renderOrderDetails(orderId){
     const dist = getDistanceSimple(driver.lat, driver.lng, o.lat, o.lng);
     etaMin = Math.max(0, Math.round(dist * 8 - sinceDispatch)); // ~8 min per km
     const totalTime = dist * 8;
-    progress = Math.min(99, (sinceDispatch / totalTime) * 100);
+    progress = totalTime > 0 ? Math.min(99, (sinceDispatch / totalTime) * 100) : 50;
   } else if(o.status === 'livree'){
     progress = 100; etaMin = 0;
   } else if(o.status === 'prete'){
@@ -307,20 +309,20 @@ function renderOrderDetails(orderId){
 
       <div class="info-block">
         <div class="info-block-label">Client</div>
-        <div class="info-block-val">${o.client||'—'}</div>
-        <div class="info-block-sub">📍 ${o.address||''} ${o.zone||''}</div>
+        <div class="info-block-val">${esc(o.client)||'—'}</div>
+        <div class="info-block-sub">📍 ${esc(o.address)} ${esc(o.zone)}</div>
       </div>
 
       <div class="info-block">
         <div class="info-block-label">Commande</div>
-        <div class="info-block-val" style="font-size:.85rem;">${o.items||'—'}</div>
+        <div class="info-block-val" style="font-size:.85rem;">${esc(o.items)||'—'}</div>
         <div class="info-block-sub">${o.total?(o.total.toLocaleString('fr')+' FCFA'):''}</div>
       </div>
 
       ${driver ? `
       <div class="info-block">
         <div class="info-block-label">Livreur</div>
-        <div class="info-block-val">${driver.avatar||'🏍️'} ${driver.name}</div>
+        <div class="info-block-val">${esc(driver.avatar)||'🏍️'} ${esc(driver.name)}</div>
         <div class="info-block-sub">Vitesse: ${driver.speed||1} • GPS actif</div>
       </div>` : ''}
 
@@ -335,9 +337,9 @@ function renderOrderDetails(orderId){
         </div>
         <div class="eta-bar"><div class="eta-fill" style="width:${progress}%;"></div></div>
         <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);margin-top:6px;">
-          <span>🏪 Meme Choco</span>
+          <span>🏪 TropRapide</span>
           <span style="color:var(--yellow);">${Math.round(progress)}%</span>
-          <span>🏠 ${o.zone}</span>
+          <span>🏠 ${esc(o.zone)}</span>
         </div>
       </div>` : ''}
 
@@ -345,7 +347,7 @@ function renderOrderDetails(orderId){
       <div style="background:#0a1a0a;border:1px solid var(--green);border-radius:12px;padding:12px;text-align:center;margin:12px 0;">
         <div style="font-size:1.5rem;margin-bottom:4px;">✅</div>
         <div style="font-weight:900;color:var(--green);">Commande livrée !</div>
-        <div style="font-size:.8rem;color:var(--muted);margin-top:4px;">Merci d'avoir commandé chez Meme Choco</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:4px;">Merci d'avoir commandé chez TropRapide</div>
       </div>` : ''}
     </div>
 
@@ -386,14 +388,14 @@ function updateMap(orderId){
   const restLng = o.restaurantLng || -4.010;
   markers.restaurant = L.marker([restLat, restLng], {icon: icons.restaurant})
     .addTo(map)
-    .bindPopup('<b>🍗 Meme Choco</b><br>Restaurant');
+    .bindPopup('<b>🍗 TropRapide</b><br>Restaurant');
   bounds.push([restLat, restLng]);
 
   // Delivery destination
   if(o.lat && o.lng){
     markers.client = L.marker([o.lat, o.lng], {icon: icons.client})
       .addTo(map)
-      .bindPopup(`<b>📍 ${o.client}</b><br>${o.zone}`);
+      .bindPopup(`<b>📍 ${esc(o.client)}</b><br>${esc(o.zone)}`);
     bounds.push([o.lat, o.lng]);
   }
 
@@ -402,7 +404,7 @@ function updateMap(orderId){
   if(driver && ['en-route'].includes(o.status)){
     markers.driver = L.marker([driver.lat, driver.lng], {icon: icons.driver})
       .addTo(map)
-      .bindPopup(`<b>🏍️ ${driver.name}</b><br>En route`);
+      .bindPopup(`<b>🏍️ ${esc(driver.name)}</b><br>En route`);
     bounds.push([driver.lat, driver.lng]);
 
     // Draw route line
@@ -444,7 +446,7 @@ function renderAllOrders(){
     <div class="order-pill" onclick="selectOrder('${id}')">
       <div>
         <div class="pill-id">#${id.slice(-8)}</div>
-        <div class="pill-info">${o.client||'—'} • ${o.zone||'—'}</div>
+        <div class="pill-info">${esc(o.client)||'—'} • ${esc(o.zone)||'—'}</div>
       </div>
       <span class="pill-badge" style="color:${colors[o.status]||'#fff'};">${labels[o.status]||o.status}</span>
     </div>`).join('');
